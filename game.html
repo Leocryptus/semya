@@ -213,21 +213,34 @@ const DIST = {
 };
 const SPEC_EM = {"Старт·Общак":"🏁","Сундук":"🎁","КПЗ":"🚔","Контрабанда":"⚓","Стрелка":"🥊","Случай":"🃏","Разгрузочный":"🍽️","Облава":"🚨","Босс":"🎩"};
 const ORDER = ["Старт·Общак","Порт","Толчок","Сундук","Госбанк","Гаражи","КПЗ","АЗС","Ломбард","Контрабанда","Промзона","Вокзал","Стрелка","Телеграф","Космос","Случай","Малина","Разгрузочный","Облава","Интурист","ЦУМ","Сундук","Босс","Верфь"];
+/* Звания: уважение → лимит районов */
+const TITLES = [["Пешка",0,2],["Шестёрка",8,3],["Бригадир",20,4],["Смотрящий",40,6],["Вор",65,9]];
+function titleOf(resp){ let t=TITLES[0]; for(const x of TITLES) if(resp>=x[1]) t=x; return t; }
+function nextTitle(resp){ for(const x of TITLES) if(resp<x[1]) return x; return null; }
+const CARD_ART = id => `assets/art/cards/${id}-t.png`;
+/* Колода «Случай» — 12 карт с лором и артом (Nano Banana) */
 const CARDS = [
-  {t:"Наводка",e:"🃏",d:"Верный человек слил адрес. <span class='money'>+$300</span> в общак.",f:s=>s.money+=300},
-  {t:"Общий котёл",e:"🍲",d:"Собрал дань с района. <span class='money'>+$60</span> за каждый твой район.",f:s=>s.money+=60*myCount(s)},
-  {t:"Кидок",e:"💸",d:"Барыга обманул. <span class='bad'>−$250</span>.",f:s=>s.money=Math.max(0,s.money-250)},
-  {t:"Уважение улицы",e:"🎖",d:"Люди зауважали. <span class='money'>+3 уважения</span>.",f:s=>s.respect+=3},
-  {t:"Дал по рукам",e:"💪",d:"Показал силу. <span class='money'>+2 силы</span>.",f:s=>s.power+=2},
-  {t:"Рывок",e:"👟",d:"Поймал кураж. <span class='money'>+2 хода</span> прямо сейчас.",f:s=>s.moves+=2},
+  {id:"navodka", t:"Наводка", kind:"удача", d:"Верный человек шепнул адрес — там ждала касса. <span class='money'>+$300</span>.", f:s=>s.money+=300},
+  {id:"kotel", t:"Общий котёл", kind:"удача", d:"Собрал дань со своих точек. <span class='money'>+$80</span> за каждый твой район.", f:s=>s.money+=80*myCount(s)},
+  {id:"fart", t:"Фарт", kind:"удача", d:"Кости легли как надо. <span class='money'>+2 хода</span> прямо сейчас.", f:s=>s.moves+=2},
+  {id:"respect", t:"Уважение улицы", kind:"удача", d:"Заступился за своих — город это видел. <span class='money'>+3 уважения</span>.", f:s=>s.respect+=3},
+  {id:"trofey", t:"Трофей", kind:"удача", d:"Взял верх в честном споре. <span class='money'>+2 силы</span>.", f:s=>s.power+=2},
+  {id:"svoy", t:"Свой человек", kind:"удача", d:"В горсовете есть свои. <span class='money'>Скидка 50%</span> на следующий район.", f:s=>s.discount=true},
+  {id:"kidok", t:"Кидок", kind:"беда", d:"Барыга кинул на сделке. <span class='bad'>−$250</span>.", f:s=>s.money=Math.max(0,s.money-250)},
+  {id:"krysa", t:"Крыса в общаке", kind:"беда", d:"Недосчитались после пересчёта. <span class='bad'>−10% денег</span>.", f:s=>s.money=Math.floor(s.money*0.9)},
+  {id:"hvost", t:"Хвост", kind:"беда", d:"Менты сели на хвост. <span class='bad'>Следующая облава бьёт вдвое</span>.", f:s=>s.tail=true},
+  {id:"razborka", t:"Разборка", kind:"беда", d:"Влез в чужой замес. <span class='bad'>−1 сила</span>.", f:s=>s.power=Math.max(0,s.power-1)},
+  {id:"malyava", t:"Малява", kind:"ход", d:"Седой зовёт на Вокзал — дело есть. <span class='money'>Прыгаешь туда</span>.", jump:"Вокзал"},
+  {id:"dolzhok", t:"Должок", kind:"удача", d:"Скляровские вернули должок. <span class='money'>+$150</span>.", f:s=>{s.money+=150; s.oppMoney=Math.max(0,(s.oppMoney||0)-150);}},
 ];
 
 /* ═══════════════ СОСТОЯНИЕ ═══════════════ */
 const KEY="semya_proto_v1";
 let S=null;
 function fresh(){ return {
-  phase:"setup", day:1, maxDay:7, pos:0, moves:0, money:200, power:0, respect:0, streak:0,
-  proto:SETUP.map(x=>({...x, cnt:x.def})), done:{}, owners:{}, pendingIncome:0, dayPct:null
+  phase:"setup", day:1, maxDay:7, pos:0, moves:0, money:500, power:0, respect:0, streak:0,
+  proto:SETUP.map(x=>({...x, cnt:x.def})), done:{}, owners:{}, dayPct:null,
+  discount:false, tail:false, oppMoney:500, oppDays:0
 }; }
 function load(){ try{const r=localStorage.getItem(KEY); if(r){S=JSON.parse(r); return true;}}catch(e){} return false; }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
@@ -258,7 +271,8 @@ $("#start-btn").onclick=()=>{ S.proto=S.proto.filter(p=>p.cnt>0); S.phase="day-o
 
 /* ── HUD ── */
 function renderHUD(){
-  $("#h-day").textContent=S.day; $("#h-streak").textContent=`🔥 серия ${S.streak}`;
+  $("#h-day").textContent=S.day;
+  const t=titleOf(S.respect); $("#h-streak").textContent=`🎖 ${t[0]} · 🔥${S.streak}`;
   const st=[["👣","Ходы",S.moves],["money","Деньги","$"+fmt(S.money),1],["muscles","Сила",S.power],["respect","Уважение",S.respect]];
   $("#h-stats").innerHTML=st.map(([ic,lbl,val,isImg])=>{
     const icon = ic.length<=2 ? `<div class="em">${ic}</div>` : `<img src="${ICON(ic)}" alt="">`;
@@ -318,8 +332,12 @@ function dayResult(){
   const sbonus = S.streak>=7?2 : S.streak>=3?1 : 0; if(moves>0) moves+=sbonus;
   // сила из ядра
   const coreDone=S.proto.filter((p,i)=>p.core&&S.done[i]).length; S.power+=coreDone;
-  // серия/уважение
+  // деньги за закрытый день (как получка — иначе не на что покупать)
+  const cash = pct>=100?300 : pct>=85?200 : pct>=50?100 : 0; S.money+=cash;
+  // серия/уважение + рост звания
+  const prevT=titleOf(S.respect)[0];
   if(pct>=85){ S.streak++; S.respect += pct>=100?3:2; } else { S.streak=0; }
+  const newT=titleOf(S.respect); if(newT[0]!==prevT) setTimeout(()=>toast(`Новое звание: ${newT[0]}! Лимит районов ${newT[2]}`),900);
   S.moves+=moves; S.phase="rolled"; save(); renderHUD();
   const verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо — ядро не добил.":"Ядро сорвано — день не в счёт.";
   openModal({
