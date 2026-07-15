@@ -367,17 +367,25 @@ const CARDS = [
 const KEY="semya_proto_v1";
 let S=null;
 function fresh(){ return {
-  phase:"setup", day:1, maxDay:7, pos:0, moves:0, money:500, power:0, respect:0, streak:0,
-  proto:SETUP_FAST.map(x=>({...x, cnt:x.def})), done:{}, owners:{}, dayPct:null,
+  phase:"setup", day:1, maxDay:14, week:1, pos:0, moves:0, money:500, power:0, respect:0, streak:0,
+  proto:SETUP_FAST.map(x=>({...x, cnt:x.def})), done:{}, owners:{}, lvl:{}, dayPct:null,
   discount:false, tail:false, oppMoney:500, oppDays:0,
-  boss:{hp:8,max:8,dead:false,dmg:0}, log:[], days:[], tab:"day"
+  weekStats:{days:0,sotki:0,oppDays:0}, flags:[], oppFlags:[],
+  perkPayout:false, perkNoOblava:0, frozen:null,
+  log:[], days:[], tab:"day"
 }; }
 function load(){ try{const r=localStorage.getItem(KEY); if(r){S=JSON.parse(r);
-  if(!S.boss) S.boss={hp:8,max:8,dead:false,dmg:0};
+  if(S.week==null){ // миграция со старых сейвов → мягкий перезапуск структуры недели
+    S.week=1; S.maxDay=14; S.weekStats={days:0,sotki:0,oppDays:0}; S.flags=[]; S.oppFlags=[];
+    S.perkPayout=false; S.perkNoOblava=0; S.frozen=null; S.lvl={};
+  }
   if(S.oppMoney==null){ S.oppMoney=500; S.oppDays=0; }
   if(S.discount==null){ S.discount=false; S.tail=false; }
-  if(!S.log) S.log=[]; if(!S.days) S.days=[]; if(!S.tab) S.tab="day";
+  if(!S.log) S.log=[]; if(!S.days) S.days=[]; if(!S.tab) S.tab="day"; if(!S.lvl) S.lvl={};
   return true;}}catch(e){} return false; }
+const LVL_MULT=[1,1.6,2.5];
+function lvlOf(i){ return S.lvl[i]||1; }
+function curBoss(){ return BOSSES[Math.min(S.week,2)]; }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
 const $=s=>document.querySelector(s);
 const fmt=n=>(n<0?"−":"")+Math.abs(n).toLocaleString("ru-RU").replace(/,/g," ");
@@ -437,7 +445,7 @@ function enterGame(){
 function renderHUD(){
   $("#h-day").textContent=S.day;
   const t=titleOf(S.respect); $("#h-streak").textContent=`🎖 ${t[0]} · 🔥${S.streak}`;
-  const b=S.boss; $("#h-boss").textContent = b.dead? "🎩 выбит" : `🎩 ${b.hp}/${b.max}`;
+  const B=curBoss(); $("#h-boss").textContent=`Н${S.week} 🎩 ${B.count(S)}/${B.need}`;
   const st=[["👣","Ходы",S.moves],["money","Деньги","$"+fmt(S.money)],["muscles","Сила",S.power],["respect","Уважение",S.respect]];
   $("#h-stats").innerHTML=st.map(([ic,lbl,val])=>{
     const icon = ic.length<=2 ? `<div class="em">${ic}</div>` : `<img src="${ICON(ic)}" alt="">`;
@@ -462,6 +470,9 @@ function renderBoard(hotIdx){
     const gc=d?GC[d.g]:null;
     const body = d ? `<img class="art" src="${ART(d.art)}" alt="">` : `<span class="em">${SPEC_EM[name]||"🏙️"}</span>`;
     let toks=""; if(S.pos===i) toks+=`<span class="tok me"></span>`;
+    if(own) toks+=`<span class="ownf">${own==="me"?"🥂":"🌹"}</span>`;
+    const lv=lvlOf(i); if(own&&lv>1) toks+=`<span class="stars">${"★".repeat(lv-1)}</span>`;
+    if(S.frozen===i) toks+=`<span class="frz">⛔</span>`;
     const cls=["bt", start?"start":"", d?"":"special", own==="me"?"own-me":own==="opp"?"own-opp":"", (hotIdx===i?"hot":"")].join(" ");
     html+=`<div class="${cls}" ${gc?`data-g="1" style="grid-row:${rr};grid-column:${cc};--gc:${gc}"`:`style="grid-row:${rr};grid-column:${cc}"`}>
       <span class="n">${i+1}</span>${body}<span class="lbl">${name.replace("Старт·","")}</span>${toks}</div>`;
@@ -514,27 +525,25 @@ function dayResult(){
   S.dayPct=pct; S.days.push({day:S.day,pct});
   let moves= pct>=100?6 : pct>=85?4 : pct>=50?2 : 0;
   const sbonus = S.streak>=7?2 : S.streak>=3?1 : 0; if(moves>0) moves+=sbonus;
+  const t0=titleOf(S.respect); if(moves>0 && t0[0]==="Положенец") moves+=1; // перк звания
   const coreDone=S.proto.filter((p,i)=>p.core&&S.done[i]).length; S.power+=coreDone;
   const cash = pct>=100?300 : pct>=85?200 : pct>=50?100 : 0; S.money+=cash;
   const prevT=titleOf(S.respect)[0];
-  if(pct>=85){ S.streak++; S.respect += pct>=100?3:2; } else { S.streak=0; }
-  const newT=titleOf(S.respect); if(newT[0]!==prevT){ setTimeout(()=>toast(`Новое звание: ${newT[0]}! Лимит районов ${newT[2]}`),900); log('g','🎖',`<b>Ты</b> поднялся до звания <b>${newT[0]}</b>`); }
-  let bossDmg=0;
-  if(S.boss && !S.boss.dead && pct>=85){
-    bossDmg = pct>=100?2:1; S.boss.hp=Math.max(0,S.boss.hp-bossDmg); S.boss.dmg=(S.boss.dmg||0)+bossDmg;
-    log('g','🎩',`Твой режим ударил смотрящего: <b>−${bossDmg}</b> терпения`);
-    if(S.boss.hp<=0){ S.boss.dead=true; S.money+=500; S.respect+=5;
-      log('g','👑','<b>Смотрящий ВЫБИТ!</b> +$500 · +5 уважения');
-      setTimeout(()=>toast("🎩 Смотрящий ВЫБИТ твоим режимом! +$500 · +5 уважения"),1400);
-    }
-  }
+  if(pct>=85){ S.streak++; S.respect += pct>=100?3:2; S.weekStats.days++; if(pct>=100)S.weekStats.sotki++; }
+  else { S.streak=0; }
+  const newT=titleOf(S.respect); if(newT[0]!==prevT){ setTimeout(()=>toast(`Новое звание: ${newT[0]}! Лимит районов ${newT[2]}${newT[3]!=="—"?" · "+newT[3]:""}`),900); log('g','🎖',`<b>Ты</b> поднялся до звания <b>${newT[0]}</b>`); }
+  // давление босс-контракта недели
+  const B=curBoss(); let pressTxt="";
+  if(B.id==="buhgalter" && pct<85){ S.money=Math.max(0,S.money-100); pressTxt="Сан Саныч оштрафовал кассу: −$100"; }
+  if(B.id==="prokuror"){ S.money=Math.max(0,S.money-50); pressTxt="Допрос у Прокурора: −$50"; }
+  if(pressTxt){ log('n','🎩',pressTxt); setTimeout(()=>toast(pressTxt),1600); }
   log('g','📅',`<b>Ты</b> закрыл день ${S.day} на <b>${pct}%</b>${cash?` · +$${cash}`:""}${moves?` · ${moves} ходов`:""}`);
   S.moves+=moves; S.phase="rolled"; save(); renderHUD();
   const verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо — ядро не добил.":"Ядро сорвано — день не в счёт.";
   openModal({
     kind:"Итог дня · "+pct+"%", art:`<span class="big">${pct>=100?"🏆":pct>=85?"💪":pct>=50?"🙂":"😮‍💨"}</span>`,
     title: moves>0?`+${moves} ходов`:"0 ходов",
-    reward:[["👣",moves+" ходов"], cash?["money","+$"+cash]:null, ["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:null, bossDmg?["🎩","−"+bossDmg+" боссу"]:null, sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
+    reward:[["👣",moves+" ходов"], cash?["money","+$"+cash]:null, ["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:null, pct>=85?["📜",curBoss().count(S)+"/"+curBoss().need+" к боссу"]:null, sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
     desc:verdict+(moves>0?" Жми «Выйти в город».":" Ходов нет — сегодня стоишь. Завтра поднимайся."),
     btns: moves>0?[["▶ Выйти в город","btn",()=>{closeModal(); const m=S.moves; S.moves=0; go("city"); walk(m);}]]
                  :[["Завершить день","btn wood",()=>{closeModal();endDay();}]]
