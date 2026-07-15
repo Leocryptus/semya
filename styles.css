@@ -1,0 +1,648 @@
+/* ═══════════════════════════════════════════════════════════════════
+   🎩 СЕМЬЯ · Telegram Mini App · styles
+   Собрано из BRANDBOOK v1 (токены + компоненты ВЕРБАТИМ) + мобайл-каркас.
+   Премиум-нуар · near-black · золото Карлеоне vs роза Скляровских · 390px.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,500&family=Oswald:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+/* ─────────────────────────  1 · ТОКЕНЫ (BRANDBOOK)  ───────────────────────── */
+:root{
+  /* Фундамент — тёплый near-black «бетон и сепия» */
+  --bg:#0D0B08; --bg-raise:#14110C; --panel:#1A1610; --panel-2:#221D15;
+  --panel-hi:#2B2419; --line:#33291A; --line-2:#4A3C26;
+  /* Чернила / текст */
+  --ink:#F5ECD8; --ink-2:#B8A888; --ink-3:#7A6D54; --ink-max:#FFFFFF;
+  /* 🥂 Карлеоне — золото / шампань */
+  --gold:#E6B450; --gold-hi:#F5D689; --gold-lo:#A8792A; --gold-ink:#1A1204;
+  --gold-glow:0 0 24px rgba(230,180,80,.22);
+  /* 🌹 Скляровские — багрово-роза */
+  --rose:#E0455E; --rose-hi:#FF7088; --rose-lo:#9E1E38; --rose-ink:#1A0509;
+  --rose-glow:0 0 24px rgba(224,69,94,.22);
+  /* Семантика */
+  --ok:#47B872; --ok-ink:#04120A; --attack:#DB3729; --attack-hi:#FF6B54; --attack-ink:#1A0402;
+  --attack-glow:0 0 20px rgba(219,55,41,.35);
+  /* Улица (графити) */
+  --graffiti:#FF2E8B; --graffiti-lo:#B21E63;
+  /* Нейтралитет / старая гвардия */
+  --neutral:#6B6252; --neutral-fill:#2A251C; --boss:#9AA0B2; --boss-lo:#4A4E5C;
+  --scrim:rgba(8,6,4,.72);
+  /* Тени / радиусы */
+  --shadow-1:0 6px 18px rgba(0,0,0,.5); --shadow-2:0 14px 40px rgba(0,0,0,.6);
+  --r-card:14px; --r-btn:12px; --r-chip:999px; --r-tile:8px;
+
+  --safe-t:env(safe-area-inset-top);
+  --safe-b:env(safe-area-inset-bottom);
+  --nav-h:60px;
+}
+
+/* --me / --opp — подменяются на буте по клану игрока. Один код — два кабинета. */
+.me-g{
+  --me:var(--gold); --me-hi:var(--gold-hi); --me-lo:var(--gold-lo);
+  --me-ink:var(--gold-ink); --me-glow:var(--gold-glow); --me-soft:rgba(230,180,80,.14);
+  --opp:var(--rose); --opp-hi:var(--rose-hi); --opp-lo:var(--rose-lo);
+}
+.me-s{
+  --me:var(--rose); --me-hi:var(--rose-hi); --me-lo:var(--rose-lo);
+  --me-ink:var(--rose-ink); --me-glow:var(--rose-glow); --me-soft:rgba(224,69,94,.14);
+  --opp:var(--gold); --opp-hi:var(--gold-hi); --opp-lo:var(--gold-lo);
+}
+
+/* ─────────────────────────  2 · БАЗА  ───────────────────────── */
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+html{ background:var(--bg); -webkit-text-size-adjust:100%; }
+body{
+  font-family:"Manrope",system-ui,sans-serif; font-size:15px; line-height:1.5;
+  color:var(--ink); background:var(--bg);
+  overflow-x:hidden; overscroll-behavior-y:none;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  user-select:none; -webkit-tap-highlight-color:transparent;
+}
+/* Бетонная текстура — тонко, поверх холста */
+body::before{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:url("assets/tex-concrete.png") center/cover no-repeat;
+  opacity:.055; mix-blend-mode:screen;
+}
+/* Тёплый виньет-градиент сверху под шапку */
+body::after{
+  content:""; position:fixed; inset:0 0 auto 0; height:340px; z-index:0; pointer-events:none;
+  background:radial-gradient(120% 80% at 50% -10%, rgba(230,180,80,.05), transparent 60%);
+}
+img{ max-width:100%; display:block; }
+button{ font-family:inherit; color:inherit; }
+::-webkit-scrollbar{ width:0; height:0; }
+
+/* Типо-хелперы */
+.t-display{ font-family:"Playfair Display",serif; font-weight:900; letter-spacing:-.02em; }
+.t-serif{ font-family:"Playfair Display",serif; }
+.t-cond{ font-family:"Oswald",sans-serif; text-transform:uppercase; letter-spacing:.05em; }
+.num{ font-family:"Space Mono",monospace; font-weight:700; font-variant-numeric:tabular-nums; }
+.italic{ font-style:italic; }
+
+/* ─────────────────────────  3 · КАРКАС  ───────────────────────── */
+#app{ position:relative; z-index:1; min-height:100vh; min-height:100dvh; }
+main#screen{
+  padding:14px 16px calc(var(--nav-h) + var(--safe-b) + 24px);
+  max-width:520px; margin:0 auto;
+}
+.screen{ animation:screen-in .3s cubic-bezier(.22,.61,.36,1); }
+@keyframes screen-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+
+.section-h{
+  display:flex; align-items:center; gap:8px; margin:22px 2px 12px;
+  font:700 15px/1 "Oswald"; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-2);
+}
+.section-h::before{ content:""; width:7px; height:7px; transform:rotate(45deg);
+  background:var(--me); box-shadow:0 0 8px var(--me); flex:0 0 auto; }
+.section-h .fill{ flex:1; height:1px; background:linear-gradient(90deg,var(--line-2),transparent); }
+
+.card{
+  position:relative; background:linear-gradient(180deg,var(--panel),#151109);
+  border:1px solid var(--line); border-radius:var(--r-card);
+  box-shadow:var(--shadow-1), inset 0 1px 0 rgba(245,236,216,.04);
+  padding:14px; overflow:hidden;
+}
+.muted{ color:var(--ink-2); } .dim{ color:var(--ink-3); }
+.row{ display:flex; align-items:center; gap:10px; }
+.between{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+
+/* ─────────────────────────  4 · ШАПКА  ───────────────────────── */
+header.top{
+  position:sticky; top:0; z-index:40;
+  padding:calc(var(--safe-t) + 10px) 16px 9px;
+  background:linear-gradient(180deg,rgba(13,11,8,.96) 60%,rgba(13,11,8,.72));
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.top__brand{ display:flex; align-items:center; gap:9px; min-width:0; }
+.top__crest{ width:30px; height:30px; color:var(--me); flex:0 0 auto;
+  filter:drop-shadow(0 0 10px var(--me-glow,transparent)); }
+.top__crest svg{ width:100%; height:100%; }
+.top__clan{ min-width:0; }
+.top__clan b{ display:block; font:800 15px/1.05 "Playfair Display"; color:var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.top__clan span{ display:block; font:600 9.5px/1 "Oswald"; text-transform:uppercase;
+  letter-spacing:.12em; color:var(--me); margin-top:3px; }
+.top__day{ text-align:right; flex:0 0 auto; }
+.top__day b{ font:700 14px/1 "Space Mono"; color:var(--ink); }
+.top__day b i{ font-style:normal; color:var(--me); }
+.top__day span{ display:block; font:600 9px/1 "Oswald"; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--ink-3); margin-top:4px; }
+
+.top__chips{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-top:11px; }
+.top__strip{ display:flex; align-items:center; gap:10px; margin-top:10px; }
+.bossmini{ flex:1; display:flex; align-items:center; gap:8px; min-width:0;
+  background:var(--panel-2); border:1px solid var(--line); border-radius:var(--r-chip);
+  padding:5px 11px 5px 8px; }
+.bossmini__ico{ width:17px; height:17px; color:var(--boss); flex:0 0 auto; }
+.bossmini__bar{ flex:1; height:6px; border-radius:4px; background:#0A0908;
+  border:1px solid var(--boss-lo); overflow:hidden; min-width:24px; }
+.bossmini__bar i{ display:block; height:100%;
+  background:linear-gradient(90deg,var(--attack),var(--attack-hi)); }
+.bossmini__n{ font:700 11px/1 "Space Mono"; color:var(--ink-2); flex:0 0 auto; }
+.omdot{ flex:0 0 auto; width:34px; height:34px; border-radius:50%; display:grid; place-items:center;
+  background:var(--panel-2); border:1px solid var(--line); color:var(--me); }
+.omdot svg{ width:18px; height:18px; }
+.omdot.is-broken{ color:var(--attack); }
+.omdot .pip{ position:absolute; }
+
+/* Чип-ресурс (BRANDBOOK) */
+.chip{
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  height:32px; padding:0 10px 0 9px; border-radius:var(--r-chip);
+  background:var(--panel-2); border:1px solid var(--line);
+  font:700 15px/1 "Space Mono"; white-space:nowrap;
+}
+.chip svg{ width:16px; height:16px; flex:0 0 auto; }
+.chip--money{ color:var(--gold); } .chip--resp{ color:var(--gold-hi); } .chip--musc{ color:var(--attack); }
+.chip--tap{ cursor:pointer; transition:.12s; } .chip--tap:active{ transform:scale(.95); }
+
+/* ─────────────────────────  5 · КНОПКИ  ───────────────────────── */
+.btn{
+  position:relative; overflow:hidden; min-height:46px; padding:0 18px; width:100%;
+  border-radius:var(--r-btn); border:0; cursor:pointer;
+  font:600 15px/1 "Oswald"; letter-spacing:.04em; text-transform:uppercase;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  transition:transform .12s, filter .12s, box-shadow .12s; color:var(--ink);
+}
+.btn svg{ width:19px; height:19px; }
+.btn--primary{ background:linear-gradient(180deg,var(--me-hi),var(--me)); color:var(--me-ink);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), var(--shadow-1); }
+.me-s .btn--primary{ color:#fff; font-weight:700; }
+.btn--attack{ background:linear-gradient(180deg,#EF4B3C,var(--attack)); color:#fff; font-weight:700;
+  box-shadow:var(--attack-glow); }
+.btn--upgrade{ background:linear-gradient(180deg,#57C982,var(--ok)); color:var(--ok-ink); }
+.btn--ghost{ background:transparent; border:1px solid var(--line-2); color:var(--ink); }
+.btn:active{ transform:translateY(1px) scale(.99); filter:brightness(.95); }
+.btn:disabled,.btn[aria-disabled="true"]{ opacity:.4; filter:grayscale(.5); cursor:not-allowed;
+  box-shadow:none; pointer-events:none; }
+.btn:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
+.btn--sm{ min-height:40px; font-size:13px; padding:0 14px; }
+
+/* Ripple */
+.ripple{ position:absolute; border-radius:50%; transform:scale(0); pointer-events:none;
+  background:radial-gradient(circle,rgba(255,255,255,.5),transparent 62%);
+  animation:ripple .5s ease-out; mix-blend-mode:overlay; }
+@keyframes ripple{ to{ transform:scale(2.6); opacity:0; } }
+
+/* ─────────────────────────  6 · НИЖНЯЯ НАВИГАЦИЯ  ───────────────────────── */
+.nav{
+  position:fixed; bottom:0; inset-inline:0; z-index:45; height:calc(var(--nav-h) + var(--safe-b));
+  padding-bottom:var(--safe-b);
+  display:grid; grid-template-columns:repeat(5,1fr);
+  background:rgba(20,17,12,.94); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);
+}
+.nav__item{ appearance:none; background:none; border:0; cursor:pointer;
+  display:grid; place-items:center; gap:3px; color:var(--ink-3);
+  font:700 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.06em;
+  transition:color .16s, transform .12s; }
+.nav__item svg{ width:23px; height:23px; transition:transform .16s; }
+.nav__item:active{ transform:scale(.9); }
+.nav__item.is-active{ color:var(--me); }
+.nav__item.is-active svg{ filter:drop-shadow(0 0 8px var(--me-glow)); }
+.nav__badge{ position:absolute; top:6px; margin-left:20px; width:8px; height:8px; border-radius:50%;
+  background:var(--attack); box-shadow:0 0 8px var(--attack); }
+.nav__cta{ position:relative; }
+.nav__cta .disc{ margin-top:-16px; width:54px; height:54px; border-radius:50%;
+  display:grid; place-items:center; color:var(--me-ink);
+  background:radial-gradient(circle at 50% 34%,var(--me-hi),var(--me));
+  box-shadow:var(--me-glow), var(--shadow-1), inset 0 1px 0 rgba(255,255,255,.4);
+  border:1px solid var(--me-hi); }
+.nav__cta .disc svg{ width:26px; height:26px; }
+.nav__cta.is-active .disc{ transform:translateY(-2px); }
+.nav__cta .lbl{ margin-top:-6px; }
+
+/* ─────────────────────────  7 · КАРТА · ГЕКСЫ  ───────────────────────── */
+.mini-count{ display:flex; gap:7px; margin:2px 0 4px; }
+.mini-count b{ flex:1; text-align:center; background:var(--panel); border:1px solid var(--line);
+  border-radius:10px; padding:8px 4px; }
+.mini-count b span{ display:block; font:700 17px/1 "Space Mono"; margin-bottom:3px; }
+.mini-count b em{ font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--ink-3); font-style:normal; }
+.mini-count .c-me span{ color:var(--me); } .mini-count .c-opp span{ color:var(--opp); }
+.mini-count .c-free span{ color:var(--neutral); }
+
+.hexgrid{ --hexw:82px; display:flex; flex-direction:column; align-items:center; padding:6px 0 2px; }
+.hexrow{ display:flex; justify-content:center; }
+.hexrow + .hexrow{ margin-top:-18px; }
+.hexrow.off{ margin-left:44px; }
+
+.hex{
+  position:relative; width:var(--hexw); aspect-ratio:1/.92; margin:0 3px; cursor:pointer;
+  clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
+  background:var(--owner,var(--neutral)); display:grid; place-items:center;
+  transition:transform .14s, filter .14s;
+}
+.hex:active{ transform:scale(.94); filter:brightness(1.12); }
+.hex__inner{ position:absolute; inset:2px; clip-path:inherit;
+  background:var(--panel); display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; padding:6px 4px; text-align:center; }
+.hex--gold{ --owner:var(--gold); } .hex--gold .hex__inner{ background:#241B0C; }
+.hex--rose{ --owner:var(--rose); } .hex--rose .hex__inner{ background:#25121A; }
+.hex--free{ --owner:var(--neutral); } .hex--free .hex__inner{ background:#161009; }
+.hex--locked{ --owner:var(--boss-lo); } .hex--locked .hex__inner{ background:#100E0C; }
+.hex__ico{ width:19px; height:19px; opacity:.9; }
+.hex--gold .hex__ico{ color:var(--gold); } .hex--rose .hex__ico{ color:var(--rose); }
+.hex--free .hex__ico{ color:var(--neutral); } .hex--locked .hex__ico{ color:var(--boss); }
+.hex__name{ font:600 10px/1.05 "Oswald"; letter-spacing:.02em; color:var(--ink);
+  max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hex__income{ font:700 10px/1 "Space Mono"; color:var(--gold); }
+.hex--rose .hex__income{ color:var(--rose-hi); }
+.hex--free .hex__income{ color:var(--neutral); }
+.hex--locked .hex__income{ color:var(--boss); }
+.hex__pips{ display:flex; gap:2px; margin-top:1px; height:5px; align-items:center; }
+.hex__pips i{ width:4px; height:4px; border-radius:50%; background:var(--gold-hi); box-shadow:0 0 3px var(--gold-hi); }
+.hex--rose .hex__pips i{ background:var(--rose-hi); box-shadow:0 0 3px var(--rose-hi); }
+.hex__pips i.fort{ width:5px; height:5px; border-radius:1px; background:var(--ok); box-shadow:none; transform:rotate(45deg); }
+.hex.mine::after{ content:""; position:absolute; inset:2px; clip-path:inherit; pointer-events:none;
+  box-shadow:inset 0 0 12px var(--me-soft); }
+.hex.is-attacked{ animation:warpulse 1.1s infinite; }
+@keyframes warpulse{ 50%{ filter:drop-shadow(0 0 8px var(--graffiti)); } }
+.hex__lockbadge{ position:absolute; top:12px; color:var(--boss); width:13px; height:13px; }
+
+.legend{ display:flex; flex-wrap:wrap; gap:10px 14px; justify-content:center; margin-top:14px;
+  font:600 11px/1 "Manrope"; color:var(--ink-2); }
+.legend b{ display:inline-flex; align-items:center; gap:6px; font-weight:600; }
+.legend i{ width:11px; height:11px; border-radius:3px; }
+.legend .lg-me{ background:var(--me); } .legend .lg-opp{ background:var(--opp); }
+.legend .lg-free{ background:var(--neutral); } .legend .lg-lock{ background:var(--boss-lo); }
+
+/* ─────────────────────────  8 · НИЖНИЙ ЛИСТ  ───────────────────────── */
+.scrim{ position:fixed; inset:0; z-index:60; background:var(--scrim);
+  backdrop-filter:blur(3px); opacity:0; animation:fade .2s forwards; }
+@keyframes fade{ to{ opacity:1; } }
+.sheet{
+  position:fixed; left:0; right:0; bottom:0; z-index:61; max-width:520px; margin:0 auto;
+  background:linear-gradient(180deg,var(--panel),#120F0A);
+  border-top:1px solid var(--line-2); border-radius:20px 20px 0 0;
+  box-shadow:var(--shadow-2); padding:8px 16px calc(var(--safe-b) + 20px);
+  max-height:88vh; overflow-y:auto; animation:sheet-up .3s cubic-bezier(.22,.61,.36,1);
+}
+@keyframes sheet-up{ from{ transform:translateY(100%); } to{ transform:none; } }
+.sheet__grip{ width:38px; height:4px; border-radius:3px; background:var(--line-2);
+  margin:6px auto 12px; }
+.sheet__head{ display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
+.sheet__title{ font:700 22px/1.05 "Playfair Display"; color:var(--ink); }
+.sheet__sub{ font:600 10px/1 "Oswald"; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--me); margin-top:6px; }
+.sheet__flavor{ font:400 13.5px/1.5 "Manrope"; color:var(--ink-2); margin:2px 0 14px; }
+.sheet__stats{ display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:14px; }
+.stat{ background:var(--panel-2); border:1px solid var(--line); border-radius:11px; padding:10px 12px; }
+.stat em{ display:block; font:600 9.5px/1 "Oswald"; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--ink-3); font-style:normal; margin-bottom:6px; }
+.stat b{ font:700 16px/1 "Space Mono"; color:var(--ink); }
+.stat b.g{ color:var(--gold); } .stat b.r{ color:var(--rose); } .stat b.ok{ color:var(--ok); }
+.sheet__btns{ display:flex; flex-direction:column; gap:9px; margin-top:4px; }
+
+/* Пикер-список целей */
+.pick{ display:flex; align-items:center; gap:12px; width:100%; text-align:left;
+  background:var(--panel-2); border:1px solid var(--line); border-radius:12px;
+  padding:11px 13px; margin-bottom:8px; cursor:pointer; transition:.12s; }
+.pick:active{ transform:scale(.99); background:var(--panel-hi); }
+.pick[aria-disabled="true"]{ opacity:.42; filter:grayscale(.4); pointer-events:none; }
+.pick__ico{ width:34px; height:34px; border-radius:9px; flex:0 0 auto; display:grid; place-items:center;
+  background:var(--panel); border:1px solid var(--line); color:var(--me); }
+.pick__ico svg{ width:20px; height:20px; }
+.pick__main{ flex:1; min-width:0; }
+.pick__main b{ display:block; font:700 15px/1.15 "Manrope"; color:var(--ink); }
+.pick__main span{ font:500 12px/1.35 "Manrope"; color:var(--ink-2); }
+.pick__val{ text-align:right; flex:0 0 auto; }
+.pick__val b{ font:700 14px/1 "Space Mono"; color:var(--gold); }
+.pick__val span{ display:block; font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--ink-3); margin-top:4px; }
+
+/* ─────────────────────────  9 · ДОСЬЕ (BRANDBOOK)  ───────────────────────── */
+.dossier{
+  position:relative; border-radius:var(--r-card);
+  background:linear-gradient(180deg,var(--panel) 0%,#120F0A 100%);
+  border:2px solid var(--gold);
+  border-image:linear-gradient(155deg,var(--gold-hi),var(--gold) 45%,var(--gold-lo)) 1;
+  box-shadow:inset 0 1px 0 rgba(245,214,137,.28), inset 0 0 0 1px rgba(0,0,0,.55), var(--shadow-2);
+  padding:12px;
+}
+.dossier--rose{ border-image:linear-gradient(155deg,var(--rose-hi),var(--rose) 45%,var(--rose-lo)) 1; }
+.dossier--steel{ border-image:linear-gradient(155deg,#C9CEDA,var(--boss) 45%,var(--boss-lo)) 1; }
+.dossier__stamp{ position:absolute; top:10px; right:10px; z-index:2;
+  font:700 11px/1 "Space Mono"; letter-spacing:.08em; color:var(--gold-ink);
+  background:var(--gold); padding:3px 7px; border-radius:4px; transform:rotate(3deg); }
+.dossier--rose .dossier__stamp{ background:var(--rose); color:#fff; }
+.dossier__name{ font:700 20px/1.1 "Playfair Display"; color:var(--ink); }
+
+/* Досье-герой персонажа */
+.hero{ display:flex; gap:14px; }
+.hero__portrait{ position:relative; width:118px; flex:0 0 auto; border-radius:10px; overflow:hidden;
+  aspect-ratio:896/1152; background:#0A0806;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.6), inset 0 -30px 40px rgba(10,8,6,.7); }
+.hero__portrait img{ width:100%; height:100%; object-fit:cover; object-position:top center; }
+.hero__info{ flex:1; min-width:0; padding-top:2px; }
+.hero__title-lbl{ font:600 10px/1 "Oswald"; text-transform:uppercase; letter-spacing:.14em;
+  color:var(--me); }
+.hero__name{ font:800 24px/1.02 "Playfair Display"; color:var(--ink); margin:5px 0 3px; }
+.hero__role{ font:500 italic 13px/1.3 "Playfair Display"; color:var(--ink-2); }
+.hero__infl{ margin-top:12px; }
+.hero__infl em{ display:block; font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--ink-3); font-style:normal; margin-bottom:3px; }
+.hero__infl b{ font:700 30px/1 "Space Mono"; color:var(--me); letter-spacing:-.01em; }
+.hero__ring{ position:absolute; bottom:8px; right:8px; }
+
+/* Кольцо прогресса */
+.ring{ position:relative; width:var(--rs,54px); height:var(--rs,54px); }
+.ring svg{ transform:rotate(-90deg); width:100%; height:100%; }
+.ring__bg{ fill:none; stroke:var(--panel-2); }
+.ring__fg{ fill:none; stroke:var(--me); stroke-linecap:round;
+  filter:drop-shadow(0 0 5px var(--me-glow)); transition:stroke-dashoffset .6s ease; }
+.ring__txt{ position:absolute; inset:0; display:grid; place-items:center;
+  font:700 15px/1 "Space Mono"; color:var(--ink); }
+.ring__txt small{ font-size:9px; color:var(--ink-3); }
+
+/* Лестница титулов */
+.ladder{ display:flex; flex-direction:column; gap:0; }
+.ladder__row{ display:flex; align-items:center; gap:12px; padding:8px 2px; position:relative; }
+.ladder__node{ width:16px; height:16px; border-radius:50%; flex:0 0 auto; z-index:2;
+  border:2px solid var(--line-2); background:var(--panel); }
+.ladder__row.done .ladder__node{ background:var(--me); border-color:var(--me); }
+.ladder__row.cur .ladder__node{ background:var(--me); border-color:var(--me-hi);
+  box-shadow:0 0 0 4px var(--me-soft), var(--me-glow); }
+.ladder__line{ position:absolute; left:9px; top:0; bottom:0; width:2px; background:var(--line); z-index:1; }
+.ladder__row.done .ladder__line, .ladder__row.cur .ladder__line{ background:var(--me); }
+.ladder__row:first-child .ladder__line{ top:50%; }
+.ladder__row:last-child .ladder__line{ bottom:50%; }
+.ladder__name{ flex:1; font:600 14px/1 "Oswald"; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--ink-3); }
+.ladder__row.done .ladder__name, .ladder__row.cur .ladder__name{ color:var(--ink); }
+.ladder__row.cur .ladder__name{ color:var(--me); }
+.ladder__req{ font:700 11px/1 "Space Mono"; color:var(--ink-3); }
+.ladder__row.cur .ladder__req{ color:var(--me); }
+.ladder__crown{ color:var(--gold-hi); }
+.next-hint{ margin-top:10px; padding:10px 12px; border-radius:11px; background:var(--me-soft);
+  border:1px solid var(--line); font:500 13px/1.4 "Manrope"; color:var(--ink-2); }
+.next-hint b{ color:var(--me); font-family:"Space Mono"; }
+
+/* Слот лейтенанта / артефакты */
+.lt-card{ display:flex; align-items:center; gap:12px; }
+.lt-card__ico{ width:44px; height:44px; border-radius:11px; flex:0 0 auto; display:grid; place-items:center;
+  background:var(--panel-2); border:1px solid var(--line-2); color:var(--ink-2); }
+.lt-card__ico svg{ width:24px; height:24px; }
+.lt-card b{ font:700 15px/1.1 "Manrope"; color:var(--ink); }
+.lt-card span{ font:500 12px/1.4 "Manrope"; color:var(--ink-2); }
+.chips-wrap{ display:flex; flex-wrap:wrap; gap:8px; }
+.art-chip{ display:inline-flex; align-items:center; gap:7px; padding:7px 12px; border-radius:var(--r-chip);
+  background:var(--panel-2); border:1px solid var(--line-2); font:600 12px/1 "Manrope"; color:var(--gold-hi); }
+.art-chip svg{ width:15px; height:15px; }
+.empty-slot{ text-align:center; padding:16px; color:var(--ink-3);
+  border:1px dashed var(--line-2); border-radius:12px; font:500 13px/1.4 "Manrope"; }
+
+/* VS-мини */
+.vs{ display:flex; align-items:stretch; gap:0; border-radius:12px; overflow:hidden;
+  border:1px solid var(--line); }
+.vs__side{ flex:1; padding:11px 12px; background:var(--panel-2); }
+.vs__side.me{ box-shadow:inset 3px 0 0 var(--me); }
+.vs__side.op{ box-shadow:inset -3px 0 0 var(--opp); text-align:right; }
+.vs__side em{ font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.08em; font-style:normal; }
+.vs__side.me em{ color:var(--me); } .vs__side.op em{ color:var(--opp); }
+.vs__side b{ display:block; font:700 18px/1.1 "Space Mono"; color:var(--ink); margin-top:6px; }
+.vs__side span{ font:500 11px/1.2 "Manrope"; color:var(--ink-2); }
+.vs__mid{ display:grid; place-items:center; padding:0 10px; background:var(--panel);
+  font:900 13px/1 "Oswald"; color:var(--ink-3); }
+
+/* ─────────────────────────  10 · ХОД  ───────────────────────── */
+.act-toggle{ display:flex; gap:8px; margin-bottom:14px; }
+.act-toggle button{ flex:1; appearance:none; border:1px solid var(--line); background:var(--panel);
+  color:var(--ink-3); border-radius:11px; padding:11px 8px; cursor:pointer;
+  font:700 12px/1 "Oswald"; text-transform:uppercase; letter-spacing:.05em; transition:.14s; }
+.act-toggle button .n{ font-family:"Space Mono"; margin-left:5px; }
+.act-toggle button.on{ color:var(--me); border-color:var(--me); background:var(--me-soft);
+  box-shadow:inset 0 0 12px var(--me-soft); }
+
+.hod-head{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+.hod-head .ring{ --rs:66px; }
+.hod-head__t b{ font:700 17px/1.1 "Oswald"; text-transform:uppercase; letter-spacing:.04em; color:var(--ink); }
+.hod-head__t span{ display:block; font:500 12.5px/1.4 "Manrope"; color:var(--ink-2); margin-top:4px; }
+.combo{ display:inline-flex; align-items:center; gap:6px; margin-top:7px; padding:4px 10px; border-radius:999px;
+  background:var(--panel-2); border:1px solid var(--line); font:700 12px/1 "Space Mono"; color:var(--attack-hi); }
+.combo svg{ width:14px; height:14px; }
+
+.lastweek{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px;
+  padding:8px; border-radius:10px; font:700 12px/1 "Oswald"; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--attack-ink); background:linear-gradient(180deg,var(--attack-hi),var(--attack)); }
+
+.proto{ display:flex; flex-direction:column; gap:7px; }
+.proto__item{ display:flex; align-items:center; gap:12px; width:100%; text-align:left; cursor:pointer;
+  background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px;
+  transition:.14s; position:relative; overflow:hidden; }
+.proto__item:active{ transform:scale(.995); }
+.proto__box{ width:24px; height:24px; border-radius:7px; flex:0 0 auto; display:grid; place-items:center;
+  border:2px solid var(--line-2); background:var(--panel-2); transition:.14s; color:transparent; }
+.proto__box svg{ width:15px; height:15px; }
+.proto__item.on{ border-color:var(--me); background:linear-gradient(90deg,var(--me-soft),transparent 80%); }
+.proto__item.on .proto__box{ background:var(--me); border-color:var(--me); color:var(--me-ink);
+  box-shadow:var(--me-glow); }
+.proto__txt{ flex:1; font:500 14px/1.3 "Manrope"; color:var(--ink); }
+.proto__item.on .proto__txt{ color:var(--ink); }
+.proto__mus{ display:inline-flex; align-items:center; gap:3px; font:700 10px/1 "Space Mono";
+  color:var(--attack); padding:4px 7px; border-radius:999px; border:1px solid var(--line-2);
+  background:var(--panel-2); flex:0 0 auto; }
+.proto__mus svg{ width:12px; height:12px; }
+
+/* Слово Дона тумблер */
+.vow-block{ margin-top:14px; padding:13px 14px; border-radius:12px;
+  background:var(--panel); border:1px solid var(--line); }
+.vow-block__q{ font:500 13.5px/1.4 "Manrope"; color:var(--ink); margin-bottom:11px; }
+.vow-block__q b{ color:var(--me); }
+.seg{ display:flex; gap:8px; }
+.seg button{ flex:1; appearance:none; cursor:pointer; border-radius:10px; padding:11px; transition:.14s;
+  font:700 13px/1 "Oswald"; text-transform:uppercase; letter-spacing:.04em;
+  border:1px solid var(--line-2); background:var(--panel-2); color:var(--ink-2); }
+.seg button.on.yes{ background:linear-gradient(180deg,#57C982,var(--ok)); color:var(--ok-ink); border-color:var(--ok); }
+.seg button.on.no{ background:linear-gradient(180deg,#EF4B3C,var(--attack)); color:#fff; border-color:var(--attack); }
+
+/* Плашка живого пересчёта (sticky) */
+.tally{ position:sticky; bottom:calc(var(--nav-h) + var(--safe-b) + 8px); z-index:20; margin-top:16px;
+  background:linear-gradient(180deg,var(--panel-hi),var(--panel));
+  border:1px solid var(--line-2); border-radius:14px; padding:12px 14px;
+  box-shadow:var(--shadow-2); }
+.tally__nums{ display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:11px; }
+.tally__nums .n{ display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
+.tally__nums .n b{ font:700 18px/1 "Space Mono"; }
+.tally__nums .n em{ font:600 8.5px/1 "Oswald"; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--ink-3); font-style:normal; }
+.tally__nums .n.money b{ color:var(--gold); } .tally__nums .n.resp b{ color:var(--gold-hi); }
+.tally__nums .n.musc b{ color:var(--attack); } .tally__nums .n.streak b{ color:var(--attack-hi); }
+.tally__sep{ width:1px; align-self:stretch; background:var(--line); }
+
+/* Фаза хода — плитки действий */
+.actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.tile{ position:relative; overflow:hidden; text-align:left; cursor:pointer;
+  background:linear-gradient(180deg,var(--panel),#151109); border:1px solid var(--line);
+  border-radius:14px; padding:13px; transition:.14s; min-height:96px;
+  display:flex; flex-direction:column; }
+.tile:active{ transform:scale(.97); }
+.tile__ico{ width:40px; height:40px; border-radius:11px; display:grid; place-items:center; margin-bottom:auto;
+  background:var(--me-soft); color:var(--me); border:1px solid var(--line); }
+.tile__ico svg{ width:23px; height:23px; }
+.tile.att .tile__ico{ background:rgba(219,55,41,.14); color:var(--attack); }
+.tile.up .tile__ico{ background:rgba(71,184,114,.14); color:var(--ok); }
+.tile.boss .tile__ico{ background:rgba(154,160,178,.14); color:var(--boss); }
+.tile__t{ font:700 14px/1.1 "Oswald"; text-transform:uppercase; letter-spacing:.03em; color:var(--ink); margin-top:10px; }
+.tile__c{ font:600 11px/1.3 "Space Mono"; color:var(--ink-2); margin-top:4px; }
+.tile__lock{ font:500 10.5px/1.3 "Manrope"; color:var(--ink-3); margin-top:4px; }
+.tile[aria-disabled="true"]{ opacity:.45; filter:grayscale(.55); pointer-events:none; }
+.tile[aria-disabled="true"] .tile__ico{ background:var(--panel-2); color:var(--ink-3); }
+
+/* Итоговая сводка (день уже отмечен) */
+.done-summary{ text-align:center; padding:20px 16px; }
+.done-summary .ring{ --rs:88px; margin:0 auto 14px; }
+.done-summary h3{ font:700 19px/1.2 "Playfair Display"; color:var(--ink); margin:0 0 6px; }
+.done-summary p{ font:500 13.5px/1.5 "Manrope"; color:var(--ink-2); margin:0; }
+
+/* ─────────────────────────  11 · БОСС  ───────────────────────── */
+.boss-hero{ display:flex; gap:14px; margin-bottom:4px; }
+.boss-hero__portrait{ width:110px; flex:0 0 auto; border-radius:11px; overflow:hidden; aspect-ratio:896/1216;
+  background:#0A0908; box-shadow:inset 0 0 0 1px rgba(0,0,0,.6), inset 0 -26px 36px rgba(8,8,10,.7); }
+.boss-hero__portrait img{ width:100%; height:100%; object-fit:cover; object-position:top center; }
+.boss-hero__info{ flex:1; min-width:0; }
+.boss-hero__wk{ font:600 10px/1 "Oswald"; text-transform:uppercase; letter-spacing:.12em; color:var(--boss); }
+.boss-hero__name{ font:700 21px/1.08 "Playfair Display"; color:var(--ink); margin:6px 0 6px; }
+.boss-hero__hold{ font:500 12.5px/1.4 "Manrope"; color:var(--ink-2); }
+.boss-hero__hold b{ color:var(--boss); }
+.deadline{ display:inline-flex; align-items:center; gap:6px; margin-top:10px; padding:5px 11px; border-radius:999px;
+  background:var(--panel-2); border:1px solid var(--line); font:700 11px/1 "Space Mono"; color:var(--attack-hi); }
+.deadline svg{ width:13px; height:13px; }
+
+/* HP-бар (BRANDBOOK) */
+.hpwrap{ margin:16px 0; }
+.hpbar__meta{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:7px; }
+.hpbar__label{ font:600 12px/1 "Oswald"; letter-spacing:.06em; text-transform:uppercase; color:var(--boss); }
+.hpbar__num{ font:700 15px/1 "Space Mono"; color:var(--ink); }
+.hpbar{ display:grid; grid-auto-flow:column; gap:2px; padding:3px;
+  border:1px solid var(--boss); border-radius:6px; background:#0A0908; }
+.hpbar__seg{ height:16px; border-radius:2px; background:var(--panel-2); }
+.hpbar__seg.is-full{ background:linear-gradient(180deg,var(--attack-hi),var(--attack)); }
+
+.dmg{ display:flex; gap:10px; margin:14px 0; }
+.dmg__side{ flex:1; text-align:center; padding:12px; border-radius:12px; background:var(--panel-2); border:1px solid var(--line); }
+.dmg__side em{ font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.08em; font-style:normal; }
+.dmg__side.me{ box-shadow:inset 0 -3px 0 var(--me); } .dmg__side.me em{ color:var(--me); }
+.dmg__side.op{ box-shadow:inset 0 -3px 0 var(--opp); } .dmg__side.op em{ color:var(--opp); }
+.dmg__side b{ display:block; font:700 26px/1 "Space Mono"; color:var(--ink); margin-top:6px; }
+.dmg__side span{ font:500 10px/1 "Manrope"; color:var(--ink-3); }
+
+.trophy{ display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; margin-top:2px;
+  background:linear-gradient(90deg,rgba(230,180,80,.12),transparent); border:1px solid var(--line-2); }
+.trophy svg{ width:26px; height:26px; color:var(--gold-hi); flex:0 0 auto; }
+.trophy b{ font:700 13px/1.2 "Manrope"; color:var(--gold-hi); }
+.trophy span{ display:block; font:500 12px/1.4 "Manrope"; color:var(--ink-2); margin-top:2px; }
+.rules{ font:500 12.5px/1.55 "Manrope"; color:var(--ink-2); margin-top:14px;
+  padding:12px 14px; background:var(--panel-2); border-radius:11px; border:1px solid var(--line); }
+.rules b{ color:var(--ink); }
+
+/* ─────────────────────────  12 · ХРОНИКА / ТОСТЫ  ───────────────────────── */
+.don-quote{ font:500 italic 15px/1.5 "Playfair Display"; color:var(--ink-2);
+  padding:2px 4px 14px; border-bottom:1px solid var(--line); margin-bottom:16px; }
+.don-quote::before{ content:"«"; color:var(--me); } .don-quote::after{ content:"»"; color:var(--me); }
+
+.filters{ display:flex; gap:8px; margin-bottom:14px; overflow-x:auto; padding-bottom:2px; }
+.filters button{ flex:0 0 auto; appearance:none; cursor:pointer; border-radius:999px; padding:8px 15px;
+  font:700 11px/1 "Oswald"; text-transform:uppercase; letter-spacing:.05em;
+  border:1px solid var(--line-2); background:var(--panel); color:var(--ink-2); transition:.14s; }
+.filters button.on{ background:var(--me); border-color:var(--me); color:var(--me-ink); }
+.me-s .filters button.on{ color:#fff; }
+
+.feed{ display:flex; flex-direction:column; gap:9px; }
+.day-tag{ font:700 11px/1 "Space Mono"; color:var(--ink-3); text-transform:uppercase; letter-spacing:.06em;
+  margin:8px 2px 3px; }
+.toast{ display:grid; grid-template-columns:4px 1fr auto; gap:11px; align-items:start;
+  background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px;
+  box-shadow:var(--shadow-1); }
+.toast__bar{ align-self:stretch; border-radius:4px; background:var(--boss); min-height:26px; }
+.toast--g .toast__bar{ background:var(--gold); } .toast--s .toast__bar{ background:var(--rose); }
+.toast--n .toast__bar{ background:var(--graffiti); }
+.toast__body{ min-width:0; }
+.toast__x{ font:500 13.5px/1.45 "Manrope"; color:var(--ink); }
+.toast__x b{ font-weight:800; color:var(--ink-max); }
+.toast__tail{ font:700 11px/1 "Space Mono"; color:var(--ok); margin-top:6px; display:inline-block; }
+.toast__time{ font:700 10px/1 "Space Mono"; color:var(--ink-3); flex:0 0 auto; white-space:nowrap; }
+
+/* Омерта-карточки (7 точек) */
+.omcards{ display:flex; flex-direction:column; gap:10px; }
+.omcard{ padding:13px 14px; border-radius:12px; background:var(--panel); border:1px solid var(--line); }
+.omcard__top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:11px; }
+.omcard__clan{ font:600 10px/1 "Oswald"; text-transform:uppercase; letter-spacing:.08em; }
+.omcard.g .omcard__clan{ color:var(--gold); } .omcard.s .omcard__clan{ color:var(--rose); }
+.omcard__vow{ font:700 14px/1.2 "Manrope"; color:var(--ink); }
+.omcard__status{ font:600 10px/1 "Oswald"; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3); }
+.dots{ display:flex; gap:7px; }
+.dots i{ width:15px; height:15px; border-radius:50%; background:var(--panel-2); border:1px solid var(--line-2); }
+.omcard.g .dots i.held{ background:var(--gold); border-color:var(--gold); box-shadow:0 0 6px var(--gold-glow); }
+.omcard.s .dots i.held{ background:var(--rose); border-color:var(--rose); box-shadow:0 0 6px var(--rose-glow); }
+.dots i.broke{ background:var(--attack); border-color:var(--attack); }
+
+/* Аукцион */
+.auction{ position:relative; border:1px solid var(--line-2); }
+.auction__lbl{ display:inline-flex; align-items:center; gap:6px; font:600 10px/1 "Oswald";
+  text-transform:uppercase; letter-spacing:.1em; color:var(--gold-hi); margin-bottom:8px; }
+.auction__lbl svg{ width:15px; height:15px; }
+.auction__lot{ font:700 18px/1.1 "Playfair Display"; color:var(--ink); }
+.auction__desc{ font:500 13px/1.45 "Manrope"; color:var(--ink-2); margin:5px 0 12px; }
+.auction__bids{ display:flex; gap:9px; }
+.bidpill{ flex:1; text-align:center; padding:9px; border-radius:10px; background:var(--panel-2);
+  border:1px solid var(--line); font:600 11px/1.3 "Manrope"; color:var(--ink-2); }
+.bidpill b{ display:block; font:700 13px/1 "Oswald"; text-transform:uppercase; letter-spacing:.04em; margin-top:5px; }
+.bidpill.yes b{ color:var(--ok); } .bidpill.no b{ color:var(--ink-3); }
+
+/* ─────────────────────────  13 · ОМЕРТА-ЭКРАН  ───────────────────────── */
+.vow-picker{ display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 6px; }
+.vow-opt{ appearance:none; cursor:pointer; border-radius:999px; padding:10px 15px; transition:.14s;
+  border:1px solid var(--line-2); background:var(--panel-2); color:var(--ink);
+  font:600 13px/1 "Manrope"; }
+.vow-opt.on{ background:var(--me); border-color:var(--me); color:var(--me-ink); box-shadow:var(--me-glow); }
+.me-s .vow-opt.on{ color:#fff; }
+.stakes{ display:flex; gap:9px; margin-top:14px; }
+.stakes>div{ flex:1; padding:12px; border-radius:11px; text-align:center; }
+.stakes .win{ background:rgba(71,184,114,.1); border:1px solid rgba(71,184,114,.3); }
+.stakes .lose{ background:rgba(219,55,41,.08); border:1px solid rgba(219,55,41,.28); }
+.stakes em{ font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.06em; font-style:normal; }
+.stakes .win em{ color:var(--ok); } .stakes .lose em{ color:var(--attack-hi); }
+.stakes b{ display:block; font:700 14px/1.3 "Space Mono"; color:var(--ink); margin-top:7px; }
+
+/* ─────────────────────────  14 · ТРАНЗИЕНТ-ТОСТ / ЗАГЛУШКИ  ───────────────────────── */
+#toaster{ position:fixed; left:0; right:0; bottom:calc(var(--nav-h) + var(--safe-b) + 14px); z-index:80;
+  display:flex; flex-direction:column; align-items:center; gap:8px; padding:0 16px; pointer-events:none; }
+.t-toast{ max-width:520px; width:100%; background:var(--panel-hi); border:1px solid var(--line-2);
+  border-radius:12px; padding:12px 16px; box-shadow:var(--shadow-2); color:var(--ink);
+  font:600 13.5px/1.4 "Manrope"; animation:t-in .28s cubic-bezier(.22,.61,.36,1);
+  border-left:4px solid var(--me); }
+.t-toast.ok{ border-left-color:var(--ok); } .t-toast.err{ border-left-color:var(--attack); }
+@keyframes t-in{ from{ transform:translateY(14px); opacity:0; } to{ transform:none; opacity:1; } }
+
+.empty{ text-align:center; padding:40px 22px; color:var(--ink-2); }
+.empty svg{ width:44px; height:44px; color:var(--ink-3); margin-bottom:14px; }
+.empty p{ font:500 14px/1.55 "Manrope"; margin:0; }
+
+.demo-banner{ display:flex; align-items:center; gap:9px; justify-content:center; margin:0 0 12px;
+  padding:8px 14px; border-radius:10px; background:rgba(255,46,139,.08); border:1px solid var(--graffiti-lo);
+  font:600 11px/1.3 "Manrope"; color:var(--graffiti); }
+.demo-banner svg{ width:15px; height:15px; flex:0 0 auto; }
+
+/* Спрей-штамп (графити) */
+.stamp{ position:absolute; font:700 15px/1 "Oswald"; letter-spacing:.06em; color:var(--graffiti);
+  transform:rotate(-8deg); opacity:.9; text-shadow:0 0 1px var(--graffiti-lo); text-transform:uppercase; }
+
+/* Загрузочный сплэш */
+#splash{ position:fixed; inset:0; z-index:100; display:grid; place-items:center; background:var(--bg);
+  transition:opacity .4s; }
+#splash.hide{ opacity:0; pointer-events:none; }
+#splash .crest{ width:96px; height:96px; margin:0 auto 18px; filter:drop-shadow(0 0 24px rgba(230,180,80,.3)); }
+#splash .crest img{ width:100%; height:100%; mix-blend-mode:screen; }
+#splash h1{ font:900 34px/1 "Playfair Display"; letter-spacing:.12em; color:var(--ink); margin:0 0 8px; text-align:center; }
+#splash p{ font:500 italic 14px/1.4 "Playfair Display"; color:var(--ink-2); text-align:center; margin:0; padding:0 30px; }
+#splash .spin{ width:26px; height:26px; margin:22px auto 0; border:2px solid var(--line-2);
+  border-top-color:var(--gold); border-radius:50%; animation:spin 1s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+@media (prefers-reduced-motion:reduce){
+  *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+}
