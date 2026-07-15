@@ -253,7 +253,12 @@ function fresh(){ return {
   discount:false, tail:false, oppMoney:500, oppDays:0,
   boss:{hp:8,max:8,dead:false,dmg:0}
 }; }
-function load(){ try{const r=localStorage.getItem(KEY); if(r){S=JSON.parse(r); return true;}}catch(e){} return false; }
+function load(){ try{const r=localStorage.getItem(KEY); if(r){S=JSON.parse(r);
+  // миграция старых сейвов
+  if(!S.boss) S.boss={hp:8,max:8,dead:false,dmg:0};
+  if(S.oppMoney==null){ S.oppMoney=500; S.oppDays=0; }
+  if(S.discount==null){ S.discount=false; S.tail=false; }
+  return true;}}catch(e){} return false; }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
 const $=s=>document.querySelector(s);
 const fmt=n=>(n<0?"−":"")+Math.abs(n).toLocaleString("ru-RU").replace(/,/g," ");
@@ -290,6 +295,7 @@ $("#start-btn").onclick=()=>{ S.proto=S.proto.filter(p=>p.cnt>0); S.phase="day-o
 function renderHUD(){
   $("#h-day").textContent=S.day;
   const t=titleOf(S.respect); $("#h-streak").textContent=`🎖 ${t[0]} · 🔥${S.streak}`;
+  const b=S.boss||{hp:8,max:8}; $("#h-boss").textContent = b.dead? "🎩 выбит" : `🎩 ${b.hp}/${b.max}`;
   const st=[["👣","Ходы",S.moves],["money","Деньги","$"+fmt(S.money),1],["muscles","Сила",S.power],["respect","Уважение",S.respect]];
   $("#h-stats").innerHTML=st.map(([ic,lbl,val,isImg])=>{
     const icon = ic.length<=2 ? `<div class="em">${ic}</div>` : `<img src="${ICON(ic)}" alt="">`;
@@ -355,12 +361,20 @@ function dayResult(){
   const prevT=titleOf(S.respect)[0];
   if(pct>=85){ S.streak++; S.respect += pct>=100?3:2; } else { S.streak=0; }
   const newT=titleOf(S.respect); if(newT[0]!==prevT) setTimeout(()=>toast(`Новое звание: ${newT[0]}! Лимит районов ${newT[2]}`),900);
+  // удар по смотрящему закрытым днём (рейд недели): ≥85% = −1, сотка = −2
+  let bossDmg=0;
+  if(S.boss && !S.boss.dead && pct>=85){
+    bossDmg = pct>=100?2:1; S.boss.hp=Math.max(0,S.boss.hp-bossDmg); S.boss.dmg=(S.boss.dmg||0)+bossDmg;
+    if(S.boss.hp<=0){ S.boss.dead=true; S.money+=500; S.respect+=5;
+      setTimeout(()=>toast("🎩 Смотрящий ВЫБИТ твоим режимом! +$500 · +5 уважения"),1400);
+    }
+  }
   S.moves+=moves; S.phase="rolled"; save(); renderHUD();
   const verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо — ядро не добил.":"Ядро сорвано — день не в счёт.";
   openModal({
     kind:"Итог дня · "+pct+"%", art:`<span class="big">${pct>=100?"🏆":pct>=85?"💪":pct>=50?"🙂":"😮‍💨"}</span>`,
     title: moves>0?`+${moves} ходов`:"0 ходов",
-    reward:[["👣",moves+" ходов"], cash?["money","+$"+cash]:null, ["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:null, sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
+    reward:[["👣",moves+" ходов"], cash?["money","+$"+cash]:null, ["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:null, bossDmg?["🎩","−"+bossDmg+" боссу"]:null, sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
     desc:verdict+(moves>0?" Жми «Выйти в город».":" Ходов нет — сегодня стоишь. Завтра поднимайся."),
     btns: moves>0?[["▶ Выйти в город","btn",()=>{closeModal();walk(moves);}]]:[["Завершить день","btn wood",()=>{closeModal();endDay();}]]
   });
@@ -447,9 +461,22 @@ function tileSpecial(name){
       desc: can?`Забиваешь стрелку Скляровским за район. Ставка — <b>2 силы</b>. Твоя дисциплина сегодня крепче — заберёшь точку.`
         : `Отжать район: нужен <b>день ≥85%</b> и <b>2 силы</b>. Сейчас: день ${S.dayPct}% · сила ${S.power}.`,
       btns:[ can?["Отжать район · −2⚡","btn red",take]:null, ["Разойтись миром","btn wood",()=>{closeModal();afterTile();}] ].filter(Boolean)}); return; }
-  if(name==="Босс"){ const can=S.dayPct>=85&&S.power>=1; openModal({kind:"Смотрящий недели",art:`<span class="big">🎩</span>`,title:"Босс",
-      desc: can?"День закрыт и сила есть — бей. Ставка <b>1 сила</b> → <span class='money'>+4 уважения, +$200</span>.":`Удар: нужен <b>день ≥85%</b> и <b>1 сила</b>. Сейчас: день ${S.dayPct}% · сила ${S.power}.`,
-      btns: can?[["Ударить · −1⚡","btn red",()=>{S.power-=1;S.respect+=4;S.money+=200;toast("Удар по боссу! +4 уважения · +$200");closeModal();afterTile();renderHUD();}]]:[["Мимо","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name==="Босс"){
+    const b=S.boss||{hp:8,max:8,dead:false};
+    if(b.dead){
+      openModal({kind:"Смотрящий недели",art:`<span class="big">👑</span>`,title:"Босс выбит",
+        desc:"Старый смотрящий сломан твоим режимом. Квартал дышит свободно до следующей недели.",
+        btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]}); return;
+    }
+    let segs=""; for(let i=0;i<b.max;i++) segs+= i<b.hp?"🟥":"⬛";
+    const can=S.dayPct>=85&&S.power>=1;
+    const hit=()=>{ S.power-=1; b.hp=Math.max(0,b.hp-2); b.dmg=(b.dmg||0)+2;
+      let msg="Жёсткий удар! −2 терпения";
+      if(b.hp<=0){ b.dead=true; S.money+=500; S.respect+=5; msg="🎩 БОСС ВЫБИТ! +$500 · +5 уважения"; }
+      toast(msg); closeModal(); afterTile(); renderHUD(); save(); };
+    openModal({kind:"Смотрящий недели",art:`<span class="big">🎩</span>`,title:"Босс",
+      desc:`Терпение: <b>${b.hp}/${b.max}</b><br>${segs}<br><br>Каждый твой день ≥85% бьёт его на −1 (сотка −2). Тут, на его земле, можно добить лично: <b>1 сила</b> → <span class='money'>−2 терпения</span>.`+(can?"":`<br><span class='bad'>Для удара: день ≥85% и 1 сила (сейчас ${S.dayPct}% · ${S.power}⚡).</span>`),
+      btns:[ can?["Ударить лично · −1⚡","btn red",hit]:null, ["Отойти","btn wood",()=>{closeModal();afterTile();}] ].filter(Boolean)}); return; }
   openModal({kind:"Клетка",art:`<span class="big">🏙️</span>`,title:name,desc:"…",btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]});
 }
 function chest(){
