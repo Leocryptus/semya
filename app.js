@@ -64,6 +64,18 @@ const BOSS = {  // id → портрет · «держит» · лор · тро
   sedoy:['boss-sedoy','Вокзал','Коронованный вор старой формации. Три ходки, чтит понятия, презирает беспредел новых. Свалить — это про право, а не про деньги.','Вокзал + лейтенант бесплатно.'],
   port_boss:['boss-port','Верфь','Последний и главный. Через его причал шёл весь левый груз южного берега. Кто держит порт — держит город. Финальный босс месяца.','Верфь + «ключ от города»: +15% к финалу.']
 };
+// Арт-кадрирование: [файл в assets/, background-size, background-position].
+// Некоторые -cut содержат запечённый UI/англотекст — зумим и смещаем, показывая только персонажа.
+const BOSS_ART = {
+  buhgalter:['art/boss-buhgalter-cut.png','168%','50% 60%'],  // прячем баннер сверху + кнопки по бокам
+  prokuror :['art/boss-prokuror-cut.png','cover','50% 18%'],  // чистый
+  sedoy    :['art/boss-sedoy-cut.png',   '156%','50% 40%'],   // прячем рамку-карту + подпись снизу
+  port_boss:['art/boss-grek-cut.png',    '150%','50% 78%']    // прячем «THE GREEK» сверху
+};
+const PORTRAIT_ART = {  // клан → портрет дона
+  g:['art/carleone-cut.png','cover','50% 22%'],               // чистый ландшафт
+  s:['art/sklyarov-cut.png','150%','50% 90%']                 // прячем «SKLYAROV BOSS» сверху
+};
 const LTS = {
   consigliere:['Коммерс',1000,'Районы под крышу −25%. Билд «Хозяйственник».'],
   kostolom:['Костолом',1200,'+10% в стрелке, вскрывает 2 форта. Билд «Таран».'],
@@ -273,6 +285,7 @@ function fillNav(){
 function go(id){ if(SCREEN===id && id!=='hod') return; SCREEN=id; render(); window.scrollTo(0,0); }
 function render(){
   fillHeader(); fillNav();
+  document.body.classList.toggle('is-karta', SCREEN==='karta');
   const m = $('#screen');
   const map = { karta:renderKarta, dossier:renderDossier, hod:renderHod, boss:renderBoss, chron:renderChron };
   m.innerHTML = `<div class="screen">${(map[SCREEN]||renderHod)()}</div>`;
@@ -340,8 +353,8 @@ function plotTile(d){
 
 /* ───────────────────────  2 · ДОСЬЕ (персонаж)  ─────────────────────── */
 function renderDossier(){
-  const portrait = SIDE==='g' ? 'don-carleone' : 'don-sklyarov';
-  const frame = SIDE==='g' ? 'dossier' : 'dossier--rose';
+  const art = PORTRAIT_ART[SIDE] || PORTRAIT_ART.g;
+  const roseCls = SIDE==='s' ? ' artframe--rose' : '';
   const role = SIDE==='g' ? 'Волк с Уолл-стрит' : 'Лицо со шрамом';
   const idx = me.title_idx;
 
@@ -406,18 +419,21 @@ function renderDossier(){
   </div>`;
 
   return `
-  <div class="${frame}" style="margin-top:4px">
+  <div class="hero-panel${roseCls}" style="margin-top:4px">
     <div class="dossier__stamp">ДОН</div>
-    <div class="hero">
-      <div class="hero__portrait"><img src="assets/${portrait}.png" alt="">
-        <div class="hero__ring">${ring(me.today,54)}</div></div>
-      <div class="hero__info">
-        <div class="hero__title-lbl">${me.title}</div>
-        <div class="hero__name">${SIDE==='g'?'Лео Карлеоне':'Скляровский'}</div>
-        <div class="hero__role">«${role}»</div>
-        <div class="hero__infl"><em>Влияние</em><b>${fmt(S.influence[ME])}</b></div>
-        <div class="combo">${I.flame} серия ${me.streak}</div>
+    <div class="artframe${roseCls}">
+      <div class="artframe__img" style="background-image:url('assets/${art[0]}');background-size:${art[1]};background-position:${art[2]}"></div>
+      <div class="artframe__scrim"></div>
+      <div class="artframe__ring">${ring(me.today,56)}</div>
+      <div class="artframe__cap">
+        <div class="artframe__kick">${me.title}</div>
+        <div class="artframe__name">${SIDE==='g'?'Лео Карлеоне':'Скляровский'}</div>
+        <div class="artframe__sub">«${role}»</div>
       </div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta__infl"><em>Влияние</em><b>${fmt(S.influence[ME])}</b></div>
+      <div class="combo">${I.flame} серия ${me.streak}</div>
     </div>
   </div>
 
@@ -643,6 +659,7 @@ function renderBoss(){
   const b=S.boss;
   if(!b){ return empty(I.fedora,'На этой неделе смотрящий отдыхает. Качай районы и общак.'); }
   const meta = BOSS[b.id] || ['boss-buhgalter','город','',''];
+  const art = BOSS_ART[b.id] || BOSS_ART.buhgalter;
   const dead = b.dead;
   const wd = (S.meta.day-1)%7, left = 6-wd;
 
