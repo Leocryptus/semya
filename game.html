@@ -154,6 +154,10 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
     <div class="brand"><h1>СЕМЬЯ</h1><p>Собери свой режим — с него начнётся игра</p></div>
     <p class="lead"><b>Перед стартом собери протокол.</b> Выбери привычки и поставь, сколько раз — плюсиками. Нажми «Погнали» — это твой режим на игру. Каждый день будешь его закрывать: чем честнее, тем дальше ходит фишка.</p>
     <div class="sh">Твой протокол<div class="f"></div></div>
+    <div style="display:flex;gap:8px;margin:0 0 12px">
+      <button class="btn sm" id="preset-fast" style="flex:1">⚡ Быстрый тест · 2</button>
+      <button class="btn sm wood" id="preset-full" style="flex:1">🎩 Полный · 11</button>
+    </div>
     <div id="proto-list"></div>
     <div style="height:14px"></div>
     <button class="btn" id="start-btn">▶ Погнали · день 1</button>
@@ -165,6 +169,7 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
     <div class="hud">
       <div class="hud__top">
         <div class="hud__day">ДЕНЬ <b id="h-day">1</b>/7</div>
+        <div class="hud__streak" id="h-boss">🎩 8/8</div>
         <div class="hud__streak" id="h-streak">🔥 серия 0</div>
       </div>
       <div class="stats" id="h-stats"></div>
@@ -200,6 +205,11 @@ const SETUP = [
   {name:"Книга, не экран", hint:"20 мин", icon:"book", def:1, core:false},
   {name:"Отбой вовремя", hint:"раз/день", icon:"sleep", def:1, core:false},
   {name:"Разгрузочный день", hint:"раз/неделю", emoji:"🍽️", def:1, core:false},
+];
+/* Быстрый пресет для теста: 1-2 условия челленджа. Полный набор наполните с Германом позже — каждый свой. */
+const SETUP_FAST = [
+  {name:"Главное дело дня", hint:"1 задача", icon:"topgoal", def:1, core:true},
+  {name:"Спорт", hint:"раз/день", icon:"sport", def:1, core:true},
 ];
 const GC = {center:"#FFC24B",tolk:"#FF4D4D",port:"#49B6F0",night:"#B466F0"};
 const DIST = {
@@ -239,8 +249,9 @@ const KEY="semya_proto_v1";
 let S=null;
 function fresh(){ return {
   phase:"setup", day:1, maxDay:7, pos:0, moves:0, money:500, power:0, respect:0, streak:0,
-  proto:SETUP.map(x=>({...x, cnt:x.def})), done:{}, owners:{}, dayPct:null,
-  discount:false, tail:false, oppMoney:500, oppDays:0
+  proto:SETUP_FAST.map(x=>({...x, cnt:x.def})), done:{}, owners:{}, dayPct:null,
+  discount:false, tail:false, oppMoney:500, oppDays:0,
+  boss:{hp:8,max:8,dead:false,dmg:0}
 }; }
 function load(){ try{const r=localStorage.getItem(KEY); if(r){S=JSON.parse(r); return true;}}catch(e){} return false; }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
@@ -267,6 +278,12 @@ $("#proto-list")?.addEventListener("click",e=>{
   p.cnt = Math.max(0, Math.min(9, p.cnt + (b.classList.contains("inc")?1:-1)));
   b.closest(".stp").querySelector(".v").textContent=p.cnt; save();
 });
+function markPreset(p){
+  const f=$("#preset-fast"), u=$("#preset-full");
+  f.className="btn sm"+(p==='fast'?"":" wood"); u.className="btn sm"+(p==='full'?"":" wood");
+}
+$("#preset-fast").onclick=()=>{ S.proto=SETUP_FAST.map(x=>({...x,cnt:x.def})); markPreset('fast'); renderSetup(); save(); };
+$("#preset-full").onclick=()=>{ S.proto=SETUP.map(x=>({...x,cnt:x.def})); markPreset('full'); renderSetup(); save(); };
 $("#start-btn").onclick=()=>{ S.proto=S.proto.filter(p=>p.cnt>0); S.phase="day-open"; save(); show("s-game"); startDay(); };
 
 /* ── HUD ── */
