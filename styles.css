@@ -4,32 +4,41 @@
    Премиум-нуар · near-black · золото Карлеоне vs роза Скляровских · 390px.
    ═══════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,500&family=Oswald:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,700&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
 /* ─────────────────────────  1 · ТОКЕНЫ (BRANDBOOK)  ───────────────────────── */
 :root{
-  /* Фундамент — тёплый near-black «бетон и сепия» */
-  --bg:#0D0B08; --bg-raise:#14110C; --panel:#1A1610; --panel-2:#221D15;
-  --panel-hi:#2B2419; --line:#33291A; --line-2:#4A3C26;
-  /* Чернила / текст */
-  --ink:#F5ECD8; --ink-2:#B8A888; --ink-3:#7A6D54; --ink-max:#FFFFFF;
+  /* ═══ БРЕНДБУК «МАФИЯ» — источник правды ═══ */
+  --ink:#0E0B08; --ink2:#171009; --wood:#2A1D14; --wood2:#3A2718; --leather:#241812;
+  --gold:#E7B54A; --gold-lite:#F5D98B; --gold-deep:#C8891F;
+  --crimson:#C0272E; --crimson-neon:#FF3B3F;
+  --violet:#8E3FBE; --blue:#4FA8E0; --green:#46A24E;
+  --parchment:#F3E4C8; --parchment2:#E7D3A9; --ink-text:#2A1E12;
+
+  /* Фундамент — кожа/дерево (ремап на бренд) */
+  --bg:var(--ink); --bg-raise:#14110C; --panel:#20160E; --panel-2:#2A1D12;
+  --panel-hi:#3A2718; --line:#3C2C1A; --line-2:#5C4527;
+  /* Чернила / текст (светлый на тёмном = пергамент) */
+  --paper:#F3E4C8; --ink-2:#C9B287; --ink-3:#907A56; --ink-max:#FFF6E4;
   /* 🥂 Карлеоне — золото / шампань */
-  --gold:#E6B450; --gold-hi:#F5D689; --gold-lo:#A8792A; --gold-ink:#1A1204;
-  --gold-glow:0 0 24px rgba(230,180,80,.22);
-  /* 🌹 Скляровские — багрово-роза */
-  --rose:#E0455E; --rose-hi:#FF7088; --rose-lo:#9E1E38; --rose-ink:#1A0509;
-  --rose-glow:0 0 24px rgba(224,69,94,.22);
+  --gold-hi:var(--gold-lite); --gold-lo:var(--gold-deep); --gold-ink:#1F1405;
+  --gold-glow:0 0 24px rgba(231,181,74,.30);
+  /* 🌹 Скляровские — кримсон/неон */
+  --rose:var(--crimson); --rose-hi:var(--crimson-neon); --rose-lo:#7E1519; --rose-ink:#1A0505;
+  --rose-glow:0 0 24px rgba(255,59,63,.28);
   /* Семантика */
-  --ok:#47B872; --ok-ink:#04120A; --attack:#DB3729; --attack-hi:#FF6B54; --attack-ink:#1A0402;
-  --attack-glow:0 0 20px rgba(219,55,41,.35);
-  /* Улица (графити) */
+  --ok:var(--green); --ok-ink:#04120A; --attack:var(--crimson); --attack-hi:var(--crimson-neon); --attack-ink:#1A0402;
+  --attack-glow:0 0 20px rgba(255,59,63,.40);
+  /* Улица (графити/неон) */
   --graffiti:#FF2E8B; --graffiti-lo:#B21E63;
-  /* Нейтралитет / старая гвардия */
-  --neutral:#6B6252; --neutral-fill:#2A251C; --boss:#9AA0B2; --boss-lo:#4A4E5C;
-  --scrim:rgba(8,6,4,.72);
+  /* Нейтралитет / под смотрящим (голубой) */
+  --neutral:#6E6250; --neutral-fill:#2A231A; --boss:var(--blue); --boss-lo:#2E526B;
+  --scrim:rgba(8,6,4,.74);
   /* Тени / радиусы */
-  --shadow-1:0 6px 18px rgba(0,0,0,.5); --shadow-2:0 14px 40px rgba(0,0,0,.6);
+  --shadow-1:0 6px 18px rgba(0,0,0,.5); --shadow-2:0 14px 40px rgba(0,0,0,.62);
   --r-card:14px; --r-btn:12px; --r-chip:999px; --r-tile:8px;
+  /* Заголовочный «чанки-золото» градиент */
+  --gold-grad:linear-gradient(178deg,var(--gold-lite) 0%,var(--gold) 46%,var(--gold-deep) 100%);
 
   --safe-t:env(safe-area-inset-top);
   --safe-b:env(safe-area-inset-bottom);
@@ -54,7 +63,7 @@ html,body{ margin:0; padding:0; }
 html{ background:var(--bg); -webkit-text-size-adjust:100%; }
 body{
   font-family:"Manrope",system-ui,sans-serif; font-size:15px; line-height:1.5;
-  color:var(--ink); background:var(--bg);
+  color:var(--paper); background:var(--bg);
   overflow-x:hidden; overscroll-behavior-y:none;
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   user-select:none; -webkit-tap-highlight-color:transparent;
@@ -75,9 +84,9 @@ button{ font-family:inherit; color:inherit; }
 ::-webkit-scrollbar{ width:0; height:0; }
 
 /* Типо-хелперы */
-.t-display{ font-family:"Playfair Display",serif; font-weight:900; letter-spacing:-.02em; }
-.t-serif{ font-family:"Playfair Display",serif; }
-.t-cond{ font-family:"Oswald",sans-serif; text-transform:uppercase; letter-spacing:.05em; }
+.t-display{ font-family:"Rubik",serif; font-weight:900; letter-spacing:-.02em; }
+.t-serif{ font-family:"Rubik",serif; }
+.t-cond{ font-family:"Rubik",sans-serif; text-transform:uppercase; letter-spacing:.05em; }
 .num{ font-family:"Space Mono",monospace; font-weight:700; font-variant-numeric:tabular-nums; }
 .italic{ font-style:italic; }
 
@@ -92,7 +101,7 @@ main#screen{
 
 .section-h{
   display:flex; align-items:center; gap:8px; margin:22px 2px 12px;
-  font:700 15px/1 "Oswald"; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-2);
+  font:700 15px/1 "Rubik"; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-2);
 }
 .section-h::before{ content:""; width:7px; height:7px; transform:rotate(45deg);
   background:var(--me); box-shadow:0 0 8px var(--me); flex:0 0 auto; }
@@ -121,14 +130,14 @@ header.top{
   filter:drop-shadow(0 0 10px var(--me-glow,transparent)); }
 .top__crest svg{ width:100%; height:100%; }
 .top__clan{ min-width:0; }
-.top__clan b{ display:block; font:800 15px/1.05 "Playfair Display"; color:var(--ink);
+.top__clan b{ display:block; font:800 15px/1.05 "Rubik"; color:var(--paper);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.top__clan span{ display:block; font:600 9.5px/1 "Oswald"; text-transform:uppercase;
+.top__clan span{ display:block; font:600 9.5px/1 "Rubik"; text-transform:uppercase;
   letter-spacing:.12em; color:var(--me); margin-top:3px; }
 .top__day{ text-align:right; flex:0 0 auto; }
-.top__day b{ font:700 14px/1 "Space Mono"; color:var(--ink); }
+.top__day b{ font:700 14px/1 "Space Mono"; color:var(--paper); }
 .top__day b i{ font-style:normal; color:var(--me); }
-.top__day span{ display:block; font:600 9px/1 "Oswald"; text-transform:uppercase;
+.top__day span{ display:block; font:600 9px/1 "Rubik"; text-transform:uppercase;
   letter-spacing:.1em; color:var(--ink-3); margin-top:4px; }
 
 .top__chips{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-top:11px; }
@@ -163,9 +172,9 @@ header.top{
 .btn{
   position:relative; overflow:hidden; min-height:46px; padding:0 18px; width:100%;
   border-radius:var(--r-btn); border:0; cursor:pointer;
-  font:600 15px/1 "Oswald"; letter-spacing:.04em; text-transform:uppercase;
+  font:600 15px/1 "Rubik"; letter-spacing:.04em; text-transform:uppercase;
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  transition:transform .12s, filter .12s, box-shadow .12s; color:var(--ink);
+  transition:transform .12s, filter .12s, box-shadow .12s; color:var(--paper);
 }
 .btn svg{ width:19px; height:19px; }
 .btn--primary{ background:linear-gradient(180deg,var(--me-hi),var(--me)); color:var(--me-ink);
@@ -174,11 +183,11 @@ header.top{
 .btn--attack{ background:linear-gradient(180deg,#EF4B3C,var(--attack)); color:#fff; font-weight:700;
   box-shadow:var(--attack-glow); }
 .btn--upgrade{ background:linear-gradient(180deg,#57C982,var(--ok)); color:var(--ok-ink); }
-.btn--ghost{ background:transparent; border:1px solid var(--line-2); color:var(--ink); }
+.btn--ghost{ background:transparent; border:1px solid var(--line-2); color:var(--paper); }
 .btn:active{ transform:translateY(1px) scale(.99); filter:brightness(.95); }
 .btn:disabled,.btn[aria-disabled="true"]{ opacity:.4; filter:grayscale(.5); cursor:not-allowed;
   box-shadow:none; pointer-events:none; }
-.btn:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
+.btn:focus-visible{ outline:2px solid var(--paper); outline-offset:2px; }
 .btn--sm{ min-height:40px; font-size:13px; padding:0 14px; }
 
 /* Ripple */
@@ -197,7 +206,7 @@ header.top{
 }
 .nav__item{ appearance:none; background:none; border:0; cursor:pointer;
   display:grid; place-items:center; gap:3px; color:var(--ink-3);
-  font:700 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.06em;
+  font:700 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em;
   transition:color .16s, transform .12s; }
 .nav__item svg{ width:23px; height:23px; transition:transform .16s; }
 .nav__item:active{ transform:scale(.9); }
@@ -220,7 +229,7 @@ header.top{
 .mini-count b{ flex:1; text-align:center; background:var(--panel); border:1px solid var(--line);
   border-radius:10px; padding:8px 4px; }
 .mini-count b span{ display:block; font:700 17px/1 "Space Mono"; margin-bottom:3px; }
-.mini-count b em{ font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.06em;
+.mini-count b em{ font:600 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em;
   color:var(--ink-3); font-style:normal; }
 .mini-count .c-me span{ color:var(--me); } .mini-count .c-opp span{ color:var(--opp); }
 .mini-count .c-free span{ color:var(--neutral); }
@@ -247,7 +256,7 @@ header.top{
 .hex__ico{ width:19px; height:19px; opacity:.9; }
 .hex--gold .hex__ico{ color:var(--gold); } .hex--rose .hex__ico{ color:var(--rose); }
 .hex--free .hex__ico{ color:var(--neutral); } .hex--locked .hex__ico{ color:var(--boss); }
-.hex__name{ font:600 10px/1.05 "Oswald"; letter-spacing:.02em; color:var(--ink);
+.hex__name{ font:600 10px/1.05 "Rubik"; letter-spacing:.02em; color:var(--paper);
   max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .hex__income{ font:700 10px/1 "Space Mono"; color:var(--gold); }
 .hex--rose .hex__income{ color:var(--rose-hi); }
@@ -285,15 +294,15 @@ header.top{
 .sheet__grip{ width:38px; height:4px; border-radius:3px; background:var(--line-2);
   margin:6px auto 12px; }
 .sheet__head{ display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
-.sheet__title{ font:700 22px/1.05 "Playfair Display"; color:var(--ink); }
-.sheet__sub{ font:600 10px/1 "Oswald"; text-transform:uppercase; letter-spacing:.1em;
+.sheet__title{ font:700 22px/1.05 "Rubik"; color:var(--paper); }
+.sheet__sub{ font:600 10px/1 "Rubik"; text-transform:uppercase; letter-spacing:.1em;
   color:var(--me); margin-top:6px; }
 .sheet__flavor{ font:400 13.5px/1.5 "Manrope"; color:var(--ink-2); margin:2px 0 14px; }
 .sheet__stats{ display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:14px; }
 .stat{ background:var(--panel-2); border:1px solid var(--line); border-radius:11px; padding:10px 12px; }
-.stat em{ display:block; font:600 9.5px/1 "Oswald"; text-transform:uppercase; letter-spacing:.06em;
+.stat em{ display:block; font:600 9.5px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em;
   color:var(--ink-3); font-style:normal; margin-bottom:6px; }
-.stat b{ font:700 16px/1 "Space Mono"; color:var(--ink); }
+.stat b{ font:700 16px/1 "Space Mono"; color:var(--paper); }
 .stat b.g{ color:var(--gold); } .stat b.r{ color:var(--rose); } .stat b.ok{ color:var(--ok); }
 .sheet__btns{ display:flex; flex-direction:column; gap:9px; margin-top:4px; }
 
@@ -307,11 +316,11 @@ header.top{
   background:var(--panel); border:1px solid var(--line); color:var(--me); }
 .pick__ico svg{ width:20px; height:20px; }
 .pick__main{ flex:1; min-width:0; }
-.pick__main b{ display:block; font:700 15px/1.15 "Manrope"; color:var(--ink); }
+.pick__main b{ display:block; font:700 15px/1.15 "Manrope"; color:var(--paper); }
 .pick__main span{ font:500 12px/1.35 "Manrope"; color:var(--ink-2); }
 .pick__val{ text-align:right; flex:0 0 auto; }
 .pick__val b{ font:700 14px/1 "Space Mono"; color:var(--gold); }
-.pick__val span{ display:block; font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.05em;
+.pick__val span{ display:block; font:600 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.05em;
   color:var(--ink-3); margin-top:4px; }
 
 /* ─────────────────────────  9 · ДОСЬЕ (BRANDBOOK)  ───────────────────────── */
@@ -329,7 +338,7 @@ header.top{
   font:700 11px/1 "Space Mono"; letter-spacing:.08em; color:var(--gold-ink);
   background:var(--gold); padding:3px 7px; border-radius:4px; transform:rotate(3deg); }
 .dossier--rose .dossier__stamp{ background:var(--rose); color:#fff; }
-.dossier__name{ font:700 20px/1.1 "Playfair Display"; color:var(--ink); }
+.dossier__name{ font:700 20px/1.1 "Rubik"; color:var(--paper); }
 
 /* Досье-герой персонажа */
 .hero{ display:flex; gap:14px; }
@@ -338,12 +347,12 @@ header.top{
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.6), inset 0 -30px 40px rgba(10,8,6,.7); }
 .hero__portrait img{ width:100%; height:100%; object-fit:cover; object-position:top center; }
 .hero__info{ flex:1; min-width:0; padding-top:2px; }
-.hero__title-lbl{ font:600 10px/1 "Oswald"; text-transform:uppercase; letter-spacing:.14em;
+.hero__title-lbl{ font:600 10px/1 "Rubik"; text-transform:uppercase; letter-spacing:.14em;
   color:var(--me); }
-.hero__name{ font:800 24px/1.02 "Playfair Display"; color:var(--ink); margin:5px 0 3px; }
-.hero__role{ font:500 italic 13px/1.3 "Playfair Display"; color:var(--ink-2); }
+.hero__name{ font:800 24px/1.02 "Rubik"; color:var(--paper); margin:5px 0 3px; }
+.hero__role{ font:500 italic 13px/1.3 "Rubik"; color:var(--ink-2); }
 .hero__infl{ margin-top:12px; }
-.hero__infl em{ display:block; font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.1em;
+.hero__infl em{ display:block; font:600 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.1em;
   color:var(--ink-3); font-style:normal; margin-bottom:3px; }
 .hero__infl b{ font:700 30px/1 "Space Mono"; color:var(--me); letter-spacing:-.01em; }
 .hero__ring{ position:absolute; bottom:8px; right:8px; }
@@ -355,7 +364,7 @@ header.top{
 .ring__fg{ fill:none; stroke:var(--me); stroke-linecap:round;
   filter:drop-shadow(0 0 5px var(--me-glow)); transition:stroke-dashoffset .6s ease; }
 .ring__txt{ position:absolute; inset:0; display:grid; place-items:center;
-  font:700 15px/1 "Space Mono"; color:var(--ink); }
+  font:700 15px/1 "Space Mono"; color:var(--paper); }
 .ring__txt small{ font-size:9px; color:var(--ink-3); }
 
 /* Лестница титулов */
@@ -370,9 +379,9 @@ header.top{
 .ladder__row.done .ladder__line, .ladder__row.cur .ladder__line{ background:var(--me); }
 .ladder__row:first-child .ladder__line{ top:50%; }
 .ladder__row:last-child .ladder__line{ bottom:50%; }
-.ladder__name{ flex:1; font:600 14px/1 "Oswald"; text-transform:uppercase; letter-spacing:.04em;
+.ladder__name{ flex:1; font:600 14px/1 "Rubik"; text-transform:uppercase; letter-spacing:.04em;
   color:var(--ink-3); }
-.ladder__row.done .ladder__name, .ladder__row.cur .ladder__name{ color:var(--ink); }
+.ladder__row.done .ladder__name, .ladder__row.cur .ladder__name{ color:var(--paper); }
 .ladder__row.cur .ladder__name{ color:var(--me); }
 .ladder__req{ font:700 11px/1 "Space Mono"; color:var(--ink-3); }
 .ladder__row.cur .ladder__req{ color:var(--me); }
@@ -386,7 +395,7 @@ header.top{
 .lt-card__ico{ width:44px; height:44px; border-radius:11px; flex:0 0 auto; display:grid; place-items:center;
   background:var(--panel-2); border:1px solid var(--line-2); color:var(--ink-2); }
 .lt-card__ico svg{ width:24px; height:24px; }
-.lt-card b{ font:700 15px/1.1 "Manrope"; color:var(--ink); }
+.lt-card b{ font:700 15px/1.1 "Manrope"; color:var(--paper); }
 .lt-card span{ font:500 12px/1.4 "Manrope"; color:var(--ink-2); }
 .chips-wrap{ display:flex; flex-wrap:wrap; gap:8px; }
 .art-chip{ display:inline-flex; align-items:center; gap:7px; padding:7px 12px; border-radius:var(--r-chip);
@@ -401,32 +410,32 @@ header.top{
 .vs__side{ flex:1; padding:11px 12px; background:var(--panel-2); }
 .vs__side.me{ box-shadow:inset 3px 0 0 var(--me); }
 .vs__side.op{ box-shadow:inset -3px 0 0 var(--opp); text-align:right; }
-.vs__side em{ font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.08em; font-style:normal; }
+.vs__side em{ font:600 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.08em; font-style:normal; }
 .vs__side.me em{ color:var(--me); } .vs__side.op em{ color:var(--opp); }
-.vs__side b{ display:block; font:700 18px/1.1 "Space Mono"; color:var(--ink); margin-top:6px; }
+.vs__side b{ display:block; font:700 18px/1.1 "Space Mono"; color:var(--paper); margin-top:6px; }
 .vs__side span{ font:500 11px/1.2 "Manrope"; color:var(--ink-2); }
 .vs__mid{ display:grid; place-items:center; padding:0 10px; background:var(--panel);
-  font:900 13px/1 "Oswald"; color:var(--ink-3); }
+  font:900 13px/1 "Rubik"; color:var(--ink-3); }
 
 /* ─────────────────────────  10 · ХОД  ───────────────────────── */
 .act-toggle{ display:flex; gap:8px; margin-bottom:14px; }
 .act-toggle button{ flex:1; appearance:none; border:1px solid var(--line); background:var(--panel);
   color:var(--ink-3); border-radius:11px; padding:11px 8px; cursor:pointer;
-  font:700 12px/1 "Oswald"; text-transform:uppercase; letter-spacing:.05em; transition:.14s; }
+  font:700 12px/1 "Rubik"; text-transform:uppercase; letter-spacing:.05em; transition:.14s; }
 .act-toggle button .n{ font-family:"Space Mono"; margin-left:5px; }
 .act-toggle button.on{ color:var(--me); border-color:var(--me); background:var(--me-soft);
   box-shadow:inset 0 0 12px var(--me-soft); }
 
 .hod-head{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
 .hod-head .ring{ --rs:66px; }
-.hod-head__t b{ font:700 17px/1.1 "Oswald"; text-transform:uppercase; letter-spacing:.04em; color:var(--ink); }
+.hod-head__t b{ font:700 17px/1.1 "Rubik"; text-transform:uppercase; letter-spacing:.04em; color:var(--paper); }
 .hod-head__t span{ display:block; font:500 12.5px/1.4 "Manrope"; color:var(--ink-2); margin-top:4px; }
 .combo{ display:inline-flex; align-items:center; gap:6px; margin-top:7px; padding:4px 10px; border-radius:999px;
   background:var(--panel-2); border:1px solid var(--line); font:700 12px/1 "Space Mono"; color:var(--attack-hi); }
 .combo svg{ width:14px; height:14px; }
 
 .lastweek{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px;
-  padding:8px; border-radius:10px; font:700 12px/1 "Oswald"; text-transform:uppercase; letter-spacing:.08em;
+  padding:8px; border-radius:10px; font:700 12px/1 "Rubik"; text-transform:uppercase; letter-spacing:.08em;
   color:var(--attack-ink); background:linear-gradient(180deg,var(--attack-hi),var(--attack)); }
 
 .proto{ display:flex; flex-direction:column; gap:7px; }
@@ -440,8 +449,8 @@ header.top{
 .proto__item.on{ border-color:var(--me); background:linear-gradient(90deg,var(--me-soft),transparent 80%); }
 .proto__item.on .proto__box{ background:var(--me); border-color:var(--me); color:var(--me-ink);
   box-shadow:var(--me-glow); }
-.proto__txt{ flex:1; font:500 14px/1.3 "Manrope"; color:var(--ink); }
-.proto__item.on .proto__txt{ color:var(--ink); }
+.proto__txt{ flex:1; font:500 14px/1.3 "Manrope"; color:var(--paper); }
+.proto__item.on .proto__txt{ color:var(--paper); }
 .proto__mus{ display:inline-flex; align-items:center; gap:3px; font:700 10px/1 "Space Mono";
   color:var(--attack); padding:4px 7px; border-radius:999px; border:1px solid var(--line-2);
   background:var(--panel-2); flex:0 0 auto; }
@@ -450,11 +459,11 @@ header.top{
 /* Слово Дона тумблер */
 .vow-block{ margin-top:14px; padding:13px 14px; border-radius:12px;
   background:var(--panel); border:1px solid var(--line); }
-.vow-block__q{ font:500 13.5px/1.4 "Manrope"; color:var(--ink); margin-bottom:11px; }
+.vow-block__q{ font:500 13.5px/1.4 "Manrope"; color:var(--paper); margin-bottom:11px; }
 .vow-block__q b{ color:var(--me); }
 .seg{ display:flex; gap:8px; }
 .seg button{ flex:1; appearance:none; cursor:pointer; border-radius:10px; padding:11px; transition:.14s;
-  font:700 13px/1 "Oswald"; text-transform:uppercase; letter-spacing:.04em;
+  font:700 13px/1 "Rubik"; text-transform:uppercase; letter-spacing:.04em;
   border:1px solid var(--line-2); background:var(--panel-2); color:var(--ink-2); }
 .seg button.on.yes{ background:linear-gradient(180deg,#57C982,var(--ok)); color:var(--ok-ink); border-color:var(--ok); }
 .seg button.on.no{ background:linear-gradient(180deg,#EF4B3C,var(--attack)); color:#fff; border-color:var(--attack); }
@@ -467,7 +476,7 @@ header.top{
 .tally__nums{ display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:11px; }
 .tally__nums .n{ display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
 .tally__nums .n b{ font:700 18px/1 "Space Mono"; }
-.tally__nums .n em{ font:600 8.5px/1 "Oswald"; text-transform:uppercase; letter-spacing:.06em;
+.tally__nums .n em{ font:600 8.5px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em;
   color:var(--ink-3); font-style:normal; }
 .tally__nums .n.money b{ color:var(--gold); } .tally__nums .n.resp b{ color:var(--gold-hi); }
 .tally__nums .n.musc b{ color:var(--attack); } .tally__nums .n.streak b{ color:var(--attack-hi); }
@@ -486,7 +495,7 @@ header.top{
 .tile.att .tile__ico{ background:rgba(219,55,41,.14); color:var(--attack); }
 .tile.up .tile__ico{ background:rgba(71,184,114,.14); color:var(--ok); }
 .tile.boss .tile__ico{ background:rgba(154,160,178,.14); color:var(--boss); }
-.tile__t{ font:700 14px/1.1 "Oswald"; text-transform:uppercase; letter-spacing:.03em; color:var(--ink); margin-top:10px; }
+.tile__t{ font:700 14px/1.1 "Rubik"; text-transform:uppercase; letter-spacing:.03em; color:var(--paper); margin-top:10px; }
 .tile__c{ font:600 11px/1.3 "Space Mono"; color:var(--ink-2); margin-top:4px; }
 .tile__lock{ font:500 10.5px/1.3 "Manrope"; color:var(--ink-3); margin-top:4px; }
 .tile[aria-disabled="true"]{ opacity:.45; filter:grayscale(.55); pointer-events:none; }
@@ -495,7 +504,7 @@ header.top{
 /* Итоговая сводка (день уже отмечен) */
 .done-summary{ text-align:center; padding:20px 16px; }
 .done-summary .ring{ --rs:88px; margin:0 auto 14px; }
-.done-summary h3{ font:700 19px/1.2 "Playfair Display"; color:var(--ink); margin:0 0 6px; }
+.done-summary h3{ font:700 19px/1.2 "Rubik"; color:var(--paper); margin:0 0 6px; }
 .done-summary p{ font:500 13.5px/1.5 "Manrope"; color:var(--ink-2); margin:0; }
 
 /* ─────────────────────────  11 · БОСС  ───────────────────────── */
@@ -504,8 +513,8 @@ header.top{
   background:#0A0908; box-shadow:inset 0 0 0 1px rgba(0,0,0,.6), inset 0 -26px 36px rgba(8,8,10,.7); }
 .boss-hero__portrait img{ width:100%; height:100%; object-fit:cover; object-position:top center; }
 .boss-hero__info{ flex:1; min-width:0; }
-.boss-hero__wk{ font:600 10px/1 "Oswald"; text-transform:uppercase; letter-spacing:.12em; color:var(--boss); }
-.boss-hero__name{ font:700 21px/1.08 "Playfair Display"; color:var(--ink); margin:6px 0 6px; }
+.boss-hero__wk{ font:600 10px/1 "Rubik"; text-transform:uppercase; letter-spacing:.12em; color:var(--boss); }
+.boss-hero__name{ font:700 21px/1.08 "Rubik"; color:var(--paper); margin:6px 0 6px; }
 .boss-hero__hold{ font:500 12.5px/1.4 "Manrope"; color:var(--ink-2); }
 .boss-hero__hold b{ color:var(--boss); }
 .deadline{ display:inline-flex; align-items:center; gap:6px; margin-top:10px; padding:5px 11px; border-radius:999px;
@@ -515,8 +524,8 @@ header.top{
 /* HP-бар (BRANDBOOK) */
 .hpwrap{ margin:16px 0; }
 .hpbar__meta{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:7px; }
-.hpbar__label{ font:600 12px/1 "Oswald"; letter-spacing:.06em; text-transform:uppercase; color:var(--boss); }
-.hpbar__num{ font:700 15px/1 "Space Mono"; color:var(--ink); }
+.hpbar__label{ font:600 12px/1 "Rubik"; letter-spacing:.06em; text-transform:uppercase; color:var(--boss); }
+.hpbar__num{ font:700 15px/1 "Space Mono"; color:var(--paper); }
 .hpbar{ display:grid; grid-auto-flow:column; gap:2px; padding:3px;
   border:1px solid var(--boss); border-radius:6px; background:#0A0908; }
 .hpbar__seg{ height:16px; border-radius:2px; background:var(--panel-2); }
@@ -524,10 +533,10 @@ header.top{
 
 .dmg{ display:flex; gap:10px; margin:14px 0; }
 .dmg__side{ flex:1; text-align:center; padding:12px; border-radius:12px; background:var(--panel-2); border:1px solid var(--line); }
-.dmg__side em{ font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.08em; font-style:normal; }
+.dmg__side em{ font:600 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.08em; font-style:normal; }
 .dmg__side.me{ box-shadow:inset 0 -3px 0 var(--me); } .dmg__side.me em{ color:var(--me); }
 .dmg__side.op{ box-shadow:inset 0 -3px 0 var(--opp); } .dmg__side.op em{ color:var(--opp); }
-.dmg__side b{ display:block; font:700 26px/1 "Space Mono"; color:var(--ink); margin-top:6px; }
+.dmg__side b{ display:block; font:700 26px/1 "Space Mono"; color:var(--paper); margin-top:6px; }
 .dmg__side span{ font:500 10px/1 "Manrope"; color:var(--ink-3); }
 
 .trophy{ display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; margin-top:2px;
@@ -537,16 +546,16 @@ header.top{
 .trophy span{ display:block; font:500 12px/1.4 "Manrope"; color:var(--ink-2); margin-top:2px; }
 .rules{ font:500 12.5px/1.55 "Manrope"; color:var(--ink-2); margin-top:14px;
   padding:12px 14px; background:var(--panel-2); border-radius:11px; border:1px solid var(--line); }
-.rules b{ color:var(--ink); }
+.rules b{ color:var(--paper); }
 
 /* ─────────────────────────  12 · ХРОНИКА / ТОСТЫ  ───────────────────────── */
-.don-quote{ font:500 italic 15px/1.5 "Playfair Display"; color:var(--ink-2);
+.don-quote{ font:500 italic 15px/1.5 "Rubik"; color:var(--ink-2);
   padding:2px 4px 14px; border-bottom:1px solid var(--line); margin-bottom:16px; }
 .don-quote::before{ content:"«"; color:var(--me); } .don-quote::after{ content:"»"; color:var(--me); }
 
 .filters{ display:flex; gap:8px; margin-bottom:14px; overflow-x:auto; padding-bottom:2px; }
 .filters button{ flex:0 0 auto; appearance:none; cursor:pointer; border-radius:999px; padding:8px 15px;
-  font:700 11px/1 "Oswald"; text-transform:uppercase; letter-spacing:.05em;
+  font:700 11px/1 "Rubik"; text-transform:uppercase; letter-spacing:.05em;
   border:1px solid var(--line-2); background:var(--panel); color:var(--ink-2); transition:.14s; }
 .filters button.on{ background:var(--me); border-color:var(--me); color:var(--me-ink); }
 .me-s .filters button.on{ color:#fff; }
@@ -561,7 +570,7 @@ header.top{
 .toast--g .toast__bar{ background:var(--gold); } .toast--s .toast__bar{ background:var(--rose); }
 .toast--n .toast__bar{ background:var(--graffiti); }
 .toast__body{ min-width:0; }
-.toast__x{ font:500 13.5px/1.45 "Manrope"; color:var(--ink); }
+.toast__x{ font:500 13.5px/1.45 "Manrope"; color:var(--paper); }
 .toast__x b{ font-weight:800; color:var(--ink-max); }
 .toast__tail{ font:700 11px/1 "Space Mono"; color:var(--ok); margin-top:6px; display:inline-block; }
 .toast__time{ font:700 10px/1 "Space Mono"; color:var(--ink-3); flex:0 0 auto; white-space:nowrap; }
@@ -570,10 +579,10 @@ header.top{
 .omcards{ display:flex; flex-direction:column; gap:10px; }
 .omcard{ padding:13px 14px; border-radius:12px; background:var(--panel); border:1px solid var(--line); }
 .omcard__top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:11px; }
-.omcard__clan{ font:600 10px/1 "Oswald"; text-transform:uppercase; letter-spacing:.08em; }
+.omcard__clan{ font:600 10px/1 "Rubik"; text-transform:uppercase; letter-spacing:.08em; }
 .omcard.g .omcard__clan{ color:var(--gold); } .omcard.s .omcard__clan{ color:var(--rose); }
-.omcard__vow{ font:700 14px/1.2 "Manrope"; color:var(--ink); }
-.omcard__status{ font:600 10px/1 "Oswald"; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3); }
+.omcard__vow{ font:700 14px/1.2 "Manrope"; color:var(--paper); }
+.omcard__status{ font:600 10px/1 "Rubik"; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3); }
 .dots{ display:flex; gap:7px; }
 .dots i{ width:15px; height:15px; border-radius:50%; background:var(--panel-2); border:1px solid var(--line-2); }
 .omcard.g .dots i.held{ background:var(--gold); border-color:var(--gold); box-shadow:0 0 6px var(--gold-glow); }
@@ -582,21 +591,21 @@ header.top{
 
 /* Аукцион */
 .auction{ position:relative; border:1px solid var(--line-2); }
-.auction__lbl{ display:inline-flex; align-items:center; gap:6px; font:600 10px/1 "Oswald";
+.auction__lbl{ display:inline-flex; align-items:center; gap:6px; font:600 10px/1 "Rubik";
   text-transform:uppercase; letter-spacing:.1em; color:var(--gold-hi); margin-bottom:8px; }
 .auction__lbl svg{ width:15px; height:15px; }
-.auction__lot{ font:700 18px/1.1 "Playfair Display"; color:var(--ink); }
+.auction__lot{ font:700 18px/1.1 "Rubik"; color:var(--paper); }
 .auction__desc{ font:500 13px/1.45 "Manrope"; color:var(--ink-2); margin:5px 0 12px; }
 .auction__bids{ display:flex; gap:9px; }
 .bidpill{ flex:1; text-align:center; padding:9px; border-radius:10px; background:var(--panel-2);
   border:1px solid var(--line); font:600 11px/1.3 "Manrope"; color:var(--ink-2); }
-.bidpill b{ display:block; font:700 13px/1 "Oswald"; text-transform:uppercase; letter-spacing:.04em; margin-top:5px; }
+.bidpill b{ display:block; font:700 13px/1 "Rubik"; text-transform:uppercase; letter-spacing:.04em; margin-top:5px; }
 .bidpill.yes b{ color:var(--ok); } .bidpill.no b{ color:var(--ink-3); }
 
 /* ─────────────────────────  13 · ОМЕРТА-ЭКРАН  ───────────────────────── */
 .vow-picker{ display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 6px; }
 .vow-opt{ appearance:none; cursor:pointer; border-radius:999px; padding:10px 15px; transition:.14s;
-  border:1px solid var(--line-2); background:var(--panel-2); color:var(--ink);
+  border:1px solid var(--line-2); background:var(--panel-2); color:var(--paper);
   font:600 13px/1 "Manrope"; }
 .vow-opt.on{ background:var(--me); border-color:var(--me); color:var(--me-ink); box-shadow:var(--me-glow); }
 .me-s .vow-opt.on{ color:#fff; }
@@ -604,15 +613,15 @@ header.top{
 .stakes>div{ flex:1; padding:12px; border-radius:11px; text-align:center; }
 .stakes .win{ background:rgba(71,184,114,.1); border:1px solid rgba(71,184,114,.3); }
 .stakes .lose{ background:rgba(219,55,41,.08); border:1px solid rgba(219,55,41,.28); }
-.stakes em{ font:600 9px/1 "Oswald"; text-transform:uppercase; letter-spacing:.06em; font-style:normal; }
+.stakes em{ font:600 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em; font-style:normal; }
 .stakes .win em{ color:var(--ok); } .stakes .lose em{ color:var(--attack-hi); }
-.stakes b{ display:block; font:700 14px/1.3 "Space Mono"; color:var(--ink); margin-top:7px; }
+.stakes b{ display:block; font:700 14px/1.3 "Space Mono"; color:var(--paper); margin-top:7px; }
 
 /* ─────────────────────────  14 · ТРАНЗИЕНТ-ТОСТ / ЗАГЛУШКИ  ───────────────────────── */
 #toaster{ position:fixed; left:0; right:0; bottom:calc(var(--nav-h) + var(--safe-b) + 14px); z-index:80;
   display:flex; flex-direction:column; align-items:center; gap:8px; padding:0 16px; pointer-events:none; }
 .t-toast{ max-width:520px; width:100%; background:var(--panel-hi); border:1px solid var(--line-2);
-  border-radius:12px; padding:12px 16px; box-shadow:var(--shadow-2); color:var(--ink);
+  border-radius:12px; padding:12px 16px; box-shadow:var(--shadow-2); color:var(--paper);
   font:600 13.5px/1.4 "Manrope"; animation:t-in .28s cubic-bezier(.22,.61,.36,1);
   border-left:4px solid var(--me); }
 .t-toast.ok{ border-left-color:var(--ok); } .t-toast.err{ border-left-color:var(--attack); }
@@ -628,7 +637,7 @@ header.top{
 .demo-banner svg{ width:15px; height:15px; flex:0 0 auto; }
 
 /* Спрей-штамп (графити) */
-.stamp{ position:absolute; font:700 15px/1 "Oswald"; letter-spacing:.06em; color:var(--graffiti);
+.stamp{ position:absolute; font:700 15px/1 "Rubik"; letter-spacing:.06em; color:var(--graffiti);
   transform:rotate(-8deg); opacity:.9; text-shadow:0 0 1px var(--graffiti-lo); text-transform:uppercase; }
 
 /* Загрузочный сплэш */
@@ -637,8 +646,8 @@ header.top{
 #splash.hide{ opacity:0; pointer-events:none; }
 #splash .crest{ width:96px; height:96px; margin:0 auto 18px; filter:drop-shadow(0 0 24px rgba(230,180,80,.3)); }
 #splash .crest img{ width:100%; height:100%; mix-blend-mode:screen; }
-#splash h1{ font:900 34px/1 "Playfair Display"; letter-spacing:.12em; color:var(--ink); margin:0 0 8px; text-align:center; }
-#splash p{ font:500 italic 14px/1.4 "Playfair Display"; color:var(--ink-2); text-align:center; margin:0; padding:0 30px; }
+#splash h1{ font:900 34px/1 "Rubik"; letter-spacing:.12em; color:var(--paper); margin:0 0 8px; text-align:center; }
+#splash p{ font:500 italic 14px/1.4 "Rubik"; color:var(--ink-2); text-align:center; margin:0; padding:0 30px; }
 #splash .spin{ width:26px; height:26px; margin:22px auto 0; border:2px solid var(--line-2);
   border-top-color:var(--gold); border-radius:50%; animation:spin 1s linear infinite; }
 @keyframes spin{ to{ transform:rotate(360deg); } }

@@ -574,8 +574,8 @@ function renderBoss(){
     const top = dmgMe>=dmgOp?ME:OPP;
     cta = `<div class="card" style="text-align:center;border-color:var(--gold-lo)">
       <div style="color:var(--gold-hi);width:40px;height:40px;margin:0 auto 8px">${I.crown}</div>
-      <h3 style="font:700 19px/1.2 'Playfair Display';color:var(--gold-hi);margin:0 0 6px">${b.n.replace(/^[^ ]+ /,'')} сломан</h3>
-      <p class="muted" style="margin:0">Старый авторитет отдал город. Трофей забирает <b style="color:var(--ink)">${top===ME?'Ты':(SIDE==='g'?'Скляровские':'Карлеоне')}</b>, перк — обоим кланам.</p></div>`;
+      <h3 style="font:700 19px/1.2 'Rubik';color:var(--gold-hi);margin:0 0 6px">${b.n.replace(/^[^ ]+ /,'')} сломан</h3>
+      <p class="muted" style="margin:0">Старый авторитет отдал город. Трофей забирает <b style="color:var(--paper)">${top===ME?'Ты':(SIDE==='g'?'Скляровские':'Карлеоне')}</b>, перк — обоим кланам.</p></div>`;
   } else {
     const reason = me.today<85?'Закрой день на ≥85% — тогда ударишь':me.muscles<1?'Нужен 1⚡ — качай жёсткие пункты':'';
     cta = `<button class="btn btn--attack" data-tap="boss-hit" ${canHit?'':'aria-disabled="true"'}>${I.fist} Ударить · −1⚡</button>
@@ -609,7 +609,7 @@ function renderBoss(){
 
   <div class="rules"><b>Как бить:</b> в день ≥85% — удар (−1 HP), 100% — крит (−2), серия ≥3 — +1. Кооп: добьёте вдвоём — район топ-урону, перк обоим; не добьёте — наезд на оба клана.</div>
 
-  <p class="muted" style="font:500 italic 13px/1.5 'Playfair Display';margin:14px 4px 16px">${meta[2]}</p>
+  <p class="muted" style="font:500 italic 13px/1.5 'Rubik';margin:14px 4px 16px">${meta[2]}</p>
 
   ${cta}`;
 }
