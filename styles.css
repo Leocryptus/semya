@@ -994,3 +994,32 @@ input,textarea{ user-select:text; -webkit-user-select:text; -webkit-tap-highligh
 @media (prefers-reduced-motion:reduce){
   *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
 }
+
+/* ═════════════════  ✨ ЭФФЕКТЫ (слой 2): блик-проблеск + пульс-свечение  ═════════════════ */
+/* Диагональный блик, медленно скользящий по портрету дона/босса */
+.artframe::after{
+  content:""; position:absolute; top:-10%; bottom:-10%; width:42%; z-index:1; pointer-events:none;
+  background:linear-gradient(105deg, transparent 0%, rgba(255,246,228,.14) 46%,
+    rgba(255,246,228,.34) 52%, rgba(255,246,228,.10) 58%, transparent 100%);
+  mix-blend-mode:screen; transform:translateX(-170%) skewX(-14deg);
+  animation:art-sheen 7s ease-in-out 1.4s infinite;
+}
+@keyframes art-sheen{ 0%{ transform:translateX(-170%) skewX(-14deg); }
+  13%,100%{ transform:translateX(340%) skewX(-14deg); } }
+
+/* Пульс-свечение фамильного герба в шапке */
+.top__crest{ animation:crest-glow 3.8s ease-in-out infinite; }
+@keyframes crest-glow{ 0%,100%{ filter:drop-shadow(0 0 6px var(--me-glow)); }
+  50%{ filter:drop-shadow(0 0 13px var(--me-glow)); } }
+
+/* Золотой проблеск по ключевой карте (Слово Семье и пр.) */
+.card--key{ position:relative; }
+.card--key::after{
+  content:""; position:absolute; inset:0; z-index:0; pointer-events:none; border-radius:var(--r-card);
+  overflow:hidden;
+  background:linear-gradient(105deg, transparent 42%, rgba(245,214,137,.12) 50%, transparent 58%);
+  background-size:250% 100%; background-position:180% 0;
+  animation:key-sheen 9s ease-in-out 2s infinite;
+}
+.card--key > *{ position:relative; z-index:1; }
+@keyframes key-sheen{ 0%,70%{ background-position:180% 0; } 88%,100%{ background-position:-80% 0; } }
