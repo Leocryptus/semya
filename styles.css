@@ -230,6 +230,29 @@ header.top{
 .btn:focus-visible{ outline:2px solid var(--paper); outline-offset:2px; }
 .btn--sm{ min-height:40px; font-size:13px; padding:0 14px; }
 
+/* ── Брендовые кнопки (фаска + вжатие) ── */
+.btn-gold,.btn-crimson,.btn-green,.btn-wood{
+  position:relative; overflow:hidden; min-height:46px; padding:0 18px; width:100%;
+  border-radius:var(--r-btn); cursor:pointer; border:0;
+  font:800 15px/1 "Rubik"; letter-spacing:.03em; text-transform:uppercase;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  transition:transform .1s, filter .12s, box-shadow .12s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 0 rgba(0,0,0,.25), var(--shadow-1);
+}
+.btn-gold svg,.btn-crimson svg,.btn-green svg,.btn-wood svg{ width:19px; height:19px; }
+.btn-gold{ background:var(--gold-grad); color:var(--gold-ink); }
+.btn-crimson{ background:linear-gradient(178deg,var(--crimson-neon),var(--crimson) 55%,#7E1519); color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25), inset 0 -2px 0 rgba(0,0,0,.3), var(--attack-glow); }
+.btn-green{ background:linear-gradient(178deg,#63C777,var(--green) 55%,#2E7A38); color:#04120A; }
+.btn-wood{ background:linear-gradient(178deg,var(--wood2),var(--wood)); color:var(--paper);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 0 0 1px var(--line-2), var(--shadow-1); }
+.btn-gold:active,.btn-crimson:active,.btn-green:active,.btn-wood:active{
+  transform:translateY(2px); filter:brightness(.94);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.4); }
+.btn-gold[aria-disabled="true"],.btn-crimson[aria-disabled="true"],
+.btn-green[aria-disabled="true"],.btn-wood[aria-disabled="true"]{
+  opacity:.4; filter:grayscale(.5); pointer-events:none; box-shadow:none; }
+
 /* Ripple */
 .ripple{ position:absolute; border-radius:50%; transform:scale(0); pointer-events:none;
   background:radial-gradient(circle,rgba(255,255,255,.5),transparent 62%);
@@ -687,13 +710,18 @@ header.top{
   transform:rotate(-8deg); opacity:.9; text-shadow:0 0 1px var(--graffiti-lo); text-transform:uppercase; }
 
 /* Загрузочный сплэш */
-#splash{ position:fixed; inset:0; z-index:100; display:grid; place-items:center; background:var(--bg);
+#splash{ position:fixed; inset:0; z-index:100; display:grid; place-items:center;
+  background:radial-gradient(130% 90% at 50% 10%, var(--wood) 0%, var(--leather) 40%, var(--ink) 100%);
   transition:opacity .4s; }
 #splash.hide{ opacity:0; pointer-events:none; }
-#splash .crest{ width:96px; height:96px; margin:0 auto 18px; filter:drop-shadow(0 0 24px rgba(230,180,80,.3)); }
+#splash .crest{ width:104px; height:104px; margin:0 auto 18px; filter:drop-shadow(0 0 26px rgba(231,181,74,.4)); }
 #splash .crest img{ width:100%; height:100%; mix-blend-mode:screen; }
-#splash h1{ font:900 34px/1 "Rubik"; letter-spacing:.12em; color:var(--paper); margin:0 0 8px; text-align:center; }
-#splash p{ font:500 italic 14px/1.4 "Rubik"; color:var(--ink-2); text-align:center; margin:0; padding:0 30px; }
+#splash h1{ font:900 42px/1 "Rubik"; letter-spacing:.06em; margin:0 0 10px; text-align:center;
+  background:var(--gold-grad); -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+  -webkit-text-stroke:1px rgba(31,20,5,.5);
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.6)) drop-shadow(0 0 18px rgba(231,181,74,.35)); }
+#splash p{ font:500 italic 14px/1.4 "Rubik"; color:var(--gold-hi); text-align:center; margin:0; padding:0 30px; opacity:.85; }
 #splash .spin{ width:26px; height:26px; margin:22px auto 0; border:2px solid var(--line-2);
   border-top-color:var(--gold); border-radius:50%; animation:spin 1s linear infinite; }
 @keyframes spin{ to{ transform:rotate(360deg); } }

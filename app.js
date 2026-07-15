@@ -278,11 +278,16 @@ function render(){
   syncMainButton();
 }
 
-/* ───────────────────────  1 · КАРТА  ─────────────────────── */
-function ownerClass(d){
-  if(d.lock && !d.owner) return 'hex--locked';
-  if(d.owner===null) return 'hex--free';
-  return S.players[d.owner].side==='g' ? 'hex--gold' : 'hex--rose';
+/* ───────────────────────  1 · КАРТА (ночной город)  ─────────────────────── */
+// Мини-вывеска-здание для каждого района (emoji, без зависимости от картинок)
+const BUILD = {
+  port:'⚓', tsum:'🏬', rynok:'🛒', bank:'🏦', cosmos:'🎰', avto:'🔧',
+  club:'🍸', azs:'⛽', lombard:'💍', sklad:'🏭', vokzal:'🚉', telegraf:'📡', hotel:'🏨', verf:'🛳️'
+};
+function plotOwnerClass(d){
+  if(d.lock && !d.owner) return 'plot--locked';
+  if(!d.owner) return 'plot--free';
+  return S.players[d.owner].side==='g' ? 'plot--gold' : 'plot--rose';
 }
 function renderKarta(){
   const ds = S.districts;
@@ -290,15 +295,7 @@ function renderKarta(){
   const opps = ds.filter(d=>d.owner===OPP).length;
   const free = ds.filter(d=>!d.owner).length;
 
-  // 4-3-4-3 «соты»
-  const order = [0,1,2,3, 4,5,6, 7,8,9,10, 11,12,13];
-  const rows = [[4,false],[3,true],[4,false],[3,true]];
-  let idx=0, grid='';
-  rows.forEach(([cnt,off])=>{
-    grid += `<div class="hexrow ${off?'off':''}">`;
-    for(let i=0;i<cnt;i++){ grid += hexTile(ds[order[idx++]]); }
-    grid += `</div>`;
-  });
+  const plots = ds.map(plotTile).join('');
 
   return `
   <div class="mini-count">
@@ -306,31 +303,38 @@ function renderKarta(){
     <b class="c-opp"><span>${opps}</span><em>${SIDE==='g'?'Скляровские':'Карлеоне'}</em></b>
     <b class="c-free"><span>${free}</span><em>Ничейных</em></b>
   </div>
-  <div class="section-h">Карта города<div class="fill"></div></div>
-  <div class="hexgrid">${grid}</div>
+  <div class="section-h">Ночной город<div class="fill"></div></div>
+  <div class="city">
+    <div class="city__grid">${plots}</div>
+  </div>
   <div class="legend">
-    <b><i style="background:var(--gold)"></i>Карлеоне</b>
-    <b><i style="background:var(--rose)"></i>Скляровские</b>
-    <b><i style="background:var(--neutral)"></i>Ничьё</b>
-    <b><i style="background:var(--boss-lo)"></i>Под смотрящим</b>
+    <b><i class="lg-gold"></i>Карлеоне</b>
+    <b><i class="lg-rose"></i>Скляровские</b>
+    <b><i class="lg-free"></i>Ничьё</b>
+    <b><i class="lg-lock"></i>Под смотрящим 🔒</b>
   </div>`;
 }
-function hexTile(d){
-  const cls = ownerClass(d);
+function plotTile(d){
+  const locked = d.lock && !d.owner;
+  const cls = plotOwnerClass(d);
   const meta = DIST[d.id] || [d.n, d.income, ''];
-  const inc = d.lock&&!d.owner ? '🔒' : '$'+d.income;
+  const ico = BUILD[d.id] || '🏙️';
+  const inc = locked
+    ? `<span class="plot__lockinc">${I.lock}</span>`
+    : `${I.coin}<b>${fmt(d.income)}</b>`;
   let pips = '';
   for(let i=1;i<d.level;i++) pips += '<i></i>';
   for(let i=0;i<d.fort;i++)  pips += '<i class="fort"></i>';
-  const mine = d.owner===ME ? 'mine' : '';
-  const ico = d.lock&&!d.owner ? I.lock : I.building;
-  return `<div class="hex ${cls} ${mine}" data-tap="dist" data-arg="${d.id}">
-    <div class="hex__inner">
-      <span class="hex__ico">${ico}</span>
-      <span class="hex__name">${meta[0]}</span>
-      <span class="hex__income">${inc}</span>
-      <span class="hex__pips">${pips}</span>
-    </div></div>`;
+  const mine = d.owner===ME ? 'is-mine' : '';
+  const lockBadge = locked ? '<span class="plot__lockbadge">🔒</span>' : '';
+  return `<button class="plot ${cls} ${mine}" data-tap="dist" data-arg="${d.id}">
+    ${lockBadge}
+    <span class="plot__roof"></span>
+    <span class="plot__ico">${ico}</span>
+    <span class="plot__name">${meta[0]}</span>
+    <span class="plot__inc">${inc}</span>
+    <span class="plot__pips">${pips}</span>
+  </button>`;
 }
 
 /* ───────────────────────  2 · ДОСЬЕ (персонаж)  ─────────────────────── */
