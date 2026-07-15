@@ -679,18 +679,19 @@ function renderBoss(){
       <p class="muted" style="margin:0">Старый авторитет отдал город. Трофей забирает <b style="color:var(--paper)">${top===ME?'Ты':(SIDE==='g'?'Скляровские':'Карлеоне')}</b>, перк — обоим кланам.</p></div>`;
   } else {
     const reason = me.today<85?'Закрой день на ≥85% — тогда ударишь':me.muscles<1?'Нужен 1⚡ — качай жёсткие пункты':'';
-    cta = `<button class="btn btn--attack" data-tap="boss-hit" ${canHit?'':'aria-disabled="true"'}>${I.fist} Ударить · −1⚡</button>
+    cta = `<button class="btn-crimson" data-tap="boss-hit" ${canHit?'':'aria-disabled="true"'}>${I.fist} Ударить · −1⚡</button>
       ${reason?`<p class="dim" style="text-align:center;font:500 12px/1.4 'Manrope';margin:9px 0 0">${reason}</p>`:''}`;
   }
 
   return `
-  <div class="dossier--steel" style="border-radius:14px;padding:12px;margin-top:4px">
-    <div class="boss-hero">
-      <div class="boss-hero__portrait"><img src="assets/${meta[0]}.png" alt=""></div>
-      <div class="boss-hero__info">
-        <div class="boss-hero__wk">Смотрящий · неделя ${b.week}</div>
-        <div class="boss-hero__name">${b.n.replace(/^[^ ]+ /,'')}</div>
-        <div class="boss-hero__hold">Держит <b>${meta[1]}</b></div>
+  <div class="dossier--steel boss-panel" style="border-radius:14px;padding:12px;margin-top:4px">
+    <div class="artframe artframe--steel">
+      <div class="artframe__img" style="background-image:url('assets/${art[0]}');background-size:${art[1]};background-position:${art[2]}"></div>
+      <div class="artframe__scrim"></div>
+      <div class="artframe__cap">
+        <div class="artframe__kick">Смотрящий · неделя ${b.week}</div>
+        <div class="artframe__name">${b.n.replace(/^[^ ]+ /,'')}</div>
+        <div class="artframe__sub">Держит <b>${meta[1]}</b></div>
         ${dead?'':`<div class="deadline">${I.clock} ${left>0?('до развязки '+left+' дн.'):'сегодня развязка'}</div>`}
       </div>
     </div>
