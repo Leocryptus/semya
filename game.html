@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1a0f08">
+<title>СЕМЬЯ · прототип</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@600;700;800;900&family=Manrope:wght@500;600;700;800&family=Space+Mono:wght@700&display=swap">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --gold:#FFC24B; --gold-lite:#FFE39A; --gold-deep:#D6891C; --gold-ink:#3A2408;
+  --wood:#3A2617; --wood2:#4E3220; --wood-hi:#654327; --wood-dk:#241610;
+  --red:#FF4D4D; --blue:#49B6F0; --violet:#B466F0; --green:#5BC66A;
+  --cream:#F7E9C9; --cream2:#EAD5A6; --inkp:#3A2A16;
+  --paper:#FFF6DF; --txt:#F6EACB; --txt2:#DBC08C; --txt3:#B0925E;
+  --panel:#2A1B10; --line:#5A3C22; --line2:#7A5230;
+  --gg:linear-gradient(180deg,var(--gold-lite),var(--gold) 44%,var(--gold-deep));
+  --wg:linear-gradient(180deg,var(--wood-hi),var(--wood2) 60%,var(--wood));
+  --disp:"Russo One","Rubik",sans-serif;
+  --sh-btn:0 4px 0 rgba(0,0,0,.35),0 8px 16px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.4),inset 0 -3px 0 rgba(0,0,0,.25);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+html{background:#1a0f08}
+body{font-family:"Manrope",system-ui,sans-serif;color:var(--txt);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;user-select:none;
+ background:radial-gradient(120% 60% at 50% -6%,rgba(73,182,240,.10),transparent 55%),radial-gradient(90% 50% at 90% 6%,rgba(255,77,77,.10),transparent 55%),linear-gradient(180deg,#2b1a0f,#1a0f08 55%) fixed;
+ overflow-x:hidden}
+img{display:block;max-width:100%}
+#app{max-width:560px;margin:0 auto;min-height:100dvh;position:relative;padding:0 12px 20px}
+.screen{display:none;animation:in .3s ease} .screen.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.hidden{display:none!important}
+
+/* ── общие ── */
+h1,h2,h3{font-family:var(--disp);font-weight:400}
+.btn{width:100%;border:0;border-radius:14px;padding:14px 18px;font:400 17px/1 var(--disp);letter-spacing:.02em;
+ color:var(--gold-ink);background:var(--gg);box-shadow:var(--sh-btn);cursor:pointer;text-transform:uppercase}
+.btn:active{transform:translateY(2px);filter:brightness(.96)}
+.btn.wood{color:var(--paper);background:var(--wg);text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.btn.red{color:#fff;background:linear-gradient(180deg,#ff6a6a,#e23b3b);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.btn.green{color:#08300f;background:linear-gradient(180deg,#7ee08c,#3fae52)}
+.btn:disabled{filter:grayscale(.6);opacity:.5;pointer-events:none}
+.btn.sm{padding:11px 14px;font-size:14px;width:auto}
+
+/* ── шапка ── */
+.brand{text-align:center;padding:26px 0 6px}
+.brand h1{margin:0;font-size:clamp(40px,13vw,66px);color:var(--gold);-webkit-text-stroke:2.5px var(--gold-ink);paint-order:stroke fill;
+ text-shadow:0 4px 0 var(--gold-ink),0 6px 12px rgba(0,0,0,.6),0 0 30px rgba(255,190,74,.35);line-height:.95}
+.brand p{margin:6px 0 0;font:700 13px/1.4 "Rubik";color:var(--paper)}
+
+/* ── сборка протокола ── */
+.lead{font:600 15px/1.55 "Manrope";color:var(--txt);margin:6px 2px 14px}
+.lead b{color:var(--paper)}
+.sh{display:flex;align-items:center;gap:10px;margin:22px 2px 12px;font:400 16px/1.1 var(--disp);text-transform:uppercase;color:#FFD873;
+ text-shadow:0 2px 0 var(--gold-ink),0 3px 6px rgba(0,0,0,.5)}
+.sh::before{content:"";width:14px;height:14px;transform:rotate(45deg);border-radius:3px;background:var(--gg);box-shadow:0 0 12px rgba(255,190,74,.6)}
+.sh .f{flex:1;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--gold-deep),transparent);opacity:.55}
+.pitem{display:flex;align-items:center;gap:12px;background:var(--cream);border:2px solid var(--gold-deep);border-radius:14px;padding:9px 11px;margin-bottom:9px;box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.pitem img{width:34px;height:34px;object-fit:contain;flex:0 0 auto}
+.pitem .em{font-size:26px;width:34px;text-align:center;flex:0 0 auto}
+.pitem .t{flex:1;min-width:0}.pitem .t b{display:block;font:800 14.5px/1.15 "Rubik";color:#4A3312}.pitem .t span{font-size:12px;color:#7a5a2c}
+.core{display:inline-block;margin-left:6px;font:800 8.5px/1 "Rubik";letter-spacing:.06em;color:#fff;background:#e23b3b;padding:3px 5px;border-radius:5px;vertical-align:middle}
+.stp{display:inline-flex;border-radius:11px;overflow:hidden;box-shadow:var(--sh-btn);flex:0 0 auto}
+.stp button{width:32px;height:32px;border:0;cursor:pointer;font:800 20px/1 "Rubik";color:var(--gold-ink);background:var(--gg)}
+.stp button:active{filter:brightness(.9)}
+.stp .v{min-width:38px;text-align:center;font:700 15px/32px "Space Mono";color:#4A3312;background:var(--cream2)}
+
+/* ── HUD ── */
+.hud{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#1a0f08 70%,transparent);padding:8px 0 6px}
+.hud__top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.hud__day{font:400 15px/1 var(--disp);color:var(--gold);text-shadow:0 1px 0 var(--gold-ink)}
+.hud__day b{color:var(--paper)}
+.hud__streak{font:700 12px/1 "Space Mono";color:#FF9E5E;background:rgba(0,0,0,.3);border:1px solid var(--line2);padding:6px 9px;border-radius:999px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.stat{background:var(--wg);border:1px solid var(--line2);border-radius:11px;padding:6px 4px;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.stat b{display:block;font:700 15px/1.1 "Space Mono";color:#FFE3A6}.stat span{font:700 8.5px/1 "Rubik";text-transform:uppercase;letter-spacing:.03em;color:var(--txt3)}
+.stat img{width:18px;height:18px;object-fit:contain;margin:0 auto 2px}.stat .em{font-size:15px}
+
+/* ── доска ── */
+.boardwrap{display:flex;justify-content:center;margin:8px 0}
+.board{display:grid;gap:4px;width:100%;max-width:520px;aspect-ratio:1/1;padding:9px;border-radius:20px;background:var(--wg);border:2px solid var(--line2);box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.bt{position:relative;border-radius:10px;padding:2px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+ background:linear-gradient(180deg,#2c1c10,#1a100a);border:1px solid var(--line);overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+.bt .n{position:absolute;top:1px;left:3px;font:700 7px/1 "Space Mono";color:var(--txt3);z-index:2}
+.bt .art{width:100%;height:58%;object-fit:contain;margin-top:7px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+.bt .em{font-size:15px;margin:auto 0 2px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.bt .lbl{font:800 7px/1 "Rubik";text-transform:uppercase;color:var(--paper);padding:0 1px 2px;text-align:center;
+ overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;max-width:100%}
+.bt.start{background:var(--gg)}.bt.start .lbl{color:var(--gold-ink)}.bt.start .n{color:#7a5416}
+.bt.special{background:linear-gradient(180deg,var(--wood-hi),var(--wood-dk))}
+.bt[data-g]{border:2px solid var(--gc);box-shadow:0 0 8px -2px var(--gc)}
+.bt.own-me::after{content:"";position:absolute;inset:0;border-radius:9px;box-shadow:inset 0 0 0 2px #FFD54A,inset 0 0 12px rgba(255,200,74,.5)}
+.bt.own-opp::after{content:"";position:absolute;inset:0;border-radius:9px;box-shadow:inset 0 0 0 2px #FF5A5A,inset 0 0 12px rgba(255,80,80,.5)}
+.bt .tok{position:absolute;top:2px;right:2px;width:15px;height:15px;border-radius:50%;z-index:5;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.6)}
+.bt .tok.me{background:radial-gradient(circle at 40% 35%,#FFE39A,#D6891C)}
+.bt .tok.opp{background:radial-gradient(circle at 40% 35%,#ff9a9a,#c0272e);top:auto;bottom:2px;right:auto;left:2px}
+.bt.hot{animation:hot .5s ease}
+@keyframes hot{0%{transform:scale(1)}45%{transform:scale(1.12);filter:brightness(1.25)}100%{transform:scale(1)}}
+.board__c{grid-row:2/-2;grid-column:2/-2;display:grid;place-items:center;text-align:center;gap:4px;border:2px dashed var(--line2);border-radius:14px;
+ background:radial-gradient(120% 120% at 50% 25%,rgba(73,182,240,.08),transparent 60%);padding:8px}
+.board__c img{width:min(42%,90px);filter:drop-shadow(0 5px 10px rgba(0,0,0,.5))}
+.board__c .t{font:400 clamp(15px,4.5vw,22px)/1 var(--disp);color:var(--gold);-webkit-text-stroke:1.5px var(--gold-ink);paint-order:stroke fill;text-shadow:0 2px 0 var(--gold-ink)}
+.board__c .s{font:600 10px/1.35 "Manrope";color:var(--txt2);max-width:200px}
+
+/* ── панель действий ── */
+.act{position:sticky;bottom:0;z-index:20;padding:10px 0 max(10px,env(safe-area-inset-bottom));background:linear-gradient(0deg,#1a0f08 72%,transparent)}
+.hint{text-align:center;font:600 13px/1.4 "Manrope";color:var(--txt2);margin:0 0 8px;min-height:18px}
+.hint b{color:var(--paper)}
+
+/* ── дневной чек-лист ── */
+.checks{display:grid;gap:8px;margin:4px 0 2px}
+.chk{display:flex;align-items:center;gap:11px;background:var(--wg);border:1px solid var(--line2);border-radius:12px;padding:9px 11px;cursor:pointer;transition:.12s}
+.chk img{width:30px;height:30px;object-fit:contain;flex:0 0 auto}.chk .em{font-size:22px;width:30px;text-align:center;flex:0 0 auto}
+.chk .t{flex:1;font:700 14px/1.25 "Rubik";color:var(--paper)}
+.chk .box{width:26px;height:26px;border-radius:999px;border:2px solid var(--line2);background:rgba(0,0,0,.25);display:grid;place-items:center;flex:0 0 auto;color:transparent;font:800 14px/1 "Rubik"}
+.chk.on{border-color:var(--gold);background:linear-gradient(90deg,rgba(255,190,74,.16),transparent)}
+.chk.on .box{background:var(--gg);border-color:var(--gold);color:var(--gold-ink)}
+.chk.core:not(.on) .box{border-color:#e2703b}
+
+/* ── модалка события ── */
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(8,5,3,.72);backdrop-filter:blur(3px);display:grid;place-items:center;padding:18px;animation:in .2s ease}
+.modal{width:100%;max-width:400px;background:var(--wg);border:2px solid var(--line2);border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.6);overflow:hidden}
+.modal__art{height:150px;display:grid;place-items:center;background:radial-gradient(120% 120% at 50% 20%,rgba(255,190,74,.12),transparent 60%);border-bottom:1px solid var(--line)}
+.modal__art img{max-height:126px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.5))}
+.modal__art .big{font-size:74px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+.modal__b{padding:16px 18px}
+.modal__k{font:800 10px/1 "Rubik";letter-spacing:.14em;text-transform:uppercase;color:#FFD98A;margin-bottom:6px}
+.modal__t{font:400 22px/1.1 var(--disp);color:#FFF0CE;margin:0 0 8px}
+.modal__d{font:600 14px/1.5 "Manrope";color:var(--txt);margin:0 0 14px}
+.modal__d .money{color:#8CE59A;font-weight:800}.modal__d .bad{color:#ff8a8a;font-weight:800}
+.modal__btns{display:grid;gap:8px}
+.reward{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.rchip{font:700 13px/1 "Space Mono";padding:8px 12px;border-radius:999px;background:rgba(0,0,0,.3);border:1px solid var(--line2);color:#FFE3A6;display:inline-flex;align-items:center;gap:6px}
+
+/* ── итог недели ── */
+.sumcard{background:var(--wg);border:2px solid var(--gold-deep);border-radius:18px;padding:20px;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.sumcard h2{margin:0 0 4px;font-size:26px;color:var(--gold);-webkit-text-stroke:1.5px var(--gold-ink);paint-order:stroke fill}
+.sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.sumgrid .s{background:rgba(0,0,0,.24);border:1px solid var(--line2);border-radius:12px;padding:12px}
+.sumgrid .s b{display:block;font:700 22px/1 "Space Mono";color:#FFE3A6}.sumgrid .s span{font:700 10px/1 "Rubik";text-transform:uppercase;color:var(--txt3)}
+.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:60;background:var(--gg);color:var(--gold-ink);font:800 14px/1.2 "Rubik";
+ padding:11px 18px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.5);opacity:0;transition:.25s;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+.reset{position:fixed;top:8px;right:10px;z-index:30;background:rgba(0,0,0,.4);border:1px solid var(--line2);color:var(--txt2);font:700 11px/1 "Rubik";padding:7px 10px;border-radius:9px;cursor:pointer}
+</style>
+</head>
+<body>
+<button class="reset" id="reset">↺ Сброс</button>
+<div id="app">
+
+  <!-- ЭКРАН 1: СБОРКА ПРОТОКОЛА -->
+  <section class="screen on" id="s-setup">
+    <div class="brand"><h1>СЕМЬЯ</h1><p>Собери свой режим — с него начнётся игра</p></div>
+    <p class="lead"><b>Перед стартом собери протокол.</b> Выбери привычки и поставь, сколько раз — плюсиками. Нажми «Погнали» — это твой режим на игру. Каждый день будешь его закрывать: чем честнее, тем дальше ходит фишка.</p>
+    <div class="sh">Твой протокол<div class="f"></div></div>
+    <div id="proto-list"></div>
+    <div style="height:14px"></div>
+    <button class="btn" id="start-btn">▶ Погнали · день 1</button>
+    <div style="height:20px"></div>
+  </section>
+
+  <!-- ЭКРАН 2: ИГРА -->
+  <section class="screen" id="s-game">
+    <div class="hud">
+      <div class="hud__top">
+        <div class="hud__day">ДЕНЬ <b id="h-day">1</b>/7</div>
+        <div class="hud__streak" id="h-streak">🔥 серия 0</div>
+      </div>
+      <div class="stats" id="h-stats"></div>
+    </div>
+    <div class="boardwrap"><div class="board" id="board"></div></div>
+    <div class="act">
+      <p class="hint" id="hint"></p>
+      <div id="act-slot"></div>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 3: ИТОГ -->
+  <section class="screen" id="s-sum"></section>
+
+</div>
+<div id="modal-root"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════ ДАННЫЕ ═══════════════ */
+const ART = n => `assets/art/districts/${n}-tile-t.png`;
+const ICON = n => `assets/art/icons/${n}-t.png`;
+// протокол по умолчанию (Лео может менять плюсиками; друг добавит своё)
+const SETUP = [
+  {name:"Подъём в одно время", hint:"раз/день", icon:"wake", def:1, core:false},
+  {name:"Не в телефон с утра", hint:"до 9:00", icon:"nophone", def:1, core:false},
+  {name:"Свет + холодный душ", hint:"раз/день", icon:"light", def:1, core:false},
+  {name:"Главное дело дня", hint:"1 задача", icon:"topgoal", def:1, core:true},
+  {name:"Блок работы 1", hint:"90 мин", icon:"block1", def:1, core:true},
+  {name:"Спорт", hint:"раз/день", icon:"sport", def:1, core:true},
+  {name:"Блок работы 2", hint:"90 мин", icon:"block2", def:1, core:true},
+  {name:"Мелкие дела", hint:"штук/день", icon:"small", def:3, core:false},
+  {name:"Книга, не экран", hint:"20 мин", icon:"book", def:1, core:false},
+  {name:"Отбой вовремя", hint:"раз/день", icon:"sleep", def:1, core:false},
+  {name:"Разгрузочный день", hint:"раз/неделю", emoji:"🍽️", def:1, core:false},
+];
+const GC = {center:"#FFC24B",tolk:"#FF4D4D",port:"#49B6F0",night:"#B466F0"};
+const DIST = {
+  "Порт":{price:1000,inc:220,g:"port",art:"port"}, "Толчок":{price:700,inc:150,g:"tolk",art:"rynok"},
+  "Госбанк":{price:900,inc:200,g:"center",art:"bank"}, "Гаражи":{price:500,inc:110,g:"tolk",art:"avto"},
+  "АЗС":{price:600,inc:130,g:"tolk",art:"azs"}, "Ломбард":{price:400,inc:90,g:"tolk",art:"lombard"},
+  "Промзона":{price:550,inc:120,g:"night",art:"sklad"}, "Вокзал":{price:800,inc:180,g:"port",art:"vokzal"},
+  "Телеграф":{price:450,inc:100,g:"night",art:"telegraf"}, "Космос":{price:1200,inc:260,g:"night",art:"cosmos"},
+  "Малина":{price:950,inc:210,g:"night",art:"club"}, "Интурист":{price:650,inc:140,g:"center",art:"hotel"},
+  "ЦУМ":{price:900,inc:200,g:"center",art:"tsum"}, "Верфь":{price:1100,inc:240,g:"port",art:"verf"},
+};
+const SPEC_EM = {"Старт·Общак":"🏁","Сундук":"🎁","КПЗ":"🚔","Контрабанда":"⚓","Стрелка":"🥊","Случай":"🃏","Разгрузочный":"🍽️","Облава":"🚨","Босс":"🎩"};
+const ORDER = ["Старт·Общак","Порт","Толчок","Сундук","Госбанк","Гаражи","КПЗ","АЗС","Ломбард","Контрабанда","Промзона","Вокзал","Стрелка","Телеграф","Космос","Случай","Малина","Разгрузочный","Облава","Интурист","ЦУМ","Сундук","Босс","Верфь"];
+const CARDS = [
+  {t:"Наводка",e:"🃏",d:"Верный человек слил адрес. <span class='money'>+$300</span> в общак.",f:s=>s.money+=300},
+  {t:"Общий котёл",e:"🍲",d:"Собрал дань с района. <span class='money'>+$60</span> за каждый твой район.",f:s=>s.money+=60*myCount(s)},
+  {t:"Кидок",e:"💸",d:"Барыга обманул. <span class='bad'>−$250</span>.",f:s=>s.money=Math.max(0,s.money-250)},
+  {t:"Уважение улицы",e:"🎖",d:"Люди зауважали. <span class='money'>+3 уважения</span>.",f:s=>s.respect+=3},
+  {t:"Дал по рукам",e:"💪",d:"Показал силу. <span class='money'>+2 силы</span>.",f:s=>s.power+=2},
+  {t:"Рывок",e:"👟",d:"Поймал кураж. <span class='money'>+2 хода</span> прямо сейчас.",f:s=>s.moves+=2},
+];
+
+/* ═══════════════ СОСТОЯНИЕ ═══════════════ */
+const KEY="semya_proto_v1";
+let S=null;
+function fresh(){ return {
+  phase:"setup", day:1, maxDay:7, pos:0, moves:0, money:200, power:0, respect:0, streak:0,
+  proto:SETUP.map(x=>({...x, cnt:x.def})), done:{}, owners:{}, pendingIncome:0, dayPct:null
+}; }
+function load(){ try{const r=localStorage.getItem(KEY); if(r){S=JSON.parse(r); return true;}}catch(e){} return false; }
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
+const $=s=>document.querySelector(s);
+const fmt=n=>(n<0?"−":"")+Math.abs(n).toLocaleString("ru-RU").replace(/,/g," ");
+function myCount(s){ return Object.values(s.owners).filter(o=>o==="me").length; }
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("show"),1800); }
+
+/* ═══════════════ ЭКРАНЫ ═══════════════ */
+function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id)); }
+
+/* ── СБОРКА ПРОТОКОЛА ── */
+function renderSetup(){
+  $("#proto-list").innerHTML = S.proto.map((p,i)=>`
+    <div class="pitem">
+      ${p.icon?`<img src="${ICON(p.icon)}" alt="">`:`<span class="em">${p.emoji||"◆"}</span>`}
+      <div class="t"><b>${p.name}${p.core?'<span class="core">ядро</span>':''}</b><span>${p.hint}</span></div>
+      <div class="stp" data-i="${i}"><button class="dec">–</button><span class="v">${p.cnt}</span><button class="inc">+</button></div>
+    </div>`).join("");
+}
+$("#proto-list")?.addEventListener("click",e=>{
+  const b=e.target.closest(".stp button"); if(!b) return;
+  const i=+b.closest(".stp").dataset.i; const p=S.proto[i];
+  p.cnt = Math.max(0, Math.min(9, p.cnt + (b.classList.contains("inc")?1:-1)));
+  b.closest(".stp").querySelector(".v").textContent=p.cnt; save();
+});
+$("#start-btn").onclick=()=>{ S.proto=S.proto.filter(p=>p.cnt>0); S.phase="day-open"; save(); show("s-game"); startDay(); };
+
+/* ── HUD ── */
+function renderHUD(){
+  $("#h-day").textContent=S.day; $("#h-streak").textContent=`🔥 серия ${S.streak}`;
+  const st=[["👣","Ходы",S.moves],["money","Деньги","$"+fmt(S.money),1],["muscles","Сила",S.power],["respect","Уважение",S.respect]];
+  $("#h-stats").innerHTML=st.map(([ic,lbl,val,isImg])=>{
+    const icon = ic.length<=2 ? `<div class="em">${ic}</div>` : `<img src="${ICON(ic)}" alt="">`;
+    return `<div class="stat">${icon}<b>${val}</b><span>${lbl}</span></div>`;
+  }).join("");
+}
+
+/* ── ДОСКА ── */
+function boardCells(n){
+  const cols=Math.max(3,Math.ceil(n/4)+1); const cells=[];
+  for(let c=1;c<=cols;c++)cells.push([1,c]); for(let r=2;r<=cols;r++)cells.push([r,cols]);
+  for(let c=cols-1;c>=1;c--)cells.push([cols,c]); for(let r=cols-1;r>=2;r--)cells.push([r,1]);
+  return {cols,cells};
+}
+function renderBoard(hotIdx){
+  const n=ORDER.length; const {cols,cells}=boardCells(n); const P=cells.length; const b=$("#board");
+  let html="";
+  for(let i=0;i<n;i++){
+    const [rr,cc]=cells[Math.round(i*P/n)%P]; const name=ORDER[i]; const d=DIST[name];
+    const start=name.startsWith("Старт"); const own=S.owners[i];
+    const gc=d?GC[d.g]:null;
+    const body = d ? `<img class="art" src="${ART(d.art)}" alt="">` : `<span class="em">${SPEC_EM[name]||"🏙️"}</span>`;
+    let toks=""; if(S.pos===i) toks+=`<span class="tok me"></span>`;
+    const cls=["bt", start?"start":"", d?"":"special", own==="me"?"own-me":own==="opp"?"own-opp":"", (hotIdx===i?"hot":"")].join(" ");
+    html+=`<div class="${cls}" ${gc?`data-g="1" style="grid-row:${rr};grid-column:${cc};--gc:${gc}"`:`style="grid-row:${rr};grid-column:${cc}"`}>
+      <span class="n">${i+1}</span>${body}<span class="lbl">${name.replace("Старт·","")}</span>${toks}</div>`;
+  }
+  html+=`<div class="board__c"><img src="assets/crest-semya.png" alt=""><div class="t">СЕМЬЯ</div><div class="s">Круг = собрал доход с районов</div></div>`;
+  b.style.gridTemplateColumns=`repeat(${cols},1fr)`; b.style.gridTemplateRows=`repeat(${cols},1fr)`;
+  b.innerHTML=html;
+}
+
+/* ── ФАЗА: ОТКРЫТЬ ДЕНЬ (чек-лист) ── */
+function startDay(){
+  S.phase="day-open"; S.done={}; S.dayPct=null; renderHUD(); renderBoard();
+  $("#hint").innerHTML=`Закрой свой день по-честному. <b>Ядро</b> обязательно.`;
+  $("#act-slot").innerHTML=`<div class="checks" id="checks"></div><div style="height:8px"></div><button class="btn" id="finish-day">Подбить день</button>`;
+  renderChecks();
+  $("#checks").onclick=e=>{ const c=e.target.closest(".chk"); if(!c)return; const i=+c.dataset.i; S.done[i]=!S.done[i]; renderChecks(); save(); };
+  $("#finish-day").onclick=dayResult;
+}
+function renderChecks(){
+  $("#checks").innerHTML=S.proto.map((p,i)=>`
+    <div class="chk ${S.done[i]?'on':''} ${p.core?'core':''}" data-i="${i}">
+      ${p.icon?`<img src="${ICON(p.icon)}">`:`<span class="em">${p.emoji||"◆"}</span>`}
+      <span class="t">${p.name}${p.core?' <span class="core">ядро</span>':''}</span>
+      <span class="box">✓</span>
+    </div>`).join("");
+}
+function dayResult(){
+  const total=S.proto.length; const doneN=S.proto.filter((_,i)=>S.done[i]).length;
+  const coreOk=S.proto.every((p,i)=>!p.core||S.done[i]);
+  let pct=Math.round(doneN/total*100); if(!coreOk) pct=Math.min(pct,60); // без ядра день не «зачётный»
+  S.dayPct=pct;
+  // ходы
+  let moves= pct>=100?6 : pct>=85?4 : pct>=50?2 : 0;
+  const sbonus = S.streak>=7?2 : S.streak>=3?1 : 0; if(moves>0) moves+=sbonus;
+  // сила из ядра
+  const coreDone=S.proto.filter((p,i)=>p.core&&S.done[i]).length; S.power+=coreDone;
+  // серия/уважение
+  if(pct>=85){ S.streak++; S.respect += pct>=100?3:2; } else { S.streak=0; }
+  S.moves+=moves; S.phase="rolled"; save(); renderHUD();
+  const verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо — ядро не добил.":"Ядро сорвано — день не в счёт.";
+  openModal({
+    kind:"Итог дня · "+pct+"%", art:`<span class="big">${pct>=100?"🏆":pct>=85?"💪":pct>=50?"🙂":"😮‍💨"}</span>`,
+    title: moves>0?`+${moves} ходов`:"0 ходов",
+    reward:[["👣",moves+" ходов"],["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:["","‎"], sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
+    desc:verdict+(moves>0?" Жми «Выйти в город».":" Ходов нет — сегодня стоишь. Завтра поднимайся."),
+    btns: moves>0?[["▶ Выйти в город","btn",()=>{closeModal();walk(moves);}]]:[["Завершить день","btn wood",()=>{closeModal();endDay();}]]
+  });
+}
+
+/* ── ФАЗА: ДВИЖЕНИЕ ── */
+function walk(steps){
+  S.phase="moving"; $("#hint").innerHTML=`Идёшь по городу…`; $("#act-slot").innerHTML="";
+  let left=steps;
+  const step=()=>{
+    if(left<=0){ landed(); return; }
+    S.pos=(S.pos+1)%ORDER.length;
+    if(S.pos===0){ // прошёл старт
+      const inc=income(); if(inc>0){ S.money+=inc; toast("Круг! +$"+fmt(inc)+" с районов"); }
+    }
+    left--; renderHUD(); renderBoard(S.pos); save();
+    setTimeout(step,260);
+  };
+  setTimeout(step,200);
+}
+function income(){ let s=0; for(const i in S.owners) if(S.owners[i]==="me"){ const d=DIST[ORDER[i]]; if(d)s+=d.inc; } return s; }
+
+/* ── ФАЗА: КЛЕТКА ── */
+function landed(){
+  S.phase="tile"; const name=ORDER[S.pos]; const d=DIST[name]; const own=S.owners[S.pos];
+  renderHUD();
+  if(d && !own){ tileBuy(name,d); }
+  else if(d && own==="me"){ tileMine(name,d); }
+  else if(d && own==="opp"){ tilePay(name,d); }
+  else tileSpecial(name);
+}
+function afterTile(){ $("#hint").innerHTML=`Ход сделан.`; $("#act-slot").innerHTML=`<button class="btn wood" id="end-day">Завершить день ${S.day}</button>`; $("#end-day").onclick=endDay; save(); }
+function tileBuy(name,d){
+  const can=S.money>=d.price;
+  openModal({ kind:"Свободный район", artImg:ART(d.art), title:name,
+    desc:`Цена <b>$${fmt(d.price)}</b> · доход <span class="money">$${d.inc}/круг</span>. Возьмёшь под крышу?`,
+    btns:[ can?["Купить · $"+fmt(d.price),"btn green",()=>{S.money-=d.price;S.owners[S.pos]="me";toast(name+" — твой!");closeModal();afterTile();renderBoard();}]
+              :["Не хватает $"+fmt(d.price-S.money),"btn",null],
+           ["Пройти мимо","btn wood",()=>{closeModal();afterTile();}] ].filter(x=>x[2]!==null||x[1]==="btn") });
+}
+function tileMine(name,d){
+  openModal({ kind:"Твой район", artImg:ART(d.art), title:name,
+    desc:`Тут ты хозяин. Доход <span class="money">$${d.inc}/круг</span> капает, когда проходишь Старт.`,
+    btns:[["Ясно","btn wood",()=>{closeModal();afterTile();}]] });
+}
+function tilePay(name,d){
+  const rent=Math.round(d.inc*0.8); S.money=Math.max(0,S.money-rent);
+  openModal({ kind:"Чужой район", artImg:ART(d.art), title:name,
+    desc:`Тут крыша соперника. Платишь за постой <span class="bad">−$${fmt(rent)}</span>.`,
+    btns:[["Заплатил","btn wood",()=>{closeModal();afterTile();}]] });
+  renderHUD();
+}
+function tileSpecial(name){
+  if(name.startsWith("Старт")){ openModal({kind:"Общак",art:`<span class="big">🏁</span>`,title:"Старт · Общак",desc:"Штаб семьи. Проходя круг, собираешь доход с районов.",btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name==="Сундук"){ chest(); return; }
+  if(name==="Случай"){ card(); return; }
+  if(name==="Разгрузочный"){ openModal({kind:"Разгрузочный день",art:`<span class="big">🍽️</span>`,title:"Голодание",
+      desc:"Выдержишь сутки — награда. В прототипе: <span class='money'>+2 силы, +2 уважения</span>.",
+      btns:[["Держу!","btn green",()=>{S.power+=2;S.respect+=2;toast("+2 силы · +2 уважения");closeModal();afterTile();renderHUD();}],["Не сегодня","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name==="Облава"){ const loss=Math.min(S.money,150+S.day*20); S.money-=loss; renderHUD();
+    openModal({kind:"Опасность",art:`<span class="big">🚨</span>`,title:"Облава",desc:`Менты чешут гавань. <span class='bad'>−$${fmt(loss)}</span>. Слово недели спасло бы.`,btns:[["Пронесло","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name==="КПЗ"){ openModal({kind:"КПЗ",art:`<span class="big">🚔</span>`,title:"Обезьянник",desc:"Просто проходишь мимо — ты держишь слово. Сорвал бы — пропустил ход.",btns:[["Мимо","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name==="Контрабанда"){ openModal({kind:"Аукцион",art:`<span class="big">⚓</span>`,title:"Контрабанда",desc:"Пришёл сухогруз. В прототипе — редкий лот: <span class='money'>+3 хода</span>.",btns:[["Взять","btn green",()=>{S.moves+=3;toast("+3 хода");closeModal();afterTile();renderHUD();}],["Пас","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name==="Стрелка"){ const win=S.dayPct>=85; if(win){S.respect+=2;} openModal({kind:"Стрелка",art:`<span class="big">🥊</span>`,title:"Стрелка",
+      desc: win?"Ты жил чище — забил стрелку. <span class='money'>+2 уважения</span>.":"Сегодня слабоват — стрелку не выиграть. В другой раз.",btns:[["Ок","btn wood",()=>{closeModal();afterTile();renderHUD();}]]}); return; }
+  if(name==="Босс"){ const can=S.dayPct>=85; openModal({kind:"Смотрящий недели",art:`<span class="big">🎩</span>`,title:"Босс",
+      desc: can?"День закрыт — можешь ударить. <span class='money'>+1 сила, +4 уважения</span>.":"Бить босса можно только в день ≥85%. Подтянись.",
+      btns: can?[["Ударить","btn red",()=>{S.power+=1;S.respect+=4;toast("Удар по боссу! +4 уважения");closeModal();afterTile();renderHUD();}]]:[["Мимо","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  openModal({kind:"Клетка",art:`<span class="big">🏙️</span>`,title:name,desc:"…",btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]});
+}
+function chest(){
+  const tier = S.streak>=7?"Золотой":S.streak>=3?"Серебряный":"Бронзовый";
+  const emo = tier==="Золотой"?"🥇":tier==="Серебряный"?"🥈":"🥉";
+  const pool = tier==="Золотой"?[["👣","+6 ходов",()=>S.moves+=6],["money","+$800",()=>S.money+=800],["🎖","+5 уважения",()=>S.respect+=5]]
+    : tier==="Серебряный"?[["👣","+4 хода",()=>S.moves+=4],["money","+$400",()=>S.money+=400],["💪","+3 силы",()=>S.power+=3]]
+    : [["👣","+2 хода",()=>S.moves+=2],["money","+$200",()=>S.money+=200],["🎖","+1 уважение",()=>S.respect+=1]];
+  const pick = pool[Math.floor((S.day*7+S.pos)%pool.length)]; pick[2]();
+  renderHUD(); save();
+  openModal({kind:tier+" сундук",art:`<span class="big">${emo}</span>`,title:"Сундук!",
+    reward:[[pick[0].length<=2?pick[0]:"🎁",pick[1]]],
+    desc:"Держишь режим — падает лут. Чем длиннее серия, тем жирнее сундук.",btns:[["Забрать","btn green",()=>{closeModal();afterTile();}]]});
+}
+function card(){
+  const c=CARDS[Math.floor((S.day*3+S.pos)%CARDS.length)]; c.f(S); renderHUD(); save();
+  openModal({kind:"Карта случая",art:`<span class="big">${c.e}</span>`,title:c.t,desc:c.d,btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]});
+}
+
+/* ── КОНЕЦ ДНЯ ── */
+function endDay(){
+  if(S.day>=S.maxDay){ return summary(); }
+  S.day++; S.phase="day-open"; save(); startDay();
+  toast("День "+S.day+" · новый заход");
+}
+
+/* ── ИТОГ НЕДЕЛИ ── */
+function summary(){
+  S.phase="summary"; save(); show("s-sum");
+  const score = myCount(S)*10 + S.respect + Math.floor(S.money/100) + S.power;
+  $("#s-sum").innerHTML=`
+    <div class="brand" style="padding-top:34px"><h1>ИТОГ</h1><p>Первая неделя в Южноморске</p></div>
+    <div class="sumcard">
+      <h2>Сила клана: ${score}</h2>
+      <p style="color:var(--txt2);margin:2px 0 0">${score>=90?"Ты поднялся. Город тебя знает.":score>=50?"Крепкий заход. Продолжай держать режим.":"Только разгон. Дальше — жёстче."}</p>
+      <div class="sumgrid">
+        <div class="s"><b>${myCount(S)}</b><span>Районов</span></div>
+        <div class="s"><b>$${fmt(S.money)}</b><span>Общак</span></div>
+        <div class="s"><b>${S.respect}</b><span>Уважение</span></div>
+        <div class="s"><b>🔥${S.streak}</b><span>Серия</span></div>
+      </div>
+      <button class="btn" id="again">↺ Сыграть неделю заново</button>
+      <div style="height:9px"></div>
+      <a href="design.html" class="btn wood" style="display:block;text-decoration:none;text-align:center">📖 Как всё устроено</a>
+    </div>`;
+  $("#again").onclick=()=>{ S=fresh(); save(); show("s-setup"); renderSetup(); };
+}
+
+/* ── МОДАЛКА ── */
+function openModal({kind,art,artImg,title,desc,reward,btns}){
+  const rh = reward&&reward.length ? `<div class="reward">${reward.map(r=>`<span class="rchip">${r[0].length<=3?r[0]:`<img src="${ICON(r[0])}" style="width:16px;height:16px">`} ${r[1]}</span>`).join("")}</div>`:"";
+  $("#modal-root").innerHTML=`<div class="scrim" id="scrim"><div class="modal">
+    <div class="modal__art">${artImg?`<img src="${artImg}" alt="">`:art||""}</div>
+    <div class="modal__b"><div class="modal__k">${kind||""}</div><div class="modal__t">${title||""}</div>
+      <div class="modal__d">${desc||""}</div>${rh}
+      <div class="modal__btns" id="mbtns"></div></div></div></div>`;
+  const box=$("#mbtns");
+  (btns||[]).forEach(b=>{ const el=document.createElement("button"); el.className="btn "+(b[1]||""); el.textContent=b[0]; if(b[2])el.onclick=b[2]; else el.disabled=true; box.appendChild(el); });
+}
+function closeModal(){ $("#modal-root").innerHTML=""; }
+
+/* ── СБРОС / БУТ ── */
+$("#reset").onclick=()=>{ if(confirm("Сбросить прогресс и собрать протокол заново?")){ S=fresh(); save(); location.reload(); } };
+(function boot(){
+  try{ if(window.Telegram&&Telegram.WebApp){ Telegram.WebApp.ready(); Telegram.WebApp.expand&&Telegram.WebApp.expand(); } }catch(e){}
+  if(!load()) S=fresh();
+  if(S.phase&&S.phase!=="setup"){ show("s-game"); renderHUD(); renderBoard();
+    if(S.phase==="summary"){ summary(); }
+    else if(S.phase==="day-open"||S.phase==="rolled"){ startDay(); }
+    else { afterTile(); } // moving/tile — досидим на завершении дня
+  } else { renderSetup(); }
+})();
+</script>
+</body>
+</html>
