@@ -104,7 +104,7 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
 .board__c .s{font:600 10px/1.35 "Manrope";color:var(--txt2);max-width:200px}
 
 /* ── панель действий ── */
-.act{position:sticky;bottom:0;z-index:20;padding:10px 0 max(10px,env(safe-area-inset-bottom));background:linear-gradient(0deg,#1a0f08 72%,transparent)}
+.act{padding:12px 0 24px}
 .hint{text-align:center;font:600 13px/1.4 "Manrope";color:var(--txt2);margin:0 0 8px;min-height:18px}
 .hint b{color:var(--paper)}
 
@@ -297,7 +297,7 @@ function startDay(){
   $("#hint").innerHTML=`Закрой свой день по-честному. <b>Ядро</b> обязательно.`;
   $("#act-slot").innerHTML=`<div class="checks" id="checks"></div><div style="height:8px"></div><button class="btn" id="finish-day">Подбить день</button>`;
   renderChecks();
-  $("#checks").onclick=e=>{ const c=e.target.closest(".chk"); if(!c)return; const i=+c.dataset.i; S.done[i]=!S.done[i]; renderChecks(); save(); };
+  $("#checks").onclick=e=>{ const c=e.target.closest(".chk"); if(!c)return; const i=+c.dataset.i; S.done[i]=!S.done[i]; c.classList.toggle("on",S.done[i]); save(); };
   $("#finish-day").onclick=dayResult;
 }
 function renderChecks(){
