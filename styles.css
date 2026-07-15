@@ -293,60 +293,102 @@ header.top{
 .nav__cta.is-active .disc{ transform:translateY(-2px); }
 .nav__cta .lbl{ margin-top:-6px; }
 
-/* ─────────────────────────  7 · КАРТА · ГЕКСЫ  ───────────────────────── */
+/* ─────────────────────────  7 · КАРТА · НОЧНОЙ ГОРОД  ───────────────────────── */
 .mini-count{ display:flex; gap:7px; margin:2px 0 4px; }
-.mini-count b{ flex:1; text-align:center; background:var(--panel); border:1px solid var(--line);
-  border-radius:10px; padding:8px 4px; }
-.mini-count b span{ display:block; font:700 17px/1 "Space Mono"; margin-bottom:3px; }
-.mini-count b em{ font:600 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em;
+.mini-count b{ flex:1; text-align:center; background:linear-gradient(180deg,var(--panel),var(--ink2));
+  border:1px solid var(--line); border-radius:12px; padding:9px 4px; }
+.mini-count b span{ display:block; font:700 18px/1 "Space Mono"; margin-bottom:3px; }
+.mini-count b em{ font:800 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em;
   color:var(--ink-3); font-style:normal; }
 .mini-count .c-me span{ color:var(--me); } .mini-count .c-opp span{ color:var(--opp); }
 .mini-count .c-free span{ color:var(--neutral); }
 
-.hexgrid{ --hexw:82px; display:flex; flex-direction:column; align-items:center; padding:6px 0 2px; }
-.hexrow{ display:flex; justify-content:center; }
-.hexrow + .hexrow{ margin-top:-18px; }
-.hexrow.off{ margin-left:44px; }
-
-.hex{
-  position:relative; width:var(--hexw); aspect-ratio:1/.92; margin:0 3px; cursor:pointer;
-  clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
-  background:var(--owner,var(--neutral)); display:grid; place-items:center;
-  transition:transform .14s, filter .14s;
+/* Асфальт-планшет города с сеткой улиц */
+.city{
+  position:relative; padding:16px 13px; border-radius:18px; overflow:hidden;
+  border:1px solid var(--gold-lo);
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(79,168,224,.06), transparent 55%),
+    linear-gradient(180deg,#14110C 0%,#0B0906 100%);
+  box-shadow:inset 0 0 70px rgba(0,0,0,.7), var(--shadow-1);
 }
-.hex:active{ transform:scale(.94); filter:brightness(1.12); }
-.hex__inner{ position:absolute; inset:2px; clip-path:inherit;
-  background:var(--panel); display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:2px; padding:6px 4px; text-align:center; }
-.hex--gold{ --owner:var(--gold); } .hex--gold .hex__inner{ background:#241B0C; }
-.hex--rose{ --owner:var(--rose); } .hex--rose .hex__inner{ background:#25121A; }
-.hex--free{ --owner:var(--neutral); } .hex--free .hex__inner{ background:#161009; }
-.hex--locked{ --owner:var(--boss-lo); } .hex--locked .hex__inner{ background:#100E0C; }
-.hex__ico{ width:19px; height:19px; opacity:.9; }
-.hex--gold .hex__ico{ color:var(--gold); } .hex--rose .hex__ico{ color:var(--rose); }
-.hex--free .hex__ico{ color:var(--neutral); } .hex--locked .hex__ico{ color:var(--boss); }
-.hex__name{ font:600 10px/1.05 "Rubik"; letter-spacing:.02em; color:var(--paper);
-  max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.hex__income{ font:700 10px/1 "Space Mono"; color:var(--gold); }
-.hex--rose .hex__income{ color:var(--rose-hi); }
-.hex--free .hex__income{ color:var(--neutral); }
-.hex--locked .hex__income{ color:var(--boss); }
-.hex__pips{ display:flex; gap:2px; margin-top:1px; height:5px; align-items:center; }
-.hex__pips i{ width:4px; height:4px; border-radius:50%; background:var(--gold-hi); box-shadow:0 0 3px var(--gold-hi); }
-.hex--rose .hex__pips i{ background:var(--rose-hi); box-shadow:0 0 3px var(--rose-hi); }
-.hex__pips i.fort{ width:5px; height:5px; border-radius:1px; background:var(--ok); box-shadow:none; transform:rotate(45deg); }
-.hex.mine::after{ content:""; position:absolute; inset:2px; clip-path:inherit; pointer-events:none;
-  box-shadow:inset 0 0 12px var(--me-soft); }
-.hex.is-attacked{ animation:warpulse 1.1s infinite; }
-@keyframes warpulse{ 50%{ filter:drop-shadow(0 0 8px var(--graffiti)); } }
-.hex__lockbadge{ position:absolute; top:12px; color:var(--boss); width:13px; height:13px; }
+/* «улицы» — тонкая световая сетка кварталов (видна в промежутках между участками) */
+.city::before{
+  content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(231,181,74,.09) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(231,181,74,.09) 1.5px, transparent 1.5px);
+  background-size:33.333% 104px; background-position:center 8px;
+}
+/* неоновая вывеска-каёмка сверху планшета */
+.city::after{
+  content:""; position:absolute; left:0; right:0; top:0; height:2px; z-index:0; pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--crimson-neon),var(--gold),transparent);
+  opacity:.5; filter:blur(.3px);
+}
+.city__grid{ position:relative; z-index:1;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:11px; }
 
-.legend{ display:flex; flex-wrap:wrap; gap:10px 14px; justify-content:center; margin-top:14px;
+.plot{
+  --fr:var(--neutral);
+  position:relative; z-index:1; cursor:pointer; overflow:hidden;
+  min-height:96px; padding:9px 7px 8px; border-radius:14px;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:3px;
+  text-align:center; appearance:none;
+  background:linear-gradient(180deg,var(--wood2),var(--wood) 70%,#1E140C);
+  border:2px solid var(--fr);
+  box-shadow:0 5px 12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+  transition:transform .12s, box-shadow .18s, filter .12s;
+}
+.plot:active{ transform:scale(.95); filter:brightness(1.08); }
+/* «крыша/козырёк» здания — тёплая полоса сверху */
+.plot__roof{ position:absolute; left:0; right:0; top:0; height:26px; pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.35),transparent);
+  border-radius:12px 12px 0 0; }
+.plot__ico{ font-size:25px; line-height:1; margin-top:1px;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.7)); }
+.plot__name{ font:800 10px/1.05 "Rubik"; text-transform:uppercase; letter-spacing:.02em;
+  color:var(--paper); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.plot__inc{ display:inline-flex; align-items:center; gap:3px; font:700 10.5px/1 "Space Mono"; color:var(--gold-hi); }
+.plot__inc svg{ width:12px; height:12px; }
+.plot__inc b{ font-weight:700; }
+.plot__inc b::before{ content:"$"; opacity:.7; }
+.plot__lockinc{ display:inline-flex; color:var(--blue); }
+.plot__lockinc svg{ width:14px; height:14px; }
+.plot__pips{ display:flex; gap:3px; height:6px; align-items:center; margin-top:1px; }
+.plot__pips i{ width:5px; height:5px; border-radius:50%; background:var(--gold-hi); box-shadow:0 0 4px var(--gold-hi); }
+.plot__pips i.fort{ width:6px; height:6px; border-radius:1px; background:var(--ok); box-shadow:0 0 4px rgba(70,162,78,.6); transform:rotate(45deg); }
+.plot__lockbadge{ position:absolute; top:5px; right:6px; font-size:12px; z-index:2;
+  filter:drop-shadow(0 0 5px rgba(79,168,224,.8)); }
+
+/* Рамка-свечение владельца */
+.plot--gold{ --fr:var(--gold);
+  box-shadow:0 5px 12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08), 0 0 16px rgba(231,181,74,.4); }
+.plot--gold .plot__name{ color:var(--gold-hi); text-shadow:0 0 7px rgba(231,181,74,.55); }
+.plot--rose{ --fr:var(--crimson-neon);
+  box-shadow:0 5px 12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08), 0 0 16px rgba(255,59,63,.42); }
+.plot--rose .plot__name{ color:var(--crimson-neon); text-shadow:0 0 7px rgba(255,59,63,.6); }
+.plot--rose .plot__inc{ color:var(--crimson-neon); }
+.plot--rose .plot__pips i{ background:var(--crimson-neon); box-shadow:0 0 4px var(--crimson-neon); }
+.plot--free{ --fr:var(--neutral); }
+.plot--free .plot__name{ color:var(--ink-2); }
+.plot--free .plot__inc{ color:var(--ink-2); }
+.plot--locked{ --fr:var(--blue);
+  background:linear-gradient(180deg,#1A2430,#101820);
+  box-shadow:0 5px 12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06), 0 0 16px rgba(79,168,224,.4); }
+.plot--locked .plot__name{ color:var(--blue); text-shadow:0 0 7px rgba(79,168,224,.55); }
+/* Твой район — золотое двойное кольцо-подсветка */
+.plot.is-mine::after{ content:""; position:absolute; inset:2px; border-radius:11px; pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18), inset 0 0 16px var(--me-soft); }
+
+.legend{ display:flex; flex-wrap:wrap; gap:9px 14px; justify-content:center; margin-top:14px;
   font:600 11px/1 "Manrope"; color:var(--ink-2); }
 .legend b{ display:inline-flex; align-items:center; gap:6px; font-weight:600; }
-.legend i{ width:11px; height:11px; border-radius:3px; }
-.legend .lg-me{ background:var(--me); } .legend .lg-opp{ background:var(--opp); }
-.legend .lg-free{ background:var(--neutral); } .legend .lg-lock{ background:var(--boss-lo); }
+.legend i{ width:12px; height:12px; border-radius:3px; border:1.5px solid transparent; }
+.legend .lg-gold{ background:var(--gold); box-shadow:0 0 7px rgba(231,181,74,.6); }
+.legend .lg-rose{ background:var(--crimson-neon); box-shadow:0 0 7px rgba(255,59,63,.6); }
+.legend .lg-free{ background:var(--neutral); }
+.legend .lg-lock{ background:var(--blue); box-shadow:0 0 7px rgba(79,168,224,.6); }
 
 /* ─────────────────────────  8 · НИЖНИЙ ЛИСТ  ───────────────────────── */
 .scrim{ position:fixed; inset:0; z-index:60; background:var(--scrim);
