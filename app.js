@@ -66,15 +66,15 @@ const BOSS = {  // id → портрет · «держит» · лор · тро
 };
 // Арт-кадрирование: [файл в assets/, background-size, background-position].
 // Некоторые -cut содержат запечённый UI/англотекст — зумим и смещаем, показывая только персонажа.
-const BOSS_ART = {
-  buhgalter:['art/boss-buhgalter-cut.png','212%','49% 46%'],  // прячем баннер + UI-плитки (зум на персонажа)
-  prokuror :['art/boss-prokuror-cut.png','cover','50% 16%'],  // чистый
-  sedoy    :['art/boss-sedoy-cut.png',   '158%','50% 33%'],   // прячем рамку-карту + подпись снизу
-  port_boss:['art/boss-grek-cut.png',    '150%','50% 72%']    // прячем «THE GREEK» сверху
+const BOSS_ART = {  // чистые -clean портреты боссов (без запечённого UI/текста), кадр по грудь
+  buhgalter:['art/boss-buhgalter-clean.png','cover','50% 20%'],
+  prokuror :['art/boss-prokuror-clean.png', 'cover','50% 18%'],
+  sedoy    :['art/boss-sedoy-clean.png',    'cover','50% 18%'],
+  port_boss:['art/boss-grek-clean.png',     'cover','50% 18%']
 };
-const PORTRAIT_ART = {  // клан → портрет дона
-  g:['art/carleone-cut.png','cover','47% 20%'],               // чистый ландшафт
-  s:['art/sklyarov-cut.png','158%','50% 82%']                 // прячем «SKLYAROV BOSS» сверху
+const PORTRAIT_ART = {  // клан → чистый портрет дона (-clean)
+  g:['art/carleone-clean.png','cover','50% 18%'],
+  s:['art/sklyarov-clean.png','cover','50% 18%']
 };
 const LTS = {
   consigliere:['Коммерс',1000,'Районы под крышу −25%. Билд «Хозяйственник».'],
@@ -137,6 +137,27 @@ const I = {
   crest: svg('<path d="M12 2.5 20 5v6.5c0 5.2-3.4 8.8-8 10.5-4.6-1.7-8-5.3-8-10.5V5Z"/><path d="M12 6.5 13.4 9.6 16.8 10 14.3 12.4 15 15.8 12 14.1 9 15.8 9.7 12.4 7.2 10 10.6 9.6Z" fill="currentColor" fill-opacity=".18"/>','1.7'),
   plus: svg('<path d="M12 5v14M5 12h14" stroke-width="2"/>')
 };
+
+/* ───────────────────────  🎨 PNG-АРТ (слой 2: здания + иконки-понятия)  ─────────────────────── */
+// Матированные ассеты (прозрачный фон), см. assets/art/. Заменяют эмодзи/плоские SVG «старой палитры».
+const ICON_ART = new Set(['wake','nophone','light','topgoal','coffee','block1','sport','lunch',
+  'block2','small','sunset','nocaf','book','sleep','money','muscles','respect','influence','fort']);
+// «Понятие света» приходит id=light — арт есть; иконка ресурса respect==respect.
+const pic  = (id, cls='') => ICON_ART.has(id)
+  ? `<img class="pic ${cls}" src="assets/art/icons/${id}-t.png" alt="" loading="lazy" decoding="async">`
+  : '';
+const tileArt = id => `assets/art/districts/${id}-tile-t.png`;
+// Рангу — свой знак отличия (воровская лестница): пики → шевроны → звёзды → корона.
+function rankEmblem(i){
+  if(i>=6) return `<span class="rankem rankem--crown">${I.crown}</span>`;
+  const g = ['<i class="rg pip"></i>',
+             '<i class="rg pip"></i><i class="rg pip"></i>',
+             '<i class="rg chev"></i>',
+             '<i class="rg chev"></i><i class="rg chev"></i>',
+             '<i class="rg star"></i>',
+             '<i class="rg star"></i><i class="rg star"></i>'][i] || '';
+  return `<span class="rankem">${g}</span>`;
+}
 
 /* ───────────────────────  Хелперы  ─────────────────────── */
 const $  = (s,r=document)=>r.querySelector(s);
@@ -233,9 +254,9 @@ function fillHeader(){
   $('#top-week').textContent = `неделя ${S.meta.week} · ${S.meta.dateStr}`;
 
   $('#top-chips').innerHTML =
-    chip('money', I.coin, fmt(me.obshak)) +
-    chip('resp',  I.star, me.respect) +
-    chip('musc',  I.fist, me.muscles);
+    chip('money', pic('money','chip-pic'), fmt(me.obshak)) +
+    chip('resp',  pic('respect','chip-pic'), me.respect) +
+    chip('musc',  pic('muscles','chip-pic'), me.muscles);
   $$('#top-chips .chip').forEach(c=>c.addEventListener('click',()=>{ hap('selection'); go('dossier'); }));
 
   // босс-полоса + омерта-точка
@@ -332,7 +353,6 @@ function plotTile(d){
   const locked = d.lock && !d.owner;
   const cls = plotOwnerClass(d);
   const meta = DIST[d.id] || [d.n, d.income, ''];
-  const ico = BUILD[d.id] || '🏙️';
   const inc = locked
     ? `<span class="plot__lockinc">${I.lock}</span>`
     : `${I.coin}<b>${fmt(d.income)}</b>`;
@@ -340,11 +360,13 @@ function plotTile(d){
   for(let i=1;i<d.level;i++) pips += '<i></i>';
   for(let i=0;i<d.fort;i++)  pips += '<i class="fort"></i>';
   const mine = d.owner===ME ? 'is-mine' : '';
-  const lockBadge = locked ? '<span class="plot__lockbadge">🔒</span>' : '';
+  const lockBadge = locked ? `<span class="plot__lockbadge">${I.lock}</span>` : '';
   return `<button class="plot ${cls} ${mine}" data-tap="dist" data-arg="${d.id}">
     ${lockBadge}
-    <span class="plot__roof"></span>
-    <span class="plot__ico">${ico}</span>
+    <span class="plot__stage">
+      <img class="plot__art" src="${tileArt(d.id)}" alt="" loading="lazy" decoding="async">
+      <span class="plot__glow"></span>
+    </span>
     <span class="plot__name">${meta[0]}</span>
     <span class="plot__inc">${inc}</span>
     <span class="plot__pips">${pips}</span>
@@ -364,7 +386,7 @@ function renderDossier(){
     const req = t[1]===null ? `<span class="ladder__crown">${I.crown}</span>`
       : `<span class="ladder__req">${t[1]}🎖 · лим ${t[2]}</span>`;
     return `<div class="ladder__row ${st}"><div class="ladder__line"></div>
-      <div class="ladder__node"></div><div class="ladder__name">${t[0]}</div>${req}</div>`;
+      <div class="ladder__seal">${rankEmblem(i)}</div><div class="ladder__name">${t[0]}</div>${req}</div>`;
   }).join('');
 
   // подсказка до следующего
@@ -528,8 +550,9 @@ function renderHod(){
       const on = checkSet.has(id)?'on':'';
       const mus = MUSCLE.includes(id) ? `<span class="proto__mus">${I.bolt}</span>` : '';
       return `<button class="proto__item ${on}" data-tap="proto" data-id="${id}">
-        <span class="proto__box">${I.check}</span>
-        <span class="proto__txt">${txt}</span>${mus}</button>`;
+        <span class="proto__pic">${pic(id)}</span>
+        <span class="proto__txt">${txt}</span>${mus}
+        <span class="proto__box">${I.check}</span></button>`;
     }).join('');
 
     // слово дона
