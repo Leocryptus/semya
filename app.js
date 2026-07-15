@@ -67,14 +67,14 @@ const BOSS = {  // id → портрет · «держит» · лор · тро
 // Арт-кадрирование: [файл в assets/, background-size, background-position].
 // Некоторые -cut содержат запечённый UI/англотекст — зумим и смещаем, показывая только персонажа.
 const BOSS_ART = {
-  buhgalter:['art/boss-buhgalter-cut.png','168%','50% 60%'],  // прячем баннер сверху + кнопки по бокам
-  prokuror :['art/boss-prokuror-cut.png','cover','50% 18%'],  // чистый
-  sedoy    :['art/boss-sedoy-cut.png',   '156%','50% 40%'],   // прячем рамку-карту + подпись снизу
-  port_boss:['art/boss-grek-cut.png',    '150%','50% 78%']    // прячем «THE GREEK» сверху
+  buhgalter:['art/boss-buhgalter-cut.png','212%','49% 46%'],  // прячем баннер + UI-плитки (зум на персонажа)
+  prokuror :['art/boss-prokuror-cut.png','cover','50% 16%'],  // чистый
+  sedoy    :['art/boss-sedoy-cut.png',   '158%','50% 33%'],   // прячем рамку-карту + подпись снизу
+  port_boss:['art/boss-grek-cut.png',    '150%','50% 72%']    // прячем «THE GREEK» сверху
 };
 const PORTRAIT_ART = {  // клан → портрет дона
-  g:['art/carleone-cut.png','cover','50% 22%'],               // чистый ландшафт
-  s:['art/sklyarov-cut.png','150%','50% 90%']                 // прячем «SKLYAROV BOSS» сверху
+  g:['art/carleone-cut.png','cover','47% 20%'],               // чистый ландшафт
+  s:['art/sklyarov-cut.png','158%','50% 82%']                 // прячем «SKLYAROV BOSS» сверху
 };
 const LTS = {
   consigliere:['Коммерс',1000,'Районы под крышу −25%. Билд «Хозяйственник».'],
