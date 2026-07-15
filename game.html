@@ -343,7 +343,7 @@ function dayResult(){
   openModal({
     kind:"Итог дня · "+pct+"%", art:`<span class="big">${pct>=100?"🏆":pct>=85?"💪":pct>=50?"🙂":"😮‍💨"}</span>`,
     title: moves>0?`+${moves} ходов`:"0 ходов",
-    reward:[["👣",moves+" ходов"],["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:["","‎"], sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
+    reward:[["👣",moves+" ходов"], cash?["money","+$"+cash]:null, ["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:null, sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
     desc:verdict+(moves>0?" Жми «Выйти в город».":" Ходов нет — сегодня стоишь. Завтра поднимайся."),
     btns: moves>0?[["▶ Выйти в город","btn",()=>{closeModal();walk(moves);}]]:[["Завершить день","btn wood",()=>{closeModal();endDay();}]]
   });
@@ -356,8 +356,9 @@ function walk(steps){
   const step=()=>{
     if(left<=0){ landed(); return; }
     S.pos=(S.pos+1)%ORDER.length;
-    if(S.pos===0){ // прошёл старт
-      const inc=income(); if(inc>0){ S.money+=inc; toast("Круг! +$"+fmt(inc)+" с районов"); }
+    if(S.pos===0){ // прошёл старт — получка с общака + доход районов (как GO в Монополии)
+      const inc=income(); S.money+=500+inc;
+      toast("Круг! Получка +$500"+(inc>0?(" · районы +$"+fmt(inc)):""));
     }
     left--; renderHUD(); renderBoard(S.pos); save();
     setTimeout(step,260);
@@ -377,11 +378,17 @@ function landed(){
 }
 function afterTile(){ $("#hint").innerHTML=`Ход сделан.`; $("#act-slot").innerHTML=`<button class="btn wood" id="end-day">Завершить день ${S.day}</button>`; $("#end-day").onclick=endDay; save(); }
 function tileBuy(name,d){
-  const can=S.money>=d.price;
+  const t=titleOf(S.respect), limit=t[2], atLimit=myCount(S)>=limit;
+  const price = S.discount? Math.floor(d.price/2) : d.price;
+  const can=S.money>=price && !atLimit;
+  const disc = S.discount? ` <span class='money'>(скидка 50%!)</span>`:"";
+  const buy = ()=>{ S.money-=price; S.owners[S.pos]="me"; if(S.discount){S.discount=false;}
+    toast(name+" — твой!"); closeModal(); afterTile(); renderBoard(); renderHUD(); };
   openModal({ kind:"Свободный район", artImg:ART(d.art), title:name,
-    desc:`Цена <b>$${fmt(d.price)}</b> · доход <span class="money">$${d.inc}/круг</span>. Возьмёшь под крышу?`,
-    btns:[ can?["Купить · $"+fmt(d.price),"btn green",()=>{S.money-=d.price;S.owners[S.pos]="me";toast(name+" — твой!");closeModal();afterTile();renderBoard();}]
-              :["Не хватает $"+fmt(d.price-S.money),"btn",null],
+    desc:`Цена <b>$${fmt(price)}</b>${disc} · доход <span class="money">$${d.inc}/круг</span>. Возьмёшь под крышу?`+
+      (atLimit?`<br><span class='bad'>Лимит районов ${limit} («${t[0]}») — подними уважение до звания повыше.</span>`:""),
+    btns:[ can?["Купить · $"+fmt(price),"btn green",buy]
+             : [atLimit?("Лимит "+limit+" районов"):("Не хватает $"+fmt(price-S.money)),"btn",null],
            ["Пройти мимо","btn wood",()=>{closeModal();afterTile();}] ].filter(x=>x[2]!==null||x[1]==="btn") });
 }
 function tileMine(name,d){
@@ -403,15 +410,29 @@ function tileSpecial(name){
   if(name==="Разгрузочный"){ openModal({kind:"Разгрузочный день",art:`<span class="big">🍽️</span>`,title:"Голодание",
       desc:"Выдержишь сутки — награда. В прототипе: <span class='money'>+2 силы, +2 уважения</span>.",
       btns:[["Держу!","btn green",()=>{S.power+=2;S.respect+=2;toast("+2 силы · +2 уважения");closeModal();afterTile();renderHUD();}],["Не сегодня","btn wood",()=>{closeModal();afterTile();}]]}); return; }
-  if(name==="Облава"){ const loss=Math.min(S.money,150+S.day*20); S.money-=loss; renderHUD();
-    openModal({kind:"Опасность",art:`<span class="big">🚨</span>`,title:"Облава",desc:`Менты чешут гавань. <span class='bad'>−$${fmt(loss)}</span>. Слово недели спасло бы.`,btns:[["Пронесло","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name==="Облава"){ let loss=Math.min(S.money,150+S.day*20); const tailed=S.tail; if(tailed){loss=Math.min(S.money,loss*2);S.tail=false;} S.money-=loss; renderHUD();
+    openModal({kind:"Опасность",art:`<span class="big">🚨</span>`,title:"Облава",desc:`Менты чешут гавань${tailed?" — и у тебя <b>хвост</b>, бьют вдвое":""}. <span class='bad'>−$${fmt(loss)}</span>. Слово недели спасло бы.`,btns:[["Пронесло","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="КПЗ"){ openModal({kind:"КПЗ",art:`<span class="big">🚔</span>`,title:"Обезьянник",desc:"Просто проходишь мимо — ты держишь слово. Сорвал бы — пропустил ход.",btns:[["Мимо","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="Контрабанда"){ openModal({kind:"Аукцион",art:`<span class="big">⚓</span>`,title:"Контрабанда",desc:"Пришёл сухогруз. В прототипе — редкий лот: <span class='money'>+3 хода</span>.",btns:[["Взять","btn green",()=>{S.moves+=3;toast("+3 хода");closeModal();afterTile();renderHUD();}],["Пас","btn wood",()=>{closeModal();afterTile();}]]}); return; }
-  if(name==="Стрелка"){ const win=S.dayPct>=85; if(win){S.respect+=2;} openModal({kind:"Стрелка",art:`<span class="big">🥊</span>`,title:"Стрелка",
-      desc: win?"Ты жил чище — забил стрелку. <span class='money'>+2 уважения</span>.":"Сегодня слабоват — стрелку не выиграть. В другой раз.",btns:[["Ок","btn wood",()=>{closeModal();afterTile();renderHUD();}]]}); return; }
-  if(name==="Босс"){ const can=S.dayPct>=85; openModal({kind:"Смотрящий недели",art:`<span class="big">🎩</span>`,title:"Босс",
-      desc: can?"День закрыт — можешь ударить. <span class='money'>+1 сила, +4 уважения</span>.":"Бить босса можно только в день ≥85%. Подтянись.",
-      btns: can?[["Ударить","btn red",()=>{S.power+=1;S.respect+=4;toast("Удар по боссу! +4 уважения");closeModal();afterTile();renderHUD();}]]:[["Мимо","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name==="Стрелка"){
+    const oppIdx=Object.keys(S.owners).filter(i=>S.owners[i]==="opp");
+    const fit=S.dayPct>=85, strong=S.power>=2;
+    if(!oppIdx.length){
+      const win=fit; if(win)S.respect+=2;
+      openModal({kind:"Стрелка",art:`<span class="big">🥊</span>`,title:"Стрелка",
+        desc: win?"У Скляровских пока нет районов — показал силу на словах. <span class='money'>+2 уважения</span>.":"Сегодня слабоват для разборок. В другой раз.",
+        btns:[["Ок","btn wood",()=>{closeModal();afterTile();renderHUD();}]]}); return;
+    }
+    const can=fit&&strong;
+    const take=()=>{ const i=oppIdx[Math.floor((S.day*3)%oppIdx.length)]; S.power-=2; S.owners[i]="me";
+      toast(ORDER[i]+" отжат у Скляровских!"); closeModal(); afterTile(); renderBoard(); renderHUD(); };
+    openModal({kind:"Стрелка",art:`<span class="big">🥊</span>`,title:"Стрелка",
+      desc: can?`Забиваешь стрелку Скляровским за район. Ставка — <b>2 силы</b>. Твоя дисциплина сегодня крепче — заберёшь точку.`
+        : `Отжать район: нужен <b>день ≥85%</b> и <b>2 силы</b>. Сейчас: день ${S.dayPct}% · сила ${S.power}.`,
+      btns:[ can?["Отжать район · −2⚡","btn red",take]:null, ["Разойтись миром","btn wood",()=>{closeModal();afterTile();}] ].filter(Boolean)}); return; }
+  if(name==="Босс"){ const can=S.dayPct>=85&&S.power>=1; openModal({kind:"Смотрящий недели",art:`<span class="big">🎩</span>`,title:"Босс",
+      desc: can?"День закрыт и сила есть — бей. Ставка <b>1 сила</b> → <span class='money'>+4 уважения, +$200</span>.":`Удар: нужен <b>день ≥85%</b> и <b>1 сила</b>. Сейчас: день ${S.dayPct}% · сила ${S.power}.`,
+      btns: can?[["Ударить · −1⚡","btn red",()=>{S.power-=1;S.respect+=4;S.money+=200;toast("Удар по боссу! +4 уважения · +$200");closeModal();afterTile();renderHUD();}]]:[["Мимо","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   openModal({kind:"Клетка",art:`<span class="big">🏙️</span>`,title:name,desc:"…",btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]});
 }
 function chest(){
@@ -427,8 +448,16 @@ function chest(){
     desc:"Держишь режим — падает лут. Чем длиннее серия, тем жирнее сундук.",btns:[["Забрать","btn green",()=>{closeModal();afterTile();}]]});
 }
 function card(){
-  const c=CARDS[Math.floor((S.day*3+S.pos)%CARDS.length)]; c.f(S); renderHUD(); save();
-  openModal({kind:"Карта случая",art:`<span class="big">${c.e}</span>`,title:c.t,desc:c.d,btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]});
+  const c=CARDS[Math.floor((S.day*5+S.pos*3)%CARDS.length)];
+  const art=`<img src="${CARD_ART(c.id)}" alt="" onerror="this.outerHTML='&lt;span class=&quot;big&quot;&gt;🃏&lt;/span&gt;'">`;
+  if(c.jump){
+    const idx=ORDER.indexOf(c.jump);
+    openModal({kind:"Карта случая · "+c.kind,art,title:c.t,desc:c.d,
+      btns:[["Поехали на "+c.jump,"btn",()=>{ closeModal(); S.pos=idx; renderBoard(S.pos); save(); setTimeout(landed,350); }]]});
+    return;
+  }
+  c.f(S); renderHUD(); save();
+  openModal({kind:"Карта случая · "+c.kind,art,title:c.t,desc:c.d,btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]});
 }
 
 /* ── КОНЕЦ ДНЯ ── */
