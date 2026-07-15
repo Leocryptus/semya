@@ -768,6 +768,87 @@ header.top{
   border-top-color:var(--gold); border-radius:50%; animation:spin 1s linear infinite; }
 @keyframes spin{ to{ transform:rotate(360deg); } }
 
+/* ─────────────────────────  15 · СЛОВО СЕМЬЕ · ОБЕТ (свободный текст)  ───────────────────────── */
+/* поля ввода снова печатаемы (глобальный user-select:none выключил бы их) */
+input,textarea{ user-select:text; -webkit-user-select:text; -webkit-tap-highlight-color:transparent; }
+
+.omvow-give{ display:flex; flex-direction:column; gap:10px; }
+.vow-input{
+  width:100%; appearance:none; border-radius:12px; padding:13px 14px;
+  background:linear-gradient(180deg,var(--parchment),var(--parchment2));
+  border:2px solid var(--gold-deep); color:var(--ink-text);
+  font:600 15px/1.3 "Manrope"; caret-color:var(--crimson);
+  box-shadow:inset 0 2px 4px rgba(80,52,20,.18);
+}
+.vow-input::placeholder{ color:rgba(42,30,18,.5); font-weight:500; }
+.vow-input:focus{ outline:none; border-color:var(--gold);
+  box-shadow:inset 0 2px 4px rgba(80,52,20,.18), 0 0 0 3px rgba(231,181,74,.25); }
+.omvow-broke{ margin:2px 0 0; font:500 12px/1.4 "Manrope"; color:var(--crimson-neon); }
+
+.omvow-active__vow{ display:inline-flex; align-items:center; gap:8px;
+  font:800 17px/1.2 "Rubik"; color:var(--gold-hi); }
+.omvow-active__vow svg{ width:20px; height:20px; }
+.omvow-active__st{ font:700 12px/1 "Rubik"; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--ink-2); margin:7px 0 11px; }
+
+.omboth{ display:flex; flex-direction:column; gap:7px; margin-top:14px;
+  padding-top:12px; border-top:1px dashed var(--line-2); }
+.omrow{ display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:9px; }
+.omrow__clan{ font:800 10px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+.omrow.g .omrow__clan{ color:var(--gold); } .omrow.s .omrow__clan{ color:var(--crimson-neon); }
+.omrow__vow{ font:600 12.5px/1.3 "Manrope"; color:var(--paper);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.omrow__st{ font:700 11px/1 "Space Mono"; color:var(--ink-3); white-space:nowrap; }
+.omrow__st.broke{ color:var(--crimson-neon); }
+
+/* ─────────────────────────  16 · РЕЖИМ · ЦЕЛЕВОЕ ВРЕМЯ (settime)  ───────────────────────── */
+.times-card{ display:flex; flex-direction:column; gap:2px; }
+.time-row{ display:flex; align-items:center; gap:11px; padding:9px 2px; }
+.time-row + .time-row{ border-top:1px solid var(--line); }
+.time-ico{ font-size:18px; width:24px; text-align:center; flex:0 0 auto;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+.time-lbl{ flex:1; font:600 13.5px/1.25 "Manrope"; color:var(--paper); }
+.time-ctl{ display:inline-flex; align-items:center; gap:6px; flex:0 0 auto; }
+.time-input{
+  appearance:none; min-height:38px; min-width:92px; text-align:center;
+  border-radius:10px; padding:6px 10px; cursor:pointer;
+  background:linear-gradient(180deg,var(--panel-hi),var(--panel-2));
+  border:1.5px solid var(--gold-lo); color:var(--gold-hi);
+  font:700 15px/1 "Space Mono"; box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.time-input--min{ min-width:64px; }
+.time-input:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(231,181,74,.22); }
+.time-input::-webkit-calendar-picker-indicator{ filter:invert(.7) sepia(1) saturate(4) hue-rotate(5deg); opacity:.7; }
+.time-suf{ font:700 11px/1 "Rubik"; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3); }
+.times-hint{ margin:8px 2px 0; font:500 11.5px/1.4 "Manrope"; }
+
+/* ─────────────────────────  17 · ФОТООТЧЁТ ДНЯ (confirm)  ───────────────────────── */
+.proof-card{ display:flex; flex-direction:column; gap:0; }
+.proof-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 2px; }
+.proof-row + .proof-row{ border-top:1px solid var(--line); }
+.proof-side{ display:inline-flex; align-items:center; gap:11px; min-width:0; }
+.proof-ico{ width:36px; height:36px; border-radius:10px; flex:0 0 auto; display:grid; place-items:center;
+  background:var(--panel-2); border:1px solid var(--line-2); color:var(--ink-2); }
+.proof-ico svg{ width:20px; height:20px; }
+.proof-tt{ min-width:0; }
+.proof-tt b{ display:block; font:800 14px/1.1 "Rubik"; color:var(--paper); }
+.proof-tt em{ font:600 10px/1 "Rubik"; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--ink-3); font-style:normal; }
+.proof-badge{ flex:0 0 auto; font:800 11px/1 "Rubik"; text-transform:uppercase; letter-spacing:.05em;
+  padding:7px 12px; border-radius:999px; border:1px solid var(--line-2); }
+.proof-row.is-ok .proof-badge{ color:var(--green); border-color:rgba(70,162,78,.5);
+  background:rgba(70,162,78,.12); }
+.proof-row.is-no .proof-badge{ color:var(--ink-3); }
+.proof-row.is-ok .proof-ico{ color:var(--green); border-color:rgba(70,162,78,.45); }
+.proof-act{ margin:10px 0 4px; }
+.proof-conf{ display:inline-flex; align-items:center; gap:7px; font:700 12px/1 "Rubik";
+  text-transform:uppercase; letter-spacing:.04em; color:var(--green); }
+.proof-conf svg{ width:16px; height:16px; }
+.proof-hint{ margin-top:11px; padding:11px 13px; border-radius:11px;
+  background:rgba(79,168,224,.09); border:1px solid rgba(79,168,224,.28);
+  font:500 12.5px/1.45 "Manrope"; color:var(--blue); }
+.proof-hint b{ color:var(--paper); }
+
 @media (prefers-reduced-motion:reduce){
   *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
 }

@@ -133,7 +133,8 @@ const fmt = n => (n<0?'−':'')+Math.abs(n).toLocaleString('ru-RU').replace(/,/g
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 
 const HAP = { checkin:'success', buy:'medium', upgrade:'medium', fort:'medium', hire:'medium',
-  strelka:'heavy', heist:'heavy', boss:'heavy', pass:'soft', omerta:'medium' };
+  strelka:'heavy', heist:'heavy', boss:'heavy', pass:'soft', omerta:'medium',
+  settime:'selection', confirm:'success' };
 function hap(t){ if(!tg||!tg.HapticFeedback) return;
   const H=tg.HapticFeedback;
   try{
@@ -144,7 +145,7 @@ function hap(t){ if(!tg||!tg.HapticFeedback) return;
 }
 const DEVMSG = { buy:'Район взят', upgrade:'Апгрейд', fort:'Район укреплён', strelka:'Стрелка забита',
   hire:'Лейтенант в деле', heist:'Дело пошло', boss:'Удар по боссу', pass:'Пас — копишь',
-  checkin:'Вечер подбит', omerta:'Слово принято' };
+  checkin:'Вечер подбит', omerta:'Слово принято', settime:'Время выставлено', confirm:'Отчёт принят' };
 
 /* Главный мост к движку */
 function act(a, d, extra){
