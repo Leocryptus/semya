@@ -384,7 +384,11 @@ body.is-karta #city-bg{ opacity:1; visibility:visible; }
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.18), inset 0 0 16px var(--me-soft); }
 
 .legend{ display:flex; flex-wrap:wrap; gap:9px 14px; justify-content:center; margin-top:14px;
-  font:600 11px/1 "Manrope"; color:var(--ink-2); }
+  padding:11px 12px; border-radius:12px;
+  background:linear-gradient(180deg,rgba(20,16,11,.66),rgba(12,9,6,.78));
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--line); box-shadow:var(--shadow-1);
+  font:600 11px/1 "Manrope"; color:var(--paper); }
 .legend b{ display:inline-flex; align-items:center; gap:6px; font-weight:600; }
 .legend i{ width:12px; height:12px; border-radius:3px; border:1.5px solid transparent; }
 .legend .lg-gold{ background:var(--gold); box-shadow:0 0 7px rgba(231,181,74,.6); }
@@ -850,6 +854,94 @@ input,textarea{ user-select:text; -webkit-user-select:text; -webkit-tap-highligh
   background:rgba(79,168,224,.09); border:1px solid rgba(79,168,224,.28);
   font:500 12.5px/1.45 "Manrope"; color:var(--blue); }
 .proof-hint b{ color:var(--paper); }
+
+/* ─────────────────────────  18 · АРТ-РАМКА (портрет дона / босса)  ───────────────────────── */
+/* Дерево-панель под геро-блок */
+.hero-panel,.boss-panel{
+  position:relative; border-radius:16px; padding:12px;
+  background:
+    linear-gradient(180deg,var(--wood2) 0%,var(--wood) 52%,var(--leather) 100%);
+  border:1px solid var(--line-2);
+  box-shadow:var(--shadow-2), inset 0 1px 0 rgba(245,214,137,.14), inset 0 0 0 1px rgba(0,0,0,.45);
+}
+.hero-panel::before,.boss-panel::before{
+  content:""; position:absolute; inset:0; border-radius:16px; pointer-events:none;
+  background:url("assets/tex-kraft.png") center/cover; opacity:.06; mix-blend-mode:overlay;
+}
+
+/* Орнамент-золотая рамка с фаской и свечением */
+.artframe{
+  position:relative; width:100%; aspect-ratio:3/2; border-radius:14px; overflow:hidden; isolation:isolate;
+  border:2.5px solid var(--gold);
+  border-image:linear-gradient(150deg,var(--gold-lite),var(--gold) 42%,var(--gold-deep) 100%) 1;
+  box-shadow:
+    inset 0 0 0 2px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(245,214,137,.35),
+    0 8px 26px rgba(0,0,0,.55),
+    var(--gold-glow);
+  background:#0A0806;
+}
+.artframe--rose{
+  border-image:linear-gradient(150deg,var(--rose-hi),var(--rose) 42%,var(--rose-lo) 100%) 1;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,210,210,.25),
+    0 8px 26px rgba(0,0,0,.55), var(--rose-glow);
+}
+.artframe--steel{
+  border-image:linear-gradient(150deg,#DCE2EC,var(--boss) 45%,var(--boss-lo) 100%) 1;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.55), inset 0 1px 0 rgba(220,230,240,.28),
+    0 8px 26px rgba(0,0,0,.55), 0 0 22px rgba(79,168,224,.28);
+}
+/* тонкая внутренняя золотая линия-кант */
+.artframe::before{
+  content:""; position:absolute; inset:3px; border-radius:11px; z-index:3; pointer-events:none;
+  border:1px solid rgba(245,214,137,.22);
+}
+.artframe--rose::before{ border-color:rgba(255,120,120,.22); }
+.artframe--steel::before{ border-color:rgba(200,215,230,.24); }
+
+.artframe__img{
+  position:absolute; inset:0; z-index:0; background-repeat:no-repeat;
+  /* background-image / size / position задаются инлайн под каждый арт (кроп запечённого UI) */
+}
+.artframe__scrim{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(180deg, rgba(10,8,5,.10) 0%, rgba(10,8,5,0) 34%,
+    rgba(10,8,5,.32) 62%, rgba(10,8,5,.86) 100%);
+}
+.artframe__ring{ position:absolute; top:9px; right:9px; z-index:2; }
+.artframe__cap{ position:absolute; left:13px; right:13px; bottom:11px; z-index:2; }
+.artframe__kick{ font:800 10px/1 "Rubik"; text-transform:uppercase; letter-spacing:.14em;
+  color:var(--gold-hi); text-shadow:0 1px 3px rgba(0,0,0,.8); }
+.artframe--rose .artframe__kick{ color:var(--rose-hi); }
+.artframe--steel .artframe__kick{ color:#BFE0F5; }
+.artframe__name{
+  margin:4px 0 2px; font:900 25px/1.02 "Rubik"; letter-spacing:.005em;
+  background:var(--gold-grad); -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+  -webkit-text-stroke:.5px rgba(31,20,5,.5);
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.85));
+}
+.artframe--rose .artframe__name{
+  background:linear-gradient(178deg,#FF9C9E,var(--crimson-neon) 55%,var(--rose-lo));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+}
+.artframe--steel .artframe__name{
+  background:linear-gradient(178deg,#EAF2FA,#BFE0F5 55%,var(--boss-lo));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+}
+.artframe__sub{ font:600 italic 12.5px/1.3 "Rubik"; color:var(--paper);
+  text-shadow:0 1px 3px rgba(0,0,0,.85); }
+.artframe__sub b{ color:var(--gold-hi); font-style:normal; }
+.artframe--steel .artframe__sub b{ color:#BFE0F5; }
+.artframe__cap .deadline{ margin-top:9px; background:rgba(10,8,5,.6); backdrop-filter:blur(3px); }
+
+/* Итог-строка досье: влияние + серия */
+.hero-meta{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
+  margin-top:12px; padding:0 3px; }
+.hero-meta__infl em{ display:block; font:600 9px/1 "Rubik"; text-transform:uppercase;
+  letter-spacing:.12em; color:var(--ink-3); font-style:normal; margin-bottom:4px; }
+.hero-meta__infl b{ font:700 30px/1 "Space Mono"; color:var(--me); letter-spacing:-.01em;
+  filter:drop-shadow(0 0 10px var(--me-glow)); }
 
 @media (prefers-reduced-motion:reduce){
   *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
