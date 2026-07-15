@@ -736,7 +736,7 @@ function nextDay(){
 }
 /* СХОДКА: развязка босс-контракта + флаг недели + эскалация */
 function shodka(){
-  const B=curBoss(); const win=B.count(S)>=B.need;
+  const B=curBoss(); const cur=B.count(S); const win=cur>=B.need;
   let stakeTxt="";
   if(B.id==="buhgalter"){
     if(win){ S.money+=600; S.perkPayout=true; stakeTxt=`<span class='money'>+$600</span> и «Чистые книги»: получка теперь <b>+10%</b>.`; log('g','👑','<b>Сан Саныч сломан!</b> +$600 · получка +10%'); }
@@ -761,7 +761,7 @@ function shodka(){
   const last=S.day>=S.maxDay;
   const nextB=BOSSES[Math.min(S.week+1,2)];
   openModal({kind:`Сходка · неделя ${S.week}`,art:`<span class="big">${win?"👑":"🌫"}</span>`,title:win?"Контракт закрыт":"Контракт провален",
-    desc:`<b>${B.name}:</b> ${B.count(S)>=B.need?"задача выполнена":"задача не выполнена"} (${B.count(S)}/${B.need}).<br>${stakeTxt}<br><br>
+    desc:`<b>${B.name}:</b> ${win?"задача выполнена":"задача не выполнена"} (${cur}/${B.need}).<br>${stakeTxt}<br><br>
       🚩 <b>Флаг недели:</b> ${flagMine?"ТВОЙ":"у Германа"} — счёт по неделям <b>${S.flags.length}:${S.oppFlags.length}</b>.`+
       (last?"":`<br><br>Со следующей недели город держит <b>${nextB.name}</b>. ${nextB.press}`),
     btns:[[last?"К финалу месяца":"В новую неделю","btn",()=>{ if(!last){ S.week=Math.min(S.week+1,2); } closeModal(); nextDay(); }]]});
