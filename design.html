@@ -201,6 +201,8 @@ function groupColorFor(name){
 function isSpecial(name){ return (BIBLE.special_tiles||[]).some(t=>t.name===name); }
 const SPECIAL_IC={ "старт":"🏁","общак":"🏁","сундук":"🎁","облава":"🚨","милиц":"🚨","стрелка":"🔪","контрабанд":"⚓","босс":"🎩","смотрящ":"🎩","тюрьм":"⛓️","обезьянник":"⛓️","шанс":"🃏","судьб":"🃏","малява":"🃏","голодан":"🍽️","пост":"🍽️" };
 function specialIcon(name){ const l=(name||"").toLowerCase(); for(const k in SPECIAL_IC) if(l.includes(k)) return SPECIAL_IC[k]; return "🏙️"; }
+const DIST_IC={ "порт":"⚓","цум":"🏬","толчок":"🛒","рынок":"🛒","госбанк":"🏦","банк":"🏦","космос":"🎰","казино":"🎰","гараж":"🔧","малина":"🍸","клуб":"🍸","азс":"⛽","заправ":"⛽","ломбард":"💍","промзон":"🏭","склад":"🏭","вокзал":"🚉","телеграф":"📡","интурист":"🏨","отель":"🏨","верф":"🛳️" };
+function distIcon(name){ const l=(name||"").toLowerCase(); for(const k in DIST_IC) if(l.includes(k)) return DIST_IC[k]; return "🏙️"; }
 
 /* ── ДОСКА-ПЕТЛЯ ── */
 function boardHTML(){
@@ -223,7 +225,7 @@ function boardHTML(){
     const gc=groupColorFor(name);
     const l=(name||"").toLowerCase();
     const start=l.includes("старт")||l.includes("общак");
-    const ic= sp||start ? specialIcon(name) : "🏙️";
+    const ic= sp||start ? specialIcon(name) : distIcon(name);
     tiles+=`<div class="btile ${sp?'special':''} ${start?'start':''}" ${gc?`data-g="1" style="grid-row:${rr};grid-column:${cc};--gc:${gc}"`:`style="grid-row:${rr};grid-column:${cc}"`}>
       <span class="bnum">${i+1}</span><span class="bic">${ic}</span><span class="bn">${esc(name)}</span></div>`;
   }
