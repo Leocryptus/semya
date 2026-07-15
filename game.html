@@ -461,8 +461,24 @@ function card(){
 }
 
 /* ── КОНЕЦ ДНЯ ── */
+/* Теневой соперник: Скляровские живут свой день и скупают город */
+function oppTurn(){
+  const pcts=[86,100,72,93,86,58,100]; const pct=pcts[(S.day-1)%pcts.length];
+  if(pct>=85){ S.oppMoney+=450; S.oppDays++; }
+  const oppOwned=Object.values(S.owners).filter(o=>o==="opp").length;
+  if(oppOwned<4){
+    // самый дешёвый свободный район
+    let best=null;
+    ORDER.forEach((n,i)=>{ const d=DIST[n]; if(d&&!S.owners[i]&&(!best||d.price<DIST[ORDER[best]].price)) best=i; });
+    if(best!=null && S.oppMoney>=DIST[ORDER[best]].price){
+      S.oppMoney-=DIST[ORDER[best]].price; S.owners[best]="opp";
+      setTimeout(()=>toast("🌹 Скляровские взяли "+ORDER[best]),700);
+    }
+  }
+}
 function endDay(){
-  if(S.day>=S.maxDay){ return summary(); }
+  oppTurn();
+  if(S.day>=S.maxDay){ save(); return summary(); }
   S.day++; S.phase="day-open"; save(); startDay();
   toast("День "+S.day+" · новый заход");
 }
@@ -471,11 +487,14 @@ function endDay(){
 function summary(){
   S.phase="summary"; save(); show("s-sum");
   const score = myCount(S)*10 + S.respect + Math.floor(S.money/100) + S.power;
+  const oppOwned=Object.values(S.owners).filter(o=>o==="opp").length;
+  const oppScore = oppOwned*10 + (S.oppDays||0)*5 + Math.floor((S.oppMoney||0)/100);
+  const win=score>=oppScore;
   $("#s-sum").innerHTML=`
-    <div class="brand" style="padding-top:34px"><h1>ИТОГ</h1><p>Первая неделя в Южноморске</p></div>
+    <div class="brand" style="padding-top:34px"><h1>${win?"ПОБЕДА":"ИТОГ"}</h1><p>Первая неделя в Южноморске</p></div>
     <div class="sumcard">
-      <h2>Сила клана: ${score}</h2>
-      <p style="color:var(--txt2);margin:2px 0 0">${score>=90?"Ты поднялся. Город тебя знает.":score>=50?"Крепкий заход. Продолжай держать режим.":"Только разгон. Дальше — жёстче."}</p>
+      <h2>🥂 Ты ${score} : ${oppScore} Скляровские 🌹</h2>
+      <p style="color:var(--txt2);margin:2px 0 0">${win?"Твой режим крепче — город это чувствует. Звание: "+titleOf(S.respect)[0]+".":"Скляровские впереди — но месяц длинный. Держи серию, отжимай районы."}</p>
       <div class="sumgrid">
         <div class="s"><b>${myCount(S)}</b><span>Районов</span></div>
         <div class="s"><b>$${fmt(S.money)}</b><span>Общак</span></div>
