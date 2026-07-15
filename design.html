@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D0B08">
+<title>СЕМЬЯ · Крайм-Монополия — как играем</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;0,600;0,700;0,800;0,900;1,700&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --ink:#0E0B08; --ink2:#171009; --wood:#2A1D14; --wood2:#3A2718; --leather:#241812;
+  --gold:#E7B54A; --gold-lite:#F5D98B; --gold-deep:#C8891F;
+  --crimson:#C0272E; --crimson-neon:#FF3B3F; --violet:#8E3FBE; --blue:#4FA8E0; --green:#46A24E;
+  --paper:#F3E4C8; --ink-2:#C9B287; --ink-3:#907A56; --ink-max:#FFF6E4;
+  --panel:#20160E; --panel-2:#2A1D12; --panel-hi:#3A2718; --line:#3C2C1A; --line-2:#5C4527;
+  --bg:var(--ink); --rose:var(--crimson-neon);
+  --gold-grad:linear-gradient(178deg,var(--gold-lite) 0%,var(--gold) 46%,var(--gold-deep) 100%);
+  --shadow-1:0 6px 18px rgba(0,0,0,.5); --shadow-2:0 14px 40px rgba(0,0,0,.62);
+  --r:16px;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+html{ background:var(--ink); -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
+body{
+  font-family:"Manrope",system-ui,sans-serif; font-size:15.5px; line-height:1.55; color:var(--paper);
+  background:radial-gradient(135% 90% at 50% -8%, var(--wood) 0%, var(--leather) 34%, var(--ink2) 70%, var(--ink) 100%) fixed;
+  overflow-x:hidden; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  -webkit-tap-highlight-color:transparent;
+}
+body::after{ content:""; position:fixed; inset:0 0 auto 0; height:420px; z-index:0; pointer-events:none;
+  background:radial-gradient(120% 80% at 50% -10%, rgba(231,181,74,.10), transparent 62%); }
+::-webkit-scrollbar{ height:8px; width:8px; }
+::-webkit-scrollbar-thumb{ background:var(--line-2); border-radius:8px; }
+img{ max-width:100%; display:block; }
+
+.wrap{ position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:0 18px 90px; }
+
+/* ── Шапка ── */
+header.hero{ position:relative; text-align:center; padding:40px 12px 22px; }
+.hero__eyebrow{ font:800 11px/1 "Rubik"; letter-spacing:.34em; text-transform:uppercase; color:var(--gold-deep); }
+.hero__title{ margin:12px 0 6px; font:900 clamp(38px,9vw,74px)/0.98 "Rubik"; letter-spacing:.01em;
+  background:var(--gold-grad); -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent;
+  -webkit-text-stroke:.6px rgba(31,20,5,.5); filter:drop-shadow(0 2px 0 rgba(0,0,0,.6)) drop-shadow(0 0 22px rgba(231,181,74,.28)); }
+.hero__sub{ font:600 italic 16px/1.5 "Rubik"; color:var(--ink-2); max-width:640px; margin:0 auto; }
+.hero__tag{ display:inline-flex; gap:8px; align-items:center; margin-top:16px; padding:7px 15px; border-radius:999px;
+  background:var(--panel-2); border:1px solid var(--line-2); font:700 12px/1 "Space Mono"; color:var(--gold-hi,var(--gold)); }
+
+/* ── Табы ── */
+.tabs{ position:sticky; top:0; z-index:30; display:flex; gap:8px; overflow-x:auto; padding:12px 4px; margin:8px -4px 22px;
+  background:linear-gradient(180deg,rgba(14,11,8,.96) 68%,rgba(14,11,8,0)); backdrop-filter:blur(12px);
+  scrollbar-width:none; }
+.tabs::-webkit-scrollbar{ display:none; }
+.tab{ flex:0 0 auto; cursor:pointer; border:1px solid var(--line-2); background:var(--panel);
+  color:var(--ink-2); border-radius:999px; padding:9px 15px; font:800 13px/1 "Rubik"; text-transform:uppercase; letter-spacing:.04em;
+  white-space:nowrap; transition:.16s; display:inline-flex; align-items:center; gap:7px; }
+.tab .ic{ font-size:15px; }
+.tab:hover{ color:var(--paper); border-color:var(--gold-deep); }
+.tab.on{ background:var(--gold-grad); color:#1F1405; border-color:transparent; box-shadow:0 0 18px rgba(231,181,74,.3); }
+
+section.panel{ display:none; animation:in .35s cubic-bezier(.22,.61,.36,1); }
+section.panel.on{ display:block; }
+@keyframes in{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none; } }
+
+/* ── Секц-заголовок ── */
+.sh{ display:flex; align-items:center; gap:11px; margin:30px 2px 15px; font:900 18px/1 "Rubik"; text-transform:uppercase; letter-spacing:.05em;
+  background:var(--gold-grad); -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent; }
+.sh::before{ content:""; width:9px; height:9px; transform:rotate(45deg); background:var(--gold); box-shadow:0 0 12px var(--gold); flex:0 0 auto; -webkit-text-fill-color:initial; }
+.sh .f{ flex:1; height:2px; background:linear-gradient(90deg,var(--gold-deep),transparent); border-radius:2px; opacity:.55; -webkit-text-fill-color:initial; }
+.lead{ font:500 16.5px/1.6 "Manrope"; color:var(--ink-2); max-width:760px; margin:0 0 6px; }
+.lead b{ color:var(--paper); }
+
+/* ── Карточки ── */
+.grid{ display:grid; gap:14px; }
+.g2{ grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+.g3{ grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); }
+.card{ position:relative; background:linear-gradient(180deg,var(--panel),var(--ink2)); border:1px solid var(--line);
+  border-radius:var(--r); box-shadow:var(--shadow-1), inset 0 1px 0 rgba(245,214,137,.06); padding:16px 17px; overflow:hidden; }
+.card--key{ border:2px solid transparent; background:linear-gradient(180deg,var(--panel),var(--ink2)) padding-box, var(--gold-grad) border-box; box-shadow:var(--shadow-2); }
+.card h4{ margin:0 0 6px; font:800 15.5px/1.2 "Rubik"; color:var(--ink-max); letter-spacing:.01em; }
+.card p{ margin:0; color:var(--ink-2); font-size:14.5px; }
+.card .num{ font-family:"Space Mono"; color:var(--gold); font-weight:700; }
+.kv{ display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
+.pill{ font:700 11px/1 "Space Mono"; padding:5px 9px; border-radius:999px; background:var(--panel-2); border:1px solid var(--line-2); color:var(--gold); }
+.pill.rose{ color:var(--rose); border-color:#5b2a2a; } .pill.blue{ color:var(--blue); } .pill.green{ color:var(--green); }
+.tagrow{ display:flex; align-items:center; gap:8px; font:800 10px/1 "Rubik"; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); margin-bottom:8px; }
+
+/* ── Таблицы ── */
+.tbl-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:12px; margin:6px 0 4px; }
+table{ border-collapse:collapse; width:100%; font-size:13.5px; min-width:420px; }
+caption{ text-align:left; font:800 13px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em; color:var(--gold-deep); padding:11px 12px 4px; }
+th,td{ text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+th{ background:var(--panel-2); color:var(--gold-hi,var(--gold)); font:800 11px/1.2 "Rubik"; text-transform:uppercase; letter-spacing:.05em; position:sticky; top:0; }
+td{ color:var(--ink-2); } td:first-child{ color:var(--paper); font-weight:600; }
+tr:last-child td{ border-bottom:0; }
+tbody tr:hover td{ background:rgba(231,181,74,.045); }
+
+/* ── Таймлайн (ход дня / онбординг) ── */
+.tl{ position:relative; margin:8px 0 0; padding-left:8px; }
+.tl__row{ position:relative; display:flex; gap:15px; padding:0 0 18px 26px; }
+.tl__row::before{ content:""; position:absolute; left:9px; top:4px; bottom:-6px; width:2px; background:linear-gradient(180deg,var(--gold-deep),var(--line)); }
+.tl__row:last-child::before{ display:none; }
+.tl__dot{ position:absolute; left:0; top:0; width:20px; height:20px; border-radius:50%; background:var(--gold-grad); color:#1F1405;
+  display:grid; place-items:center; font:800 11px/1 "Space Mono"; box-shadow:0 0 0 4px rgba(231,181,74,.14); }
+.tl__b{ flex:1; }
+.tl__b b{ display:block; font:800 15px/1.3 "Rubik"; color:var(--ink-max); margin-bottom:2px; }
+.tl__b span{ color:var(--ink-2); font-size:14.5px; }
+
+/* ── Петля-доска ── */
+.boardwrap{ display:flex; justify-content:center; margin:6px 0 10px; }
+.board{ display:grid; gap:5px; width:100%; max-width:640px; aspect-ratio:1/1; }
+.btile{ position:relative; border-radius:9px; padding:5px 4px; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  background:var(--panel); border:1px solid var(--line); text-align:center; overflow:hidden; }
+.btile .bn{ font:800 8.5px/1.05 "Rubik"; text-transform:uppercase; letter-spacing:.01em; color:var(--paper);
+  overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.btile .bnum{ position:absolute; top:2px; left:4px; font:700 7px/1 "Space Mono"; color:var(--ink-3); }
+.btile .bic{ font-size:15px; line-height:1; }
+.btile.special{ background:linear-gradient(180deg,var(--panel-hi),var(--panel-2)); border-color:var(--line-2); }
+.btile.start{ background:var(--gold-grad); } .btile.start .bn{ color:#1F1405; } .btile.start .bnum{ color:#5b3d10; }
+.btile[data-g]{ border-bottom:4px solid var(--gc,var(--line-2)); }
+.board__center{ grid-row:2 / -2; grid-column:2 / -2; display:grid; place-items:center; text-align:center;
+  border:1px dashed var(--line-2); border-radius:14px; background:radial-gradient(120% 120% at 50% 20%, rgba(231,181,74,.06), transparent 60%); padding:12px; }
+.board__center .bc-t{ font:900 clamp(20px,4vw,34px)/1 "Rubik"; background:var(--gold-grad); -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent; }
+.board__center .bc-s{ font:600 italic 12px/1.4 "Rubik"; color:var(--ink-2); margin-top:6px; max-width:300px; }
+.legend{ display:flex; flex-wrap:wrap; gap:8px 14px; justify-content:center; margin:10px 0 2px; font:600 12px/1 "Manrope"; }
+.legend b{ display:inline-flex; align-items:center; gap:6px; font-weight:600; color:var(--ink-2); }
+.legend i{ width:13px; height:13px; border-radius:3px; }
+
+/* ── Лут / списки ── */
+.loot{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:6px; }
+.loot li{ display:flex; gap:9px; align-items:flex-start; font-size:14px; color:var(--ink-2); }
+.loot li::before{ content:"◆"; color:var(--gold-deep); font-size:10px; margin-top:4px; }
+.chest{ border-radius:14px; padding:15px 16px; border:1px solid var(--line-2); }
+.chest.bronze{ background:linear-gradient(180deg,#2a1c10,#1a1109); box-shadow:inset 0 0 0 1px rgba(180,120,60,.25); }
+.chest.silver{ background:linear-gradient(180deg,#20232a,#12141a); box-shadow:inset 0 0 0 1px rgba(190,200,215,.22); }
+.chest.gold{ background:linear-gradient(180deg,#2a2110,#191206); box-shadow:inset 0 0 0 1px rgba(231,181,74,.4), 0 0 24px rgba(231,181,74,.16); }
+.chest h4{ display:flex; align-items:center; gap:8px; }
+
+/* ── Лестница титулов ── */
+.ladder{ display:flex; flex-direction:column; }
+.lrow{ display:flex; align-items:center; gap:13px; padding:10px 4px; border-bottom:1px solid var(--line); }
+.lrow:last-child{ border-bottom:0; }
+.lseal{ width:34px; height:34px; flex:0 0 auto; display:grid; place-items:center; clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  background:var(--gold-grad); color:#1F1405; font:800 13px/1 "Space Mono"; box-shadow:0 0 14px rgba(231,181,74,.3); }
+.lrow b{ font:800 15px/1 "Rubik"; text-transform:uppercase; letter-spacing:.03em; color:var(--paper); flex:1; }
+.lrow .req{ font:700 11px/1 "Space Mono"; color:var(--gold-deep); } .lrow .perk{ color:var(--ink-2); font-size:13px; flex-basis:100%; margin-left:47px; }
+
+/* ── Loop-схема обзора ── */
+.loop{ display:flex; flex-wrap:wrap; gap:10px; align-items:stretch; margin:6px 0; }
+.loop__step{ flex:1 1 150px; position:relative; background:var(--panel); border:1px solid var(--line-2); border-radius:13px; padding:13px 14px; }
+.loop__step .n{ font:800 11px/1 "Space Mono"; color:var(--gold-deep); } .loop__step b{ display:block; font:800 14px/1.3 "Rubik"; color:var(--ink-max); margin:4px 0 3px; }
+.loop__step span{ font-size:13px; color:var(--ink-2); }
+.loop__step::after{ content:"→"; position:absolute; right:-11px; top:50%; transform:translateY(-50%); color:var(--gold-deep); font-weight:800; z-index:2; }
+.loop__step:last-child::after{ display:none; }
+
+.note{ font:600 italic 13.5px/1.55 "Rubik"; color:var(--ink-3); margin-top:10px; padding-left:12px; border-left:2px solid var(--line-2); }
+.foot{ text-align:center; margin:44px 0 0; color:var(--ink-3); font:600 12px/1.6 "Manrope"; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="hero__eyebrow">Южноморск · 1994 · дисциплина = власть</div>
+    <h1 class="hero__title" id="h-title">СЕМЬЯ</h1>
+    <p class="hero__sub" id="h-sub">Крайм-монополия, где кубик — это твой прожитый день.</p>
+    <div class="hero__tag" id="h-tag">🎩 как мы играем</div>
+  </header>
+  <nav class="tabs" id="tabs"></nav>
+  <main id="main"></main>
+  <div class="foot">СЕМЬЯ · дизайн-док крайм-монополии · собран роем · <span id="foot-date"></span></div>
+</div>
+
+<script src="design-data.js"></script>
+<script>
+/* ══════════════ ДАННЫЕ (BIBLE) — из design-data.js (финал дизайн-роя), иначе плейсхолдер ══════════════ */
+const BIBLE = window.__BIBLE__ || {
+  title:"СЕМЬЯ", pitch:"Плейсхолдер — библия ещё считается роем.",
+  resources:[], board_loop:{size:"",order:[],pass_start:""}, special_tiles:[], district_groups:[],
+  day_flow:[], week_flow:[], streaks:[], chest_tiers:[], event_cards:[], build_ladder:[],
+  set_trade_rules:[], pvp_rules:[], win_condition:{formula:"",detail:""}, titles:[], omerta_weekly:[],
+  lore:[], balance_numbers:[], onboarding:[], glossary:[], why_it_works:[]
+};
+
+const GROUP_COLORS = ["#E7B54A","#FF3B3F","#4FA8E0","#8E3FBE","#46A24E","#E07A2E","#C9B287","#E0459E"];
+const $=(s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+function tableHTML(t){
+  if(!t||!t.columns) return "";
+  return `<div class="tbl-wrap"><table>${t.title?`<caption>${esc(t.title)}</caption>`:""}
+    <thead><tr>${t.columns.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead>
+    <tbody>${(t.rows||[]).map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+
+/* соответствие имени клетки → цвет группы */
+function groupColorFor(name){
+  const gi=(BIBLE.district_groups||[]).findIndex(g=>(g.districts||[]).some(d=>name&&name.includes(d)||d&&d.includes(name)));
+  return gi>=0 ? GROUP_COLORS[gi%GROUP_COLORS.length] : null;
+}
+function isSpecial(name){ return (BIBLE.special_tiles||[]).some(t=>t.name===name); }
+const SPECIAL_IC={ "старт":"🏁","общак":"🏁","сундук":"🎁","облава":"🚨","милиц":"🚨","стрелка":"🔪","контрабанд":"⚓","босс":"🎩","смотрящ":"🎩","тюрьм":"⛓️","обезьянник":"⛓️","шанс":"🃏","судьб":"🃏","малява":"🃏","голодан":"🍽️","пост":"🍽️" };
+function specialIcon(name){ const l=(name||"").toLowerCase(); for(const k in SPECIAL_IC) if(l.includes(k)) return SPECIAL_IC[k]; return "🏙️"; }
+
+/* ── ДОСКА-ПЕТЛЯ ── */
+function boardHTML(){
+  const order=(BIBLE.board_loop&&BIBLE.board_loop.order)||[];
+  const n=order.length;
+  if(!n) return `<p class="lead">Доска ещё собирается…</p>`;
+  const cols=Math.max(3,Math.ceil(n/4)+1);
+  // координаты периметра по часовой
+  const cells=[];
+  for(let c=1;c<=cols;c++)cells.push([1,c]);
+  for(let r=2;r<=cols;r++)cells.push([r,cols]);
+  for(let c=cols-1;c>=1;c--)cells.push([cols,c]);
+  for(let r=cols-1;r>=2;r--)cells.push([r,1]);
+  const P=cells.length;
+  let tiles="";
+  for(let i=0;i<n;i++){
+    const [rr,cc]=cells[Math.round(i*P/n)%P];
+    const name=order[i];
+    const sp=isSpecial(name);
+    const gc=groupColorFor(name);
+    const l=(name||"").toLowerCase();
+    const start=l.includes("старт")||l.includes("общак");
+    const ic= sp||start ? specialIcon(name) : "🏙️";
+    tiles+=`<div class="btile ${sp?'special':''} ${start?'start':''}" ${gc?`data-g="1" style="grid-row:${rr};grid-column:${cc};--gc:${gc}"`:`style="grid-row:${rr};grid-column:${cc}"`}>
+      <span class="bnum">${i+1}</span><span class="bic">${ic}</span><span class="bn">${esc(name)}</span></div>`;
+  }
+  const center=`<div class="board__center"><div class="bc-t">СЕМЬЯ</div><div class="bc-s">${esc((BIBLE.board_loop.pass_start)||"Прошёл круг — собрал общак с города.")}</div></div>`;
+  const legend=(BIBLE.district_groups||[]).map((g,i)=>`<b><i style="background:${GROUP_COLORS[i%GROUP_COLORS.length]}"></i>${esc(g.group)}</b>`).join("")
+    + `<b><i style="background:var(--panel-hi)"></i>Спец-клетки</b>`;
+  return `<div class="boardwrap"><div class="board" style="grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${cols},1fr)">${tiles}${center}</div></div>
+    <div class="legend">${legend}</div>`;
+}
+
+/* ── РЕНДЕР ТАБОВ ── */
+const TABS=[
+  { id:"obzor", ic:"🎩", name:"Обзор", render:renderObzor },
+  { id:"res",   ic:"💰", name:"Ресурсы", render:renderRes },
+  { id:"board", ic:"🗺", name:"Доска", render:renderBoard },
+  { id:"day",   ic:"🎲", name:"Ход дня", render:renderDay },
+  { id:"week",  ic:"📅", name:"Неделя", render:renderWeek },
+  { id:"chest", ic:"🎁", name:"Стрики·Сундуки", render:renderChest },
+  { id:"build", ic:"🏗", name:"Стройка·Торг", render:renderBuild },
+  { id:"pvp",   ic:"⚔️", name:"PvP·Финал", render:renderPvp },
+  { id:"lore",  ic:"📖", name:"Лор·Справка", render:renderLore },
+];
+
+function renderObzor(){
+  const loop=[
+    {b:"Закрой день",s:"Отметил понятия честно — получил ХОДЫ (шаги по городу). Стрик множит."},
+    {b:"Выйди в город",s:"Двигаешь фишку дона по кругу на число ходов дня."},
+    {b:"Клетка решает",s:"Куда встал — то и делаешь: купить район, платить дань, тянуть маляву, бить босса."},
+    {b:"Строй империю",s:"Собрал цветной сет — строишь, дань растёт. Торгуешь, чтобы добить сет."},
+    {b:"Рубка и Сходка",s:"Отжимаешь районы у клана-соперника. 30 дней — Большая Сходка решает всё."},
+  ];
+  return `<p class="lead">${esc(BIBLE.pitch)}</p>
+  <div class="sh">Петля игры<div class="f"></div></div>
+  <div class="loop">${loop.map((x,i)=>`<div class="loop__step"><span class="n">0${i+1}</span><b>${x.b}</b><span>${x.s}</span></div>`).join("")}</div>
+  <div class="sh">Почему это работает<div class="f"></div></div>
+  <div class="grid g2">${(BIBLE.why_it_works||[]).map(w=>`<div class="card"><p>${esc(w)}</p></div>`).join("")||'<div class="card"><p>—</p></div>'}</div>`;
+}
+function renderRes(){
+  return `<p class="lead">Три валюты с <b>разными ролями</b> — вот чем игра отличается от «есть деньги — купил всё».</p>
+  <div class="grid g2">${(BIBLE.resources||[]).map(r=>`<div class="card card--key">
+    <div class="tagrow">${esc(r.icon||"◆")} ресурс</div><h4>${esc(r.name)}</h4>
+    <p>${esc(r.role)}</p>
+    <div class="kv"><span class="pill green">+ ${esc(r.earn)}</span><span class="pill rose">− ${esc(r.spend)}</span></div>
+  </div>`).join("")}</div>`;
+}
+function renderBoard(){
+  return `<p class="lead">Город — <b>замкнутая петля</b>. Фишка дона идёт по кругу на ходы, что дал прожитый день. Куда встал — там и играешь.</p>
+  ${boardHTML()}
+  <div class="sh">Спец-клетки<div class="f"></div></div>
+  <div class="grid g3">${(BIBLE.special_tiles||[]).map(t=>`<div class="card"><div class="tagrow">${specialIcon(t.name)} ${esc(t.type)}</div><h4>${esc(t.name)}</h4><p>${esc(t.effect)}</p>${t.lore?`<p class="note">${esc(t.lore)}</p>`:""}</div>`).join("")}</div>
+  <div class="sh">Цветные сеты районов<div class="f"></div></div>
+  <div class="grid g2">${(BIBLE.district_groups||[]).map((g,i)=>`<div class="card" style="border-left:4px solid ${GROUP_COLORS[i%GROUP_COLORS.length]}">
+    <h4>${esc(g.group)}</h4><p>${(g.districts||[]).map(esc).join(" · ")}</p><div class="kv"><span class="pill">Сет: ${esc(g.set_bonus)}</span></div></div>`).join("")}</div>`;
+}
+function renderDay(){
+  return `<p class="lead">Один день игрока — от честной отметки до хода по городу.</p>
+  <div class="tl">${(BIBLE.day_flow||[]).map((x,i)=>`<div class="tl__row"><div class="tl__dot">${i+1}</div><div class="tl__b"><b>${esc(x.step)}</b><span>${esc(x.detail)}</span></div></div>`).join("")}</div>`;
+}
+function renderWeek(){
+  return `<p class="lead">Неделя задаёт ритм: <b>слово в понедельник</b>, разгрузочный день, контрабанда, развязка в воскресенье.</p>
+  <div class="tl">${(BIBLE.week_flow||[]).map((x,i)=>`<div class="tl__row"><div class="tl__dot">${esc((x.day||"").slice(0,2))}</div><div class="tl__b"><b>${esc(x.event)}</b><span>${esc(x.detail)}</span></div></div>`).join("")}</div>
+  <div class="sh">Слово недели · Омерта<div class="f"></div></div>
+  <div class="grid g2">${(BIBLE.omerta_weekly||[]).map(o=>`<div class="card"><h4>${esc(o.aspect)}</h4><p>${esc(o.detail)}</p></div>`).join("")}</div>`;
+}
+function renderChest(){
+  const chestCls=t=>{const l=(t.tier||"").toLowerCase(); return l.includes("золот")||l.includes("gold")?"gold":l.includes("серебр")||l.includes("silver")?"silver":"bronze";};
+  return `<p class="lead">Стрики — <b>множители</b>. Сундуки — <b>рандом-дофамин</b>: держишь режим — получаешь редкий джекпот.</p>
+  <div class="sh">Стрики-множители<div class="f"></div></div>
+  <div class="grid g3">${(BIBLE.streaks||[]).map(s=>`<div class="card"><h4>🔥 ${esc(s.streak)}</h4><p>${esc(s.effect)}</p></div>`).join("")}</div>
+  <div class="sh">Сундуки и лут<div class="f"></div></div>
+  <div class="grid g2">${(BIBLE.chest_tiers||[]).map(t=>`<div class="chest ${chestCls(t)}"><h4>🎁 ${esc(t.tier)}</h4><p style="color:var(--ink-2)">Триггер: ${esc(t.trigger)}</p><ul class="loot">${(t.loot||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>
+  <div class="sh">Карты «маляву тянешь»<div class="f"></div></div>
+  <div class="grid g3">${(BIBLE.event_cards||[]).map(c=>`<div class="card"><div class="tagrow">🃏 ${esc(c.kind||"событие")}</div><h4>${esc(c.name)}</h4><p>${esc(c.effect)}</p></div>`).join("")}</div>`;
+}
+function renderBuild(){
+  return `<p class="lead">Собрал сет — <b>строишь</b>: от ларька до «малины». Каждый уровень — жирнее дань. Не хватает района — <b>торгуешь</b>.</p>
+  <div class="sh">Лестница стройки<div class="f"></div></div>
+  <div class="grid g3">${(BIBLE.build_ladder||[]).map((b,i)=>`<div class="card"><div class="tagrow">ур. ${esc(b.level)}</div><h4>${esc(b.name)}</h4><p>${esc(b.effect)}</p><div class="kv"><span class="pill">${esc(b.cost)}</span></div></div>`).join("")}</div>
+  <div class="sh">Сеты и торг<div class="f"></div></div>
+  <div class="card"><ul class="loot">${(BIBLE.set_trade_rules||[]).map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>`;
+}
+function renderPvp(){
+  return `<p class="lead">Кланы делят один город. Встал на чужой район — <b>платишь дань</b>. Хочешь отжать — <b>стрелка</b>. 30 дней — <b>Большая Сходка</b>.</p>
+  <div class="sh">Механики рубки<div class="f"></div></div>
+  <div class="grid g2">${(BIBLE.pvp_rules||[]).map(p=>`<div class="card"><h4>${esc(p.name)}</h4><p>${esc(p.rule)}</p></div>`).join("")}</div>
+  <div class="sh">Условие победы<div class="f"></div></div>
+  <div class="card card--key"><h4>🏆 Большая Сходка</h4><p style="font-family:'Space Mono';color:var(--gold)">${esc(BIBLE.win_condition&&BIBLE.win_condition.formula)}</p><p style="margin-top:8px">${esc(BIBLE.win_condition&&BIBLE.win_condition.detail)}</p></div>
+  <div class="sh">Титулы (воровская лестница)<div class="f"></div></div>
+  <div class="card"><div class="ladder">${(BIBLE.titles||[]).map((t,i)=>`<div class="lrow"><div class="lseal">${i+1}</div><b>${esc(t.title)}</b><span class="req">${esc(t.req)}</span><span class="perk">${esc(t.perk)}</span></div>`).join("")}</div></div>`;
+}
+function renderLore(){
+  return `<div class="sh">Лор Южноморска<div class="f"></div></div>
+  <div class="grid g2">${(BIBLE.lore||[]).map(l=>`<div class="card"><p>${esc(l)}</p></div>`).join("")}</div>
+  <div class="sh">Онбординг — первые 7 дней<div class="f"></div></div>
+  <div class="tl">${(BIBLE.onboarding||[]).map(o=>`<div class="tl__row"><div class="tl__dot">${esc((o.day||"").replace(/\\D/g,"")||"•")}</div><div class="tl__b"><b>${esc(o.day)}</b><span>${esc(o.unlocks)}</span></div></div>`).join("")}</div>
+  <div class="sh">Баланс — ключевые числа<div class="f"></div></div>
+  ${tableHTML({title:"Экономика на 30 дней",columns:["Метрика","Значение","Примечание"],rows:(BIBLE.balance_numbers||[]).map(b=>[b.metric,b.value,b.note||""])})}
+  <div class="sh">Глоссарий<div class="f"></div></div>
+  <div class="grid g3">${(BIBLE.glossary||[]).map(g=>`<div class="card"><h4>${esc(g.term)}</h4><p>${esc(g.meaning)}</p></div>`).join("")}</div>`;
+}
+
+/* ── БУТ ── */
+function boot(){
+  $("#h-title").textContent=BIBLE.title||"СЕМЬЯ";
+  const tabsEl=$("#tabs"), main=$("#main");
+  TABS.forEach((t,i)=>{
+    const b=document.createElement("button"); b.className="tab"+(i===0?" on":""); b.dataset.id=t.id;
+    b.innerHTML=`<span class="ic">${t.ic}</span>${t.name}`;
+    b.onclick=()=>{ $$(".tab").forEach(x=>x.classList.toggle("on",x===b)); $$(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t.id)); window.scrollTo({top:0,behavior:"smooth"}); };
+    tabsEl.appendChild(b);
+    const sec=document.createElement("section"); sec.className="panel"+(i===0?" on":""); sec.id="p-"+t.id;
+    sec.innerHTML=t.render(); main.appendChild(sec);
+  });
+}
+boot();
+</script>
+</body>
+</html>
