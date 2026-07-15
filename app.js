@@ -370,11 +370,32 @@ function renderDossier(){
     ? `<div class="chips-wrap">${me.artifacts.map(a=>`<span class="art-chip">${I.anchor}${a}</span>`).join('')}</div>`
     : `<div class="empty-slot">Сундук пуст. Хочешь козырь — лови контрабанду в среду.</div>`;
 
-  // омерта строка
-  const om = me.omerta;
+  // ── Слово Семье (обет свободным текстом) ──
+  const om = me.omerta || {};
+  const omActive = om.vow && !om.broken;
   const omDots = dotsRow(om, SIDE);
-  const omStatus = om.broken ? 'слово нарушено — город помнит'
-    : om.vow ? `${om.held}/7 держит` : 'обет недели не дан';
+  const omInput = omActive
+    ? `<div class="omvow-active">
+         <div class="omvow-active__vow">${I.lips} «${om.vow}»</div>
+         <div class="omvow-active__st">${om.held||0}/7 держишь</div>
+         ${omDots}
+       </div>`
+    : `<div class="omvow-give">
+         <input class="vow-input" id="vowInput" maxlength="60" autocomplete="off"
+           placeholder="Свой обет: без сахара, без скролла…">
+         <button class="btn-gold" data-tap="do-omerta-text">${I.lips} Дать слово</button>
+         ${om.broken?'<p class="dim omvow-broke">Прошлое слово сгорело — город помнит. Дай новое, второй шанс есть.</p>':''}
+       </div>`;
+  // статусы обоих кланов
+  const omBoth = [[ME,me],[OPP,opp]].map(([pid,p])=>{
+    const o=(p&&p.omerta)||{}; const gg=p&&p.side==='g';
+    const nm = gg?'Карлеоне':'Скляровские';
+    const st = o.broken?'нарушено':(o.vow?`${o.held||0}/7`:'не дано');
+    return `<div class="omrow ${gg?'g':'s'}">
+      <span class="omrow__clan">${nm}</span>
+      <span class="omrow__vow">${o.vow?('«'+o.vow+'»'):'—'}</span>
+      <span class="omrow__st ${o.broken?'broke':''}">${st}</span></div>`;
+  }).join('');
 
   // vs
   const vs = `<div class="vs">
@@ -408,15 +429,14 @@ function renderDossier(){
   <div class="section-h">Козыри<div class="fill"></div></div>
   <div class="card">${arts}</div>
 
-  <div class="section-h">Слово Дона<div class="fill"></div></div>
-  <div class="card" data-tap="omerta-open" style="cursor:pointer">
-    <div class="between" style="margin-bottom:12px">
-      <div><div class="omcard__vow">${om.vow?('Неделя без «'+om.vow+'»'):'Обет не дан'}</div>
-        <div class="omcard__status" style="margin-top:4px">${omStatus}</div></div>
-      <div style="color:var(--me)">${I.lips.replace('<svg','<svg width="24" height="24"')}</div>
-    </div>
-    ${omDots}
-    <div class="next-hint" style="margin-top:12px">Сдержанных слов: <b>${om.kept_weeks}</b> · на Сходке каждое = +100 влияния</div>
+  <div class="section-h">Режим · время<div class="fill"></div></div>
+  ${renderTimes()}
+
+  <div class="section-h">Слово Семье<div class="fill"></div></div>
+  <div class="card card--key">
+    ${omInput}
+    <div class="omboth">${omBoth}</div>
+    <div class="next-hint" style="margin-top:12px">Сдержанных слов: <b>${om.kept_weeks||0}</b> · на Сходке каждое = +100 влияния</div>
   </div>
 
   <div class="section-h">Расклад<div class="fill"></div></div>
@@ -425,12 +445,40 @@ function renderDossier(){
 function ltDesc(name){ for(const k in LTS){ if(LTS[k][0]===name) return LTS[k][2]; } return 'в деле'; }
 function dotsRow(om, side){
   let d='';
+  const held0 = om.held||0;
   for(let i=0;i<7;i++){
-    const held = i<om.held;
-    const broke = om.broken && i===om.held;
+    const held = i<held0;
+    const broke = om.broken && i===held0;
     d += `<i class="${held?'held':''} ${broke?'broke':''}"></i>`;
   }
   return `<div class="omcard ${side==='g'?'g':'s'}" style="border:0;padding:0;background:none"><div class="dots">${d}</div></div>`;
+}
+
+/* Режим дня в понятиях времени · settime */
+const TIME_ITEMS = [
+  ['wake','☀️','Подъём','time'],
+  ['nophone','📵','Телефон убран до','time'],
+  ['coffee','☕','Кофе отложить','min'],   // times.coffee_after_min
+  ['nocaf','🚫','Кофеин стоп до','time'],  // times.caffeine_before
+  ['sleep','🌙','Отбой','time']
+];
+const TIME_FIELD = { wake:'wake', nophone:'nophone', coffee:'coffee_after_min', nocaf:'caffeine_before', sleep:'sleep' };
+function renderTimes(){
+  const t = (me && me.times) || {};
+  const rows = TIME_ITEMS.map(([id,ico,label,kind])=>{
+    const raw = t[TIME_FIELD[id]];
+    const val = (raw===undefined || raw===null) ? '' : raw;
+    const ctl = kind==='time'
+      ? `<input class="time-input" type="time" data-item="${id}" value="${val}">`
+      : `<input class="time-input time-input--min" type="number" inputmode="numeric" min="0" max="240" step="5" data-item="${id}" value="${val}" placeholder="90"><span class="time-suf">мин</span>`;
+    return `<div class="time-row">
+      <span class="time-ico">${ico}</span>
+      <span class="time-lbl">${label}</span>
+      <span class="time-ctl">${ctl}</span>
+    </div>`;
+  }).join('');
+  return `<div class="card times-card">${rows}
+    <p class="dim times-hint">Тап по времени → выстави своё. Город любит тех, кто ходит как часы.</p></div>`;
 }
 
 /* ───────────────────────  3 · ХОД  ─────────────────────── */
@@ -497,8 +545,39 @@ function renderHod(){
   return `
   <div class="section-h">Понятия дня<div class="fill"></div></div>
   ${actA}
+  <div class="section-h">Фотоотчёт дня<div class="fill"></div></div>
+  ${renderProof()}
   <div class="section-h">Фаза хода<div class="fill"></div></div>
   ${actB}`;
+}
+function renderProof(){
+  const day = S.meta.day;
+  const meProof = !!(me && me.today_proof);
+  const opProof = !!(opp && opp.today_proof);
+  const opConfirmed = !!(opp && opp.proof_confirmed);
+  const meName = SIDE==='g'?'Карлеоне':'Скляровские';
+  const opName = SIDE==='g'?'Скляровские':'Карлеоне';
+
+  const meRow = `<div class="proof-row ${meProof?'is-ok':'is-no'}">
+    <span class="proof-side"><span class="proof-ico">${I.idcard}</span>
+      <span class="proof-tt"><b>${meName}</b><em>ты · день ${day}</em></span></span>
+    <span class="proof-badge">${meProof?'✓ сдан':'не сдан'}</span></div>`;
+
+  let opAction='';
+  if(opProof && !opConfirmed){
+    opAction = `<div class="proof-act"><button class="btn-green" data-tap="confirm-proof" data-arg="${OPP}">${I.check} Подтвердить отчёт</button></div>`;
+  } else if(opProof && opConfirmed){
+    opAction = `<div class="proof-act"><span class="proof-conf">${I.check} подтверждён тобой</span></div>`;
+  }
+  const opRow = `<div class="proof-row ${opProof?'is-ok':'is-no'}">
+    <span class="proof-side"><span class="proof-ico">${I.idcard}</span>
+      <span class="proof-tt"><b>${opName}</b><em>партнёр</em></span></span>
+    <span class="proof-badge">${opProof?'✓ сдан':'ждём'}</span></div>${opAction}`;
+
+  const hint = !meProof
+    ? `<div class="proof-hint">📸 Сдать фото — <b>пришли фото боту в чат</b> (загрузка идёт в чате, не в аппе)</div>`
+    : '';
+  return `<div class="card proof-card">${meRow}${opRow}${hint}</div>`;
 }
 function tally(t){
   return `<div class="tally" id="tally">
@@ -916,10 +995,37 @@ document.addEventListener('click', e=>{
       const gb=$('.sheet [data-tap="do-omerta"]'); if(gb) gb.removeAttribute('aria-disabled'); break;
     case 'do-omerta': if(!vowDraft){ return; }
       confirmAct(`Даю слово: неделя без «${vowDraft}». Город будет смотреть.`, ()=>act('omerta',vowDraft)); break;
+    case 'do-omerta-text': doOmertaText(); break;
+
+    /* Фотоотчёт */
+    case 'confirm-proof': doConfirmProof(arg); break;
 
     /* Хроника */
     case 'filter': chronFilter=arg; hap('selection'); render(); break;
   }
+});
+
+/* Обет свободным текстом → act omerta */
+function doOmertaText(){
+  const inp = $('#vowInput');
+  const val = inp ? inp.value.trim() : '';
+  if(!val){ hap('warning'); toast('Впиши обет — своими словами','err'); return; }
+  confirmAct(`Даю слово Семье: «${val}». Город будет смотреть.`, ()=>act('omerta', val));
+}
+/* Подтвердить фотоотчёт партнёра → act confirm */
+function doConfirmProof(clan){
+  const day = S.meta.day;
+  confirmAct('Подтвердить фотоотчёт партнёра за сегодня? Слово Семьи держится честностью.',
+    ()=>act('confirm', { clan, day }));
+}
+/* Целевое время режима → act settime (native sendData закрывает апп, как и другие ходы) */
+document.addEventListener('change', e=>{
+  const inp = e.target && e.target.closest ? e.target.closest('.time-input') : null;
+  if(!inp) return;
+  const item = inp.dataset.item;
+  const time = (inp.value||'').trim();
+  if(!item || time==='') return;
+  act('settime', { item, time });
 });
 
 function toggleProto(el, id){
