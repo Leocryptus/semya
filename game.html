@@ -238,7 +238,7 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
   <div id="game-root" class="hidden">
     <div class="hud">
       <div class="hud__top">
-        <div class="hud__day">ДЕНЬ <b id="h-day">1</b>/7</div>
+        <div class="hud__day">ДЕНЬ <b id="h-day">1</b>/14</div>
         <div class="badge" id="h-boss">🎩 8/8</div>
         <div class="badge" id="h-streak">🔥 0</div>
       </div>
@@ -822,11 +822,11 @@ function renderChron(){
 
 /* ═══════════ ДОСЬЕ ═══════════ */
 function renderDossier(){
-  const t=titleOf(S.respect);
+  const t=titleOf(S.respect); const nx=nextTitle(S.respect);
   const ladder=TITLES.map((x,i)=>{
     const done=S.respect>=x[1]&&x[0]!==t[0]; const cur=x[0]===t[0];
-    return `<div class="lrow ${done?'done':''} ${cur?'cur':''}"><div class="lseal">${i+1}</div><b>${x[0]}</b><span class="req">${x[1]}🎖 · лимит ${x[2]}</span></div>`;
-  }).join("");
+    return `<div class="lrow ${done?'done':''} ${cur?'cur':''}"><div class="lseal">${i+1}</div><b>${x[0]}</b><span class="req">${x[1]>=9999?"финал":x[1]+"🎖"} · лимит ${x[2]}${x[3]!=="—"?" · "+x[3]:""}</span></div>`;
+  }).join("") + (nx?`<p class="note">До «${nx[0]}»: ещё <b>${nx[1]-S.respect}🎖</b> → лимит районов ${nx[2]}${nx[3]!=="—"?", перк: "+nx[3]:""}.</p>`:"");
   const days=Array.from({length:S.maxDay},(_,i)=>{
     const rec=S.days.find(d=>d.day===i+1);
     if(!rec) return `<b>${i+1}</b>`;
@@ -852,7 +852,7 @@ function renderDossier(){
   <div class="card"><div class="kv">
     <span class="pill">районы: ${myCount(S)}</span><span class="pill">серия: 🔥${S.streak}</span>
     <span class="pill">деньги: $${fmt(S.money)}</span><span class="pill">сила: ${S.power}⚡</span>
-    <span class="pill">уважение: ${S.respect}🎖</span><span class="pill">босс: ${S.boss.dead?"выбит":S.boss.hp+"/"+S.boss.max}</span>
+    <span class="pill">уважение: ${S.respect}🎖</span><span class="pill">🚩 флаги: ${S.flags.length}:${S.oppFlags.length}</span>
   </div></div>
   <div class="card"><h4>Слово недели · скоро</h4><p>Обет («без сахара», «без скролла») с баффом за неделю и штрафом за срыв — включим в боевой версии на двоих.</p></div>`;
 }
@@ -860,11 +860,12 @@ function renderDossier(){
 /* ═══════════ ИТОГ ═══════════ */
 function summary(){
   S.phase="summary"; save(); show("s-sum");
-  const score = myCount(S)*10 + S.respect + Math.floor(S.money/100) + S.power + (S.boss.dead?10:0);
-  const oppScore = oppCount()*10 + (S.oppDays||0)*5 + Math.floor((S.oppMoney||0)/100);
+  let build=0; for(const i in S.lvl) if(S.owners[i]==="me") build+=(S.lvl[i]-1)*5;
+  const score = myCount(S)*10 + build + S.respect + Math.floor(S.money/100) + S.power + S.flags.length*15;
+  const oppScore = oppCount()*10 + (S.oppDays||0)*5 + Math.floor((S.oppMoney||0)/100) + S.oppFlags.length*15;
   const win=score>=oppScore;
   $("#s-sum").innerHTML=`
-    <div class="brand" style="padding-top:24px"><h1>${win?"ПОБЕДА":"ИТОГ"}</h1><p>Первая неделя в Южноморске</p></div>
+    <div class="brand" style="padding-top:24px"><h1>${win?"ПОБЕДА":"ИТОГ"}</h1><p>Две недели в Южноморске</p></div>
     <div class="sumcard">
       <h2>🥂 Ты ${score} : ${oppScore} Герман 🌹</h2>
       <p style="color:var(--txt2);margin:2px 0 0">${win?"Твой режим крепче — город это чувствует. Звание: "+titleOf(S.respect)[0]+".":"Герман впереди — но месяц длинный. Держи серию, отжимай районы."}</p>
@@ -872,9 +873,9 @@ function summary(){
         <div class="s"><b>${myCount(S)}</b><span>Районов</span></div>
         <div class="s"><b>$${fmt(S.money)}</b><span>Общак</span></div>
         <div class="s"><b>${S.respect}</b><span>Уважение</span></div>
-        <div class="s"><b>${S.boss.dead?"✓":"—"}</b><span>Босс выбит</span></div>
+        <div class="s"><b>🚩 ${S.flags.length}:${S.oppFlags.length}</b><span>Флаги недель</span></div>
       </div>
-      <button class="btn" id="again">↺ Сыграть неделю заново</button>
+      <button class="btn" id="again">↺ Сыграть заново</button>
       <div style="height:9px"></div>
       <a href="design.html" class="btn wood" style="display:block;text-decoration:none;text-align:center">📖 Как всё устроено</a>
     </div>`;
