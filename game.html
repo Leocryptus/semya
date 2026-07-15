@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1a0f08">
-<title>СЕМЬЯ · прототип</title>
+<title>СЕМЬЯ · Южноморск 1994</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@600;700;800;900&family=Manrope:wght@500;600;700;800&family=Space+Mono:wght@700&display=swap">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -19,20 +19,19 @@
   --wg:linear-gradient(180deg,var(--wood-hi),var(--wood2) 60%,var(--wood));
   --disp:"Russo One","Rubik",sans-serif;
   --sh-btn:0 4px 0 rgba(0,0,0,.35),0 8px 16px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.4),inset 0 -3px 0 rgba(0,0,0,.25);
+  --nav-h:62px;
 }
 *,*::before,*::after{box-sizing:border-box}
-html,body{margin:0;padding:0;height:100%}
+html,body{margin:0;padding:0}
 html{background:#1a0f08}
 body{font-family:"Manrope",system-ui,sans-serif;color:var(--txt);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;user-select:none;
  background:radial-gradient(120% 60% at 50% -6%,rgba(73,182,240,.10),transparent 55%),radial-gradient(90% 50% at 90% 6%,rgba(255,77,77,.10),transparent 55%),linear-gradient(180deg,#2b1a0f,#1a0f08 55%) fixed;
  overflow-x:hidden}
 img{display:block;max-width:100%}
-#app{max-width:560px;margin:0 auto;min-height:100dvh;position:relative;padding:0 12px 20px}
+#app{max-width:560px;margin:0 auto;min-height:100dvh;position:relative;padding:0 12px calc(var(--nav-h) + 26px)}
 .screen{display:none;animation:in .3s ease} .screen.on{display:block}
 @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
-.hidden{display:none!important}
 
-/* ── общие ── */
 h1,h2,h3{font-family:var(--disp);font-weight:400}
 .btn{width:100%;border:0;border-radius:14px;padding:14px 18px;font:400 17px/1 var(--disp);letter-spacing:.02em;
  color:var(--gold-ink);background:var(--gg);box-shadow:var(--sh-btn);cursor:pointer;text-transform:uppercase}
@@ -43,19 +42,22 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
 .btn:disabled{filter:grayscale(.6);opacity:.5;pointer-events:none}
 .btn.sm{padding:11px 14px;font-size:14px;width:auto}
 
-/* ── шапка ── */
 .brand{text-align:center;padding:26px 0 6px}
 .brand h1{margin:0;font-size:clamp(40px,13vw,66px);color:var(--gold);-webkit-text-stroke:2.5px var(--gold-ink);paint-order:stroke fill;
  text-shadow:0 4px 0 var(--gold-ink),0 6px 12px rgba(0,0,0,.6),0 0 30px rgba(255,190,74,.35);line-height:.95}
 .brand p{margin:6px 0 0;font:700 13px/1.4 "Rubik";color:var(--paper)}
-
-/* ── сборка протокола ── */
 .lead{font:600 15px/1.55 "Manrope";color:var(--txt);margin:6px 2px 14px}
 .lead b{color:var(--paper)}
-.sh{display:flex;align-items:center;gap:10px;margin:22px 2px 12px;font:400 16px/1.1 var(--disp);text-transform:uppercase;color:#FFD873;
+.sh{display:flex;align-items:center;gap:10px;margin:20px 2px 12px;font:400 15.5px/1.1 var(--disp);text-transform:uppercase;color:#FFD873;
  text-shadow:0 2px 0 var(--gold-ink),0 3px 6px rgba(0,0,0,.5)}
-.sh::before{content:"";width:14px;height:14px;transform:rotate(45deg);border-radius:3px;background:var(--gg);box-shadow:0 0 12px rgba(255,190,74,.6)}
+.sh::before{content:"";width:13px;height:13px;transform:rotate(45deg);border-radius:3px;background:var(--gg);box-shadow:0 0 12px rgba(255,190,74,.6)}
 .sh .f{flex:1;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--gold-deep),transparent);opacity:.55}
+.card{background:var(--wg);border:1px solid var(--line2);border-radius:15px;padding:14px 15px;box-shadow:0 8px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.12);margin-bottom:11px}
+.card h4{margin:0 0 6px;font:400 15px/1.25 var(--disp);color:#FFEFC6}
+.card p{margin:0;color:var(--txt);font-size:14px}
+.note{font:600 italic 13px/1.5 "Rubik";color:var(--txt3);margin-top:8px;padding-left:11px;border-left:3px solid var(--line2)}
+
+/* сетап */
 .pitem{display:flex;align-items:center;gap:12px;background:var(--cream);border:2px solid var(--gold-deep);border-radius:14px;padding:9px 11px;margin-bottom:9px;box-shadow:0 6px 14px rgba(0,0,0,.35)}
 .pitem img{width:34px;height:34px;object-fit:contain;flex:0 0 auto}
 .pitem .em{font-size:26px;width:34px;text-align:center;flex:0 0 auto}
@@ -63,21 +65,20 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
 .core{display:inline-block;margin-left:6px;font:800 8.5px/1 "Rubik";letter-spacing:.06em;color:#fff;background:#e23b3b;padding:3px 5px;border-radius:5px;vertical-align:middle}
 .stp{display:inline-flex;border-radius:11px;overflow:hidden;box-shadow:var(--sh-btn);flex:0 0 auto}
 .stp button{width:32px;height:32px;border:0;cursor:pointer;font:800 20px/1 "Rubik";color:var(--gold-ink);background:var(--gg)}
-.stp button:active{filter:brightness(.9)}
 .stp .v{min-width:38px;text-align:center;font:700 15px/32px "Space Mono";color:#4A3312;background:var(--cream2)}
 
-/* ── HUD ── */
-.hud{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#1a0f08 70%,transparent);padding:8px 0 6px}
-.hud__top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
-.hud__day{font:400 15px/1 var(--disp);color:var(--gold);text-shadow:0 1px 0 var(--gold-ink)}
+/* HUD */
+.hud{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#1a0f08 72%,transparent);padding:8px 0 6px}
+.hud__top{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px}
+.hud__day{font:400 14px/1 var(--disp);color:var(--gold);text-shadow:0 1px 0 var(--gold-ink)}
 .hud__day b{color:var(--paper)}
-.hud__streak{font:700 12px/1 "Space Mono";color:#FF9E5E;background:rgba(0,0,0,.3);border:1px solid var(--line2);padding:6px 9px;border-radius:999px}
+.badge{font:700 11px/1 "Space Mono";color:#FF9E5E;background:rgba(0,0,0,.3);border:1px solid var(--line2);padding:6px 8px;border-radius:999px;white-space:nowrap}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .stat{background:var(--wg);border:1px solid var(--line2);border-radius:11px;padding:6px 4px;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
-.stat b{display:block;font:700 15px/1.1 "Space Mono";color:#FFE3A6}.stat span{font:700 8.5px/1 "Rubik";text-transform:uppercase;letter-spacing:.03em;color:var(--txt3)}
+.stat b{display:block;font:700 14px/1.1 "Space Mono";color:#FFE3A6}.stat span{font:700 8.5px/1 "Rubik";text-transform:uppercase;letter-spacing:.03em;color:var(--txt3)}
 .stat img{width:18px;height:18px;object-fit:contain;margin:0 auto 2px}.stat .em{font-size:15px}
 
-/* ── доска ── */
+/* доска */
 .boardwrap{margin:8px 0;text-align:center}
 .board{display:grid;gap:4px;width:100%;max-width:min(92vw,440px);aspect-ratio:1/1;margin:0 auto;padding:9px;border-radius:20px;background:var(--wg);border:2px solid var(--line2);box-shadow:0 12px 30px rgba(0,0,0,.5)}
 .bt{position:relative;border-radius:10px;padding:2px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
@@ -94,7 +95,6 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
 .bt.own-opp::after{content:"";position:absolute;inset:0;border-radius:9px;box-shadow:inset 0 0 0 2px #FF5A5A,inset 0 0 12px rgba(255,80,80,.5)}
 .bt .tok{position:absolute;top:2px;right:2px;width:15px;height:15px;border-radius:50%;z-index:5;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.6)}
 .bt .tok.me{background:radial-gradient(circle at 40% 35%,#FFE39A,#D6891C)}
-.bt .tok.opp{background:radial-gradient(circle at 40% 35%,#ff9a9a,#c0272e);top:auto;bottom:2px;right:auto;left:2px}
 .bt.hot{animation:hot .5s ease}
 @keyframes hot{0%{transform:scale(1)}45%{transform:scale(1.12);filter:brightness(1.25)}100%{transform:scale(1)}}
 .board__c{grid-row:2/-2;grid-column:2/-2;display:grid;place-items:center;text-align:center;gap:4px;border:2px dashed var(--line2);border-radius:14px;
@@ -102,13 +102,19 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
 .board__c img{width:min(42%,90px);filter:drop-shadow(0 5px 10px rgba(0,0,0,.5))}
 .board__c .t{font:400 clamp(15px,4.5vw,22px)/1 var(--disp);color:var(--gold);-webkit-text-stroke:1.5px var(--gold-ink);paint-order:stroke fill;text-shadow:0 2px 0 var(--gold-ink)}
 .board__c .s{font:600 10px/1.35 "Manrope";color:var(--txt2);max-width:200px}
+.mini-count{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:2px 0 8px}
+.mini-count b{background:var(--wg);border:1px solid var(--line2);border-radius:11px;padding:7px 4px;text-align:center;font:700 15px/1.1 "Space Mono";color:#FFE3A6}
+.mini-count b em{display:block;font:700 8.5px/1.3 "Rubik";font-style:normal;text-transform:uppercase;color:var(--txt3)}
+.mini-count .c1{color:#FFD54A}.mini-count .c2 b{}
+.legend{display:flex;flex-wrap:wrap;gap:7px 13px;justify-content:center;margin:8px 0 2px;font:700 11px/1 "Manrope";color:var(--txt2)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 
-/* ── панель действий ── */
-.act{padding:12px 0 24px}
+/* панель действий */
+.act{padding:10px 0 14px}
 .hint{text-align:center;font:600 13px/1.4 "Manrope";color:var(--txt2);margin:0 0 8px;min-height:18px}
 .hint b{color:var(--paper)}
 
-/* ── дневной чек-лист ── */
+/* чек-лист */
 .checks{display:grid;gap:8px;margin:4px 0 2px}
 .chk{display:flex;align-items:center;gap:11px;background:var(--wg);border:1px solid var(--line2);border-radius:12px;padding:9px 11px;cursor:pointer;transition:.12s}
 .chk img{width:30px;height:30px;object-fit:contain;flex:0 0 auto}.chk .em{font-size:22px;width:30px;text-align:center;flex:0 0 auto}
@@ -118,7 +124,7 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
 .chk.on .box{background:var(--gg);border-color:var(--gold);color:var(--gold-ink)}
 .chk.core:not(.on) .box{border-color:#e2703b}
 
-/* ── модалка события ── */
+/* модалка */
 .scrim{position:fixed;inset:0;z-index:50;background:rgba(8,5,3,.72);backdrop-filter:blur(3px);display:grid;place-items:center;padding:18px;animation:in .2s ease}
 .modal{width:100%;max-width:400px;background:var(--wg);border:2px solid var(--line2);border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.6);overflow:hidden}
 .modal__art{height:150px;display:grid;place-items:center;background:radial-gradient(120% 120% at 50% 20%,rgba(255,190,74,.12),transparent 60%);border-bottom:1px solid var(--line)}
@@ -133,26 +139,86 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
 .reward{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
 .rchip{font:700 13px/1 "Space Mono";padding:8px 12px;border-radius:999px;background:rgba(0,0,0,.3);border:1px solid var(--line2);color:#FFE3A6;display:inline-flex;align-items:center;gap:6px}
 
-/* ── итог недели ── */
+/* босс-вкладка / досье */
+.artframe{position:relative;width:100%;aspect-ratio:3/2.1;border-radius:16px;overflow:hidden;border:2.5px solid var(--gold);
+ box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 22px rgba(255,190,74,.22);background:#120b06;margin-bottom:12px}
+.artframe.steel{border-color:var(--blue);box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 22px rgba(73,182,240,.25)}
+.artframe .img{position:absolute;inset:0;background-size:cover;background-position:50% 16%}
+.artframe .scrim{position:absolute;inset:auto 0 0 0;height:62%;background:linear-gradient(180deg,transparent,rgba(10,6,3,.9) 82%)}
+.artframe .cap{position:absolute;left:14px;right:14px;bottom:11px}
+.artframe .kick{font:800 9.5px/1 "Rubik";letter-spacing:.16em;text-transform:uppercase;color:#FFD98A;text-shadow:0 1px 3px #000}
+.artframe .name{font:400 24px/1.05 var(--disp);color:var(--gold);-webkit-text-stroke:1.5px var(--gold-ink);paint-order:stroke fill;text-shadow:0 2px 0 var(--gold-ink)}
+.artframe.steel .name{color:#BFE4FA;-webkit-text-stroke:1.5px #0e2a3d;text-shadow:0 2px 0 #0e2a3d}
+.artframe .sub{font:600 italic 12px/1.35 "Rubik";color:var(--paper);text-shadow:0 1px 3px #000}
+.hpbar{display:flex;gap:4px;margin:9px 0 4px}
+.hpbar i{flex:1;height:14px;border-radius:4px;background:#2a1810;border:1px solid var(--line2)}
+.hpbar i.on{background:linear-gradient(180deg,#ff7a6a,#d92f2f);border-color:#a12222;box-shadow:0 0 8px rgba(255,80,60,.45)}
+.kv{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.pill{font:700 11.5px/1 "Space Mono";padding:6px 11px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid var(--line2);color:#FFD98A}
+
+/* лестница званий */
+.lrow{display:flex;align-items:center;gap:12px;padding:9px 4px;border-bottom:1px solid var(--line)}
+.lrow:last-child{border-bottom:0}
+.lseal{width:32px;height:32px;flex:0 0 auto;display:grid;place-items:center;clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+ background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 1.5px var(--line2);font:800 13px/1 "Space Mono";color:var(--txt3)}
+.lrow.done .lseal,.lrow.cur .lseal{background:var(--gg);color:var(--gold-ink);box-shadow:0 0 12px rgba(255,190,74,.35)}
+.lrow b{font:800 14px/1.1 "Rubik";text-transform:uppercase;color:var(--txt3);flex:1}
+.lrow.done b,.lrow.cur b{color:var(--paper)}
+.lrow.cur b{color:#FFD873}
+.lrow .req{font:700 11px/1 "Space Mono";color:var(--txt3)}
+
+/* дни-прогресс */
+.days{display:flex;gap:5px;flex-wrap:wrap}
+.days b{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font:700 11px/1 "Space Mono";
+ background:rgba(0,0,0,.28);border:1px solid var(--line2);color:var(--txt3)}
+.days b.ok{background:linear-gradient(180deg,rgba(91,198,106,.25),rgba(0,0,0,.2));border-color:#3f7a49;color:#9FE8AB}
+.days b.crit{background:var(--gg);border-color:var(--gold-deep);color:var(--gold-ink)}
+.days b.bad{border-color:#7a3030;color:#ff9e9e}
+
+/* хроника */
+.filters{display:flex;gap:7px;margin:2px 0 12px;overflow-x:auto}
+.filters button{flex:0 0 auto;border:1px solid var(--line2);background:var(--wg);color:var(--txt2);border-radius:999px;
+ padding:8px 13px;font:800 12px/1 "Rubik";cursor:pointer}
+.filters button.on{background:var(--gg);color:var(--gold-ink);border-color:transparent;box-shadow:0 0 12px rgba(255,190,74,.3)}
+.ln{display:flex;gap:10px;align-items:flex-start;padding:10px 11px;border-radius:12px;background:var(--wg);border:1px solid var(--line);margin-bottom:8px;border-left-width:4px}
+.ln.g{border-left-color:#FFD54A}.ln.s{border-left-color:#FF5A5A}.ln.n{border-left-color:var(--blue)}
+.ln .ico{font-size:18px;flex:0 0 auto;margin-top:1px}
+.ln .tx{flex:1;font:600 13.5px/1.4 "Manrope";color:var(--txt)} .ln .tx b{color:var(--paper)}
+.ln .dd{font:700 10px/1 "Space Mono";color:var(--txt3);flex:0 0 auto;margin-top:3px}
+.day-tag{font:400 13px/1 var(--disp);color:#FFD873;margin:14px 2px 9px;text-transform:uppercase}
+
+/* нижняя навигация */
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:40;height:calc(var(--nav-h) + env(safe-area-inset-bottom));
+ background:linear-gradient(180deg,#241610,#1a0f08);border-top:2px solid var(--line2);box-shadow:0 -8px 24px rgba(0,0,0,.5)}
+.nav__in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--nav-h)}
+.nav__it{border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+ font:800 9.5px/1 "Rubik";text-transform:uppercase;letter-spacing:.04em;color:var(--txt3);position:relative}
+.nav__it .i{font-size:20px;filter:grayscale(.4) brightness(.8)}
+.nav__it.on{color:#FFD873}
+.nav__it.on .i{filter:none;transform:scale(1.12)}
+.nav__it.on::before{content:"";position:absolute;top:-2px;left:20%;right:20%;height:3px;border-radius:0 0 4px 4px;background:var(--gg);box-shadow:0 2px 10px rgba(255,190,74,.6)}
+.nav__badge{position:absolute;top:7px;right:calc(50% - 17px);width:9px;height:9px;border-radius:50%;background:#FF4D4D;box-shadow:0 0 8px rgba(255,77,77,.8)}
+
 .sumcard{background:var(--wg);border:2px solid var(--gold-deep);border-radius:18px;padding:20px;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.5)}
-.sumcard h2{margin:0 0 4px;font-size:26px;color:var(--gold);-webkit-text-stroke:1.5px var(--gold-ink);paint-order:stroke fill}
+.sumcard h2{margin:0 0 4px;font-size:24px;color:var(--gold);-webkit-text-stroke:1.5px var(--gold-ink);paint-order:stroke fill}
 .sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
 .sumgrid .s{background:rgba(0,0,0,.24);border:1px solid var(--line2);border-radius:12px;padding:12px}
 .sumgrid .s b{display:block;font:700 22px/1 "Space Mono";color:#FFE3A6}.sumgrid .s span{font:700 10px/1 "Rubik";text-transform:uppercase;color:var(--txt3)}
-.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:60;background:var(--gg);color:var(--gold-ink);font:800 14px/1.2 "Rubik";
- padding:11px 18px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.5);opacity:0;transition:.25s;max-width:90%;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 22px);transform:translateX(-50%);z-index:60;background:var(--gg);color:var(--gold-ink);font:800 14px/1.2 "Rubik";
+ padding:11px 18px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.5);opacity:0;transition:.25s;max-width:90%;text-align:center;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
 .reset{position:fixed;top:8px;right:10px;z-index:30;background:rgba(0,0,0,.4);border:1px solid var(--line2);color:var(--txt2);font:700 11px/1 "Rubik";padding:7px 10px;border-radius:9px;cursor:pointer}
+.hidden{display:none!important}
 </style>
 </head>
 <body>
 <button class="reset" id="reset">↺ Сброс</button>
 <div id="app">
 
-  <!-- ЭКРАН 1: СБОРКА ПРОТОКОЛА -->
+  <!-- СБОРКА ПРОТОКОЛА -->
   <section class="screen on" id="s-setup">
     <div class="brand"><h1>СЕМЬЯ</h1><p>Собери свой режим — с него начнётся игра</p></div>
-    <p class="lead"><b>Перед стартом собери протокол.</b> Выбери привычки и поставь, сколько раз — плюсиками. Нажми «Погнали» — это твой режим на игру. Каждый день будешь его закрывать: чем честнее, тем дальше ходит фишка.</p>
+    <p class="lead"><b>Перед стартом собери протокол.</b> Выбери привычки и поставь, сколько раз — плюсиками. Это твой режим на игру: чем честнее закрываешь день, тем дальше ходит фишка.</p>
     <div class="sh">Твой протокол<div class="f"></div></div>
     <div style="display:flex;gap:8px;margin:0 0 12px">
       <button class="btn sm" id="preset-fast" style="flex:1">⚡ Быстрый тест · 2</button>
@@ -164,35 +230,64 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
     <div style="height:20px"></div>
   </section>
 
-  <!-- ЭКРАН 2: ИГРА -->
-  <section class="screen" id="s-game">
+  <!-- ИГРА: общий HUD + вкладки -->
+  <div id="game-root" class="hidden">
     <div class="hud">
       <div class="hud__top">
         <div class="hud__day">ДЕНЬ <b id="h-day">1</b>/7</div>
-        <div class="hud__streak" id="h-boss">🎩 8/8</div>
-        <div class="hud__streak" id="h-streak">🔥 серия 0</div>
+        <div class="badge" id="h-boss">🎩 8/8</div>
+        <div class="badge" id="h-streak">🔥 0</div>
       </div>
       <div class="stats" id="h-stats"></div>
     </div>
-    <div class="boardwrap"><div class="board" id="board"></div></div>
-    <div class="act">
-      <p class="hint" id="hint"></p>
-      <div id="act-slot"></div>
-    </div>
-  </section>
 
-  <!-- ЭКРАН 3: ИТОГ -->
-  <section class="screen" id="s-sum"></section>
+    <!-- ГОРОД -->
+    <section class="screen" id="s-city">
+      <div class="mini-count" id="city-count"></div>
+      <div class="boardwrap"><div class="board" id="board"></div></div>
+      <div class="legend"><span><i style="background:#FFC24B"></i>Центр</span><span><i style="background:#FF4D4D"></i>Толкучка</span><span><i style="background:#49B6F0"></i>Порт</span><span><i style="background:#B466F0"></i>Ночь</span><span><i style="background:#FFD54A"></i>Твой</span><span><i style="background:#FF5A5A"></i>Германа</span></div>
+      <div class="act"><p class="hint" id="hint-city"></p><div id="act-city"></div></div>
+    </section>
+
+    <!-- ДЕНЬ -->
+    <section class="screen" id="s-day">
+      <div class="act" style="padding-top:2px"><p class="hint" id="hint-day"></p><div id="act-day"></div></div>
+    </section>
+
+    <!-- БОСС -->
+    <section class="screen" id="s-boss"><div id="boss-body"></div></section>
+
+    <!-- ХРОНИКА -->
+    <section class="screen" id="s-chron">
+      <div class="filters" id="chron-f"></div>
+      <div id="chron-feed"></div>
+    </section>
+
+    <!-- ДОСЬЕ -->
+    <section class="screen" id="s-dossier"><div id="dossier-body"></div></section>
+
+    <!-- ИТОГ -->
+    <section class="screen" id="s-sum"></section>
+  </div>
+
+  <!-- НАВИГАЦИЯ -->
+  <nav class="nav hidden" id="nav"><div class="nav__in">
+    <button class="nav__it on" data-t="city"><span class="i">🗺</span>Город</button>
+    <button class="nav__it" data-t="day" id="nav-day"><span class="i">🎲</span>День<span class="nav__badge hidden" id="day-dot"></span></button>
+    <button class="nav__it" data-t="boss"><span class="i">🎩</span>Босс</button>
+    <button class="nav__it" data-t="chron"><span class="i">📜</span>Хроника</button>
+    <button class="nav__it" data-t="dossier"><span class="i">👤</span>Досье</button>
+  </div></nav>
 
 </div>
 <div id="modal-root"></div>
 <div class="toast" id="toast"></div>
 
 <script>
-/* ═══════════════ ДАННЫЕ ═══════════════ */
+/* ═══════════ ДАННЫЕ ═══════════ */
 const ART = n => `assets/art/districts/${n}-tile-t.png`;
 const ICON = n => `assets/art/icons/${n}-t.png`;
-// протокол по умолчанию (Лео может менять плюсиками; друг добавит своё)
+const CARD_ART = id => `assets/art/cards/${id}-t.png`;
 const SETUP = [
   {name:"Подъём в одно время", hint:"раз/день", icon:"wake", def:1, core:false},
   {name:"Не в телефон с утра", hint:"до 9:00", icon:"nophone", def:1, core:false},
@@ -206,7 +301,6 @@ const SETUP = [
   {name:"Отбой вовремя", hint:"раз/день", icon:"sleep", def:1, core:false},
   {name:"Разгрузочный день", hint:"раз/неделю", emoji:"🍽️", def:1, core:false},
 ];
-/* Быстрый пресет для теста: 1-2 условия челленджа. Полный набор наполните с Германом позже — каждый свой. */
 const SETUP_FAST = [
   {name:"Главное дело дня", hint:"1 задача", icon:"topgoal", def:1, core:true},
   {name:"Спорт", hint:"раз/день", icon:"sport", def:1, core:true},
@@ -223,12 +317,11 @@ const DIST = {
 };
 const SPEC_EM = {"Старт·Общак":"🏁","Сундук":"🎁","КПЗ":"🚔","Контрабанда":"⚓","Стрелка":"🥊","Случай":"🃏","Разгрузочный":"🍽️","Облава":"🚨","Босс":"🎩"};
 const ORDER = ["Старт·Общак","Порт","Толчок","Сундук","Госбанк","Гаражи","КПЗ","АЗС","Ломбард","Контрабанда","Промзона","Вокзал","Стрелка","Телеграф","Космос","Случай","Малина","Разгрузочный","Облава","Интурист","ЦУМ","Сундук","Босс","Верфь"];
-/* Звания: уважение → лимит районов */
 const TITLES = [["Пешка",0,2],["Шестёрка",8,3],["Бригадир",20,4],["Смотрящий",40,6],["Вор",65,9]];
-function titleOf(resp){ let t=TITLES[0]; for(const x of TITLES) if(resp>=x[1]) t=x; return t; }
-function nextTitle(resp){ for(const x of TITLES) if(resp<x[1]) return x; return null; }
-const CARD_ART = id => `assets/art/cards/${id}-t.png`;
-/* Колода «Случай» — 12 карт с лором и артом (Nano Banana) */
+function titleOf(r){ let t=TITLES[0]; for(const x of TITLES) if(r>=x[1]) t=x; return t; }
+const BOSS_META = { name:"Бухгалтер «Сан Саныч»", holds:"Госбанк", art:"assets/art/boss-buhgalter-clean.png",
+  lore:"Тридцать лет вёл чёрную кассу города. Тихий старик в нарукавниках: «Мальчики, деньги счёт любят». Ломается только перед тем, кто ходит как часы.",
+  reward:"+$500 · +5 уважения · квартал дышит свободно" };
 const CARDS = [
   {id:"navodka", t:"Наводка", kind:"удача", d:"Верный человек шепнул адрес — там ждала касса. <span class='money'>+$300</span>.", f:s=>s.money+=300},
   {id:"kotel", t:"Общий котёл", kind:"удача", d:"Собрал дань со своих точек. <span class='money'>+$80</span> за каждый твой район.", f:s=>s.money+=80*myCount(s)},
@@ -244,31 +337,44 @@ const CARDS = [
   {id:"dolzhok", t:"Должок", kind:"удача", d:"Скляровские вернули должок. <span class='money'>+$150</span>.", f:s=>{s.money+=150; s.oppMoney=Math.max(0,(s.oppMoney||0)-150);}},
 ];
 
-/* ═══════════════ СОСТОЯНИЕ ═══════════════ */
+/* ═══════════ СОСТОЯНИЕ ═══════════ */
 const KEY="semya_proto_v1";
 let S=null;
 function fresh(){ return {
   phase:"setup", day:1, maxDay:7, pos:0, moves:0, money:500, power:0, respect:0, streak:0,
   proto:SETUP_FAST.map(x=>({...x, cnt:x.def})), done:{}, owners:{}, dayPct:null,
   discount:false, tail:false, oppMoney:500, oppDays:0,
-  boss:{hp:8,max:8,dead:false,dmg:0}
+  boss:{hp:8,max:8,dead:false,dmg:0}, log:[], days:[], tab:"day"
 }; }
 function load(){ try{const r=localStorage.getItem(KEY); if(r){S=JSON.parse(r);
-  // миграция старых сейвов
   if(!S.boss) S.boss={hp:8,max:8,dead:false,dmg:0};
   if(S.oppMoney==null){ S.oppMoney=500; S.oppDays=0; }
   if(S.discount==null){ S.discount=false; S.tail=false; }
+  if(!S.log) S.log=[]; if(!S.days) S.days=[]; if(!S.tab) S.tab="day";
   return true;}}catch(e){} return false; }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
 const $=s=>document.querySelector(s);
 const fmt=n=>(n<0?"−":"")+Math.abs(n).toLocaleString("ru-RU").replace(/,/g," ");
-function myCount(s){ return Object.values(s.owners).filter(o=>o==="me").length; }
-function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("show"),1800); }
+function myCount(s){ return Object.values((s||S).owners).filter(o=>o==="me").length; }
+function oppCount(){ return Object.values(S.owners).filter(o=>o==="opp").length; }
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("show"),2000); }
+function log(side,ico,txt){ S.log.unshift({d:S.day, side, ico, txt}); if(S.log.length>80)S.log.length=80; }
 
-/* ═══════════════ ЭКРАНЫ ═══════════════ */
+/* ═══════════ НАВИГАЦИЯ/ЭКРАНЫ ═══════════ */
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id)); }
+function go(tab){
+  S.tab=tab; save();
+  document.querySelectorAll(".nav__it").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
+  if(tab==="city"){ show("s-city"); renderCity(); }
+  if(tab==="day"){ show("s-day"); renderDayTab(); }
+  if(tab==="boss"){ show("s-boss"); renderBoss(); }
+  if(tab==="chron"){ show("s-chron"); renderChron(); }
+  if(tab==="dossier"){ show("s-dossier"); renderDossier(); }
+  window.scrollTo({top:0});
+}
+document.querySelectorAll(".nav__it").forEach(b=>b.onclick=()=>go(b.dataset.t));
 
-/* ── СБОРКА ПРОТОКОЛА ── */
+/* ═══════════ СЕТАП ═══════════ */
 function renderSetup(){
   $("#proto-list").innerHTML = S.proto.map((p,i)=>`
     <div class="pitem">
@@ -277,33 +383,44 @@ function renderSetup(){
       <div class="stp" data-i="${i}"><button class="dec">–</button><span class="v">${p.cnt}</span><button class="inc">+</button></div>
     </div>`).join("");
 }
-$("#proto-list")?.addEventListener("click",e=>{
+$("#proto-list").addEventListener("click",e=>{
   const b=e.target.closest(".stp button"); if(!b) return;
   const i=+b.closest(".stp").dataset.i; const p=S.proto[i];
   p.cnt = Math.max(0, Math.min(9, p.cnt + (b.classList.contains("inc")?1:-1)));
   b.closest(".stp").querySelector(".v").textContent=p.cnt; save();
 });
 function markPreset(p){
-  const f=$("#preset-fast"), u=$("#preset-full");
-  f.className="btn sm"+(p==='fast'?"":" wood"); u.className="btn sm"+(p==='full'?"":" wood");
+  $("#preset-fast").className="btn sm"+(p==='fast'?"":" wood");
+  $("#preset-full").className="btn sm"+(p==='full'?"":" wood");
 }
 $("#preset-fast").onclick=()=>{ S.proto=SETUP_FAST.map(x=>({...x,cnt:x.def})); markPreset('fast'); renderSetup(); save(); };
 $("#preset-full").onclick=()=>{ S.proto=SETUP.map(x=>({...x,cnt:x.def})); markPreset('full'); renderSetup(); save(); };
-$("#start-btn").onclick=()=>{ S.proto=S.proto.filter(p=>p.cnt>0); S.phase="day-open"; save(); show("s-game"); startDay(); };
+$("#start-btn").onclick=()=>{ S.proto=S.proto.filter(p=>p.cnt>0); S.phase="day-open";
+  log('n','🏁','Челлендж начался. Южноморск ждёт.');
+  save(); enterGame(); };
 
-/* ── HUD ── */
+function enterGame(){
+  $("#s-setup").classList.remove("on");
+  $("#game-root").classList.remove("hidden");
+  $("#nav").classList.remove("hidden");
+  renderHUD();
+  go(S.phase==="day-open"||S.phase==="rolled" ? "day" : "city");
+}
+
+/* ═══════════ HUD ═══════════ */
 function renderHUD(){
   $("#h-day").textContent=S.day;
   const t=titleOf(S.respect); $("#h-streak").textContent=`🎖 ${t[0]} · 🔥${S.streak}`;
-  const b=S.boss||{hp:8,max:8}; $("#h-boss").textContent = b.dead? "🎩 выбит" : `🎩 ${b.hp}/${b.max}`;
-  const st=[["👣","Ходы",S.moves],["money","Деньги","$"+fmt(S.money),1],["muscles","Сила",S.power],["respect","Уважение",S.respect]];
-  $("#h-stats").innerHTML=st.map(([ic,lbl,val,isImg])=>{
+  const b=S.boss; $("#h-boss").textContent = b.dead? "🎩 выбит" : `🎩 ${b.hp}/${b.max}`;
+  const st=[["👣","Ходы",S.moves],["money","Деньги","$"+fmt(S.money)],["muscles","Сила",S.power],["respect","Уважение",S.respect]];
+  $("#h-stats").innerHTML=st.map(([ic,lbl,val])=>{
     const icon = ic.length<=2 ? `<div class="em">${ic}</div>` : `<img src="${ICON(ic)}" alt="">`;
     return `<div class="stat">${icon}<b>${val}</b><span>${lbl}</span></div>`;
   }).join("");
+  $("#day-dot").classList.toggle("hidden", S.phase!=="day-open");
 }
 
-/* ── ДОСКА ── */
+/* ═══════════ ГОРОД ═══════════ */
 function boardCells(n){
   const cols=Math.max(3,Math.ceil(n/4)+1); const cells=[];
   for(let c=1;c<=cols;c++)cells.push([1,c]); for(let r=2;r<=cols;r++)cells.push([r,cols]);
@@ -323,19 +440,38 @@ function renderBoard(hotIdx){
     html+=`<div class="${cls}" ${gc?`data-g="1" style="grid-row:${rr};grid-column:${cc};--gc:${gc}"`:`style="grid-row:${rr};grid-column:${cc}"`}>
       <span class="n">${i+1}</span>${body}<span class="lbl">${name.replace("Старт·","")}</span>${toks}</div>`;
   }
-  html+=`<div class="board__c"><img src="assets/crest-semya.png" alt=""><div class="t">СЕМЬЯ</div><div class="s">Круг = собрал доход с районов</div></div>`;
+  html+=`<div class="board__c"><img src="assets/crest-semya.png" alt=""><div class="t">СЕМЬЯ</div><div class="s">Круг = получка $500 + доход районов</div></div>`;
   b.style.gridTemplateColumns=`repeat(${cols},1fr)`; b.style.gridTemplateRows=`repeat(${cols},1fr)`;
   b.innerHTML=html;
 }
+function renderCity(){
+  renderBoard();
+  const free=ORDER.filter((n,i)=>DIST[n]&&!S.owners[i]).length;
+  $("#city-count").innerHTML=`<b class="c1">${myCount(S)}<em>Твои</em></b><b style="color:#FF9E9E">${oppCount()}<em>Германа</em></b><b>${free}<em>Ничейные</em></b>`;
+  const h=$("#hint-city"), slot=$("#act-city");
+  if(S.phase==="day-open"||S.phase==="rolled"){ h.innerHTML=`Сначала закрой день — вкладка <b>🎲 День</b>.`; slot.innerHTML=""; }
+  else if(S.phase==="tile-done"){ h.innerHTML=`Ход сделан.`; slot.innerHTML=`<button class="btn wood" id="end-day">Завершить день ${S.day}</button>`; $("#end-day").onclick=endDay; }
+  else { h.innerHTML=""; slot.innerHTML=""; }
+}
 
-/* ── ФАЗА: ОТКРЫТЬ ДЕНЬ (чек-лист) ── */
-function startDay(){
-  S.phase="day-open"; S.done={}; S.dayPct=null; renderHUD(); renderBoard();
-  $("#hint").innerHTML=`Закрой свой день по-честному. <b>Ядро</b> обязательно.`;
-  $("#act-slot").innerHTML=`<div class="checks" id="checks"></div><div style="height:8px"></div><button class="btn" id="finish-day">Подбить день</button>`;
-  renderChecks();
-  $("#checks").onclick=e=>{ const c=e.target.closest(".chk"); if(!c)return; const i=+c.dataset.i; S.done[i]=!S.done[i]; c.classList.toggle("on",S.done[i]); save(); };
-  $("#finish-day").onclick=dayResult;
+/* ═══════════ ДЕНЬ ═══════════ */
+function renderDayTab(){
+  const h=$("#hint-day"), slot=$("#act-day");
+  if(S.phase==="day-open"){
+    h.innerHTML=`Закрой свой день по-честному. <b>Ядро</b> обязательно.`;
+    slot.innerHTML=`<div class="checks" id="checks"></div><div style="height:10px"></div><button class="btn" id="finish-day">Подбить день</button>`;
+    renderChecks();
+    $("#checks").onclick=e=>{ const c=e.target.closest(".chk"); if(!c)return; const i=+c.dataset.i; S.done[i]=!S.done[i]; c.classList.toggle("on",S.done[i]); save(); };
+    $("#finish-day").onclick=dayResult;
+  } else if(S.phase==="rolled"){
+    h.innerHTML=`Ходы начислены — выходи в город.`;
+    slot.innerHTML=`<button class="btn" id="walk-btn">▶ Выйти в город · ${S.moves} ходов</button>`;
+    $("#walk-btn").onclick=()=>{ const m=S.moves; S.moves=0; go("city"); walk(m); };
+  } else if(S.phase==="tile-done"){
+    h.innerHTML=`День ${S.day} отработан на ${S.dayPct}%. Заверши его на вкладке Город.`;
+    slot.innerHTML=`<button class="btn wood" id="end-day2">Завершить день ${S.day}</button>`;
+    $("#end-day2").onclick=endDay;
+  } else { h.innerHTML="Идёшь по городу…"; slot.innerHTML=""; }
 }
 function renderChecks(){
   $("#checks").innerHTML=S.proto.map((p,i)=>`
@@ -348,27 +484,25 @@ function renderChecks(){
 function dayResult(){
   const total=S.proto.length; const doneN=S.proto.filter((_,i)=>S.done[i]).length;
   const coreOk=S.proto.every((p,i)=>!p.core||S.done[i]);
-  let pct=Math.round(doneN/total*100); if(!coreOk) pct=Math.min(pct,60); // без ядра день не «зачётный»
-  S.dayPct=pct;
-  // ходы
+  let pct=Math.round(doneN/total*100); if(!coreOk) pct=Math.min(pct,60);
+  S.dayPct=pct; S.days.push({day:S.day,pct});
   let moves= pct>=100?6 : pct>=85?4 : pct>=50?2 : 0;
   const sbonus = S.streak>=7?2 : S.streak>=3?1 : 0; if(moves>0) moves+=sbonus;
-  // сила из ядра
   const coreDone=S.proto.filter((p,i)=>p.core&&S.done[i]).length; S.power+=coreDone;
-  // деньги за закрытый день (как получка — иначе не на что покупать)
   const cash = pct>=100?300 : pct>=85?200 : pct>=50?100 : 0; S.money+=cash;
-  // серия/уважение + рост звания
   const prevT=titleOf(S.respect)[0];
   if(pct>=85){ S.streak++; S.respect += pct>=100?3:2; } else { S.streak=0; }
-  const newT=titleOf(S.respect); if(newT[0]!==prevT) setTimeout(()=>toast(`Новое звание: ${newT[0]}! Лимит районов ${newT[2]}`),900);
-  // удар по смотрящему закрытым днём (рейд недели): ≥85% = −1, сотка = −2
+  const newT=titleOf(S.respect); if(newT[0]!==prevT){ setTimeout(()=>toast(`Новое звание: ${newT[0]}! Лимит районов ${newT[2]}`),900); log('g','🎖',`<b>Ты</b> поднялся до звания <b>${newT[0]}</b>`); }
   let bossDmg=0;
   if(S.boss && !S.boss.dead && pct>=85){
     bossDmg = pct>=100?2:1; S.boss.hp=Math.max(0,S.boss.hp-bossDmg); S.boss.dmg=(S.boss.dmg||0)+bossDmg;
+    log('g','🎩',`Твой режим ударил смотрящего: <b>−${bossDmg}</b> терпения`);
     if(S.boss.hp<=0){ S.boss.dead=true; S.money+=500; S.respect+=5;
+      log('g','👑','<b>Смотрящий ВЫБИТ!</b> +$500 · +5 уважения');
       setTimeout(()=>toast("🎩 Смотрящий ВЫБИТ твоим режимом! +$500 · +5 уважения"),1400);
     }
   }
+  log('g','📅',`<b>Ты</b> закрыл день ${S.day} на <b>${pct}%</b>${cash?` · +$${cash}`:""}${moves?` · ${moves} ходов`:""}`);
   S.moves+=moves; S.phase="rolled"; save(); renderHUD();
   const verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо — ядро не добил.":"Ядро сорвано — день не в счёт.";
   openModal({
@@ -376,19 +510,21 @@ function dayResult(){
     title: moves>0?`+${moves} ходов`:"0 ходов",
     reward:[["👣",moves+" ходов"], cash?["money","+$"+cash]:null, ["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:null, bossDmg?["🎩","−"+bossDmg+" боссу"]:null, sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
     desc:verdict+(moves>0?" Жми «Выйти в город».":" Ходов нет — сегодня стоишь. Завтра поднимайся."),
-    btns: moves>0?[["▶ Выйти в город","btn",()=>{closeModal();walk(moves);}]]:[["Завершить день","btn wood",()=>{closeModal();endDay();}]]
+    btns: moves>0?[["▶ Выйти в город","btn",()=>{closeModal(); const m=S.moves; S.moves=0; go("city"); walk(m);}]]
+                 :[["Завершить день","btn wood",()=>{closeModal();endDay();}]]
   });
 }
 
-/* ── ФАЗА: ДВИЖЕНИЕ ── */
+/* ═══════════ ДВИЖЕНИЕ ═══════════ */
 function walk(steps){
-  S.phase="moving"; $("#hint").innerHTML=`Идёшь по городу…`; $("#act-slot").innerHTML="";
+  S.phase="moving"; save(); renderDayTab(); $("#hint-city").innerHTML=`Идёшь по городу…`; $("#act-city").innerHTML="";
   let left=steps;
   const step=()=>{
     if(left<=0){ landed(); return; }
     S.pos=(S.pos+1)%ORDER.length;
-    if(S.pos===0){ // прошёл старт — получка с общака + доход районов (как GO в Монополии)
+    if(S.pos===0){
       const inc=income(); S.money+=500+inc;
+      log('g','🏁',`Круг пройден: получка <b>+$500</b>${inc?` · районы +$${fmt(inc)}`:""}`);
       toast("Круг! Получка +$500"+(inc>0?(" · районы +$"+fmt(inc)):""));
     }
     left--; renderHUD(); renderBoard(S.pos); save();
@@ -398,26 +534,27 @@ function walk(steps){
 }
 function income(){ let s=0; for(const i in S.owners) if(S.owners[i]==="me"){ const d=DIST[ORDER[i]]; if(d)s+=d.inc; } return s; }
 
-/* ── ФАЗА: КЛЕТКА ── */
+/* ═══════════ КЛЕТКА ═══════════ */
 function landed(){
   S.phase="tile"; const name=ORDER[S.pos]; const d=DIST[name]; const own=S.owners[S.pos];
-  renderHUD();
+  renderHUD(); save();
   if(d && !own){ tileBuy(name,d); }
   else if(d && own==="me"){ tileMine(name,d); }
   else if(d && own==="opp"){ tilePay(name,d); }
   else tileSpecial(name);
 }
-function afterTile(){ $("#hint").innerHTML=`Ход сделан.`; $("#act-slot").innerHTML=`<button class="btn wood" id="end-day">Завершить день ${S.day}</button>`; $("#end-day").onclick=endDay; save(); }
+function afterTile(){ S.phase="tile-done"; save(); renderCity(); renderDayTab(); }
 function tileBuy(name,d){
   const t=titleOf(S.respect), limit=t[2], atLimit=myCount(S)>=limit;
   const price = S.discount? Math.floor(d.price/2) : d.price;
   const can=S.money>=price && !atLimit;
   const disc = S.discount? ` <span class='money'>(скидка 50%!)</span>`:"";
   const buy = ()=>{ S.money-=price; S.owners[S.pos]="me"; if(S.discount){S.discount=false;}
+    log('g','🏙',`<b>Ты</b> взял под крышу <b>${name}</b> за $${fmt(price)}`);
     toast(name+" — твой!"); closeModal(); afterTile(); renderBoard(); renderHUD(); };
   openModal({ kind:"Свободный район", artImg:ART(d.art), title:name,
     desc:`Цена <b>$${fmt(price)}</b>${disc} · доход <span class="money">$${d.inc}/круг</span>. Возьмёшь под крышу?`+
-      (atLimit?`<br><span class='bad'>Лимит районов ${limit} («${t[0]}») — подними уважение до звания повыше.</span>`:""),
+      (atLimit?`<br><span class='bad'>Лимит районов ${limit} («${t[0]}») — подними уважение.</span>`:""),
     btns:[ can?["Купить · $"+fmt(price),"btn green",buy]
              : [atLimit?("Лимит "+limit+" районов"):("Не хватает $"+fmt(price-S.money)),"btn",null],
            ["Пройти мимо","btn wood",()=>{closeModal();afterTile();}] ].filter(x=>x[2]!==null||x[1]==="btn") });
@@ -428,54 +565,59 @@ function tileMine(name,d){
     btns:[["Ясно","btn wood",()=>{closeModal();afterTile();}]] });
 }
 function tilePay(name,d){
-  const rent=Math.round(d.inc*0.8); S.money=Math.max(0,S.money-rent);
-  openModal({ kind:"Чужой район", artImg:ART(d.art), title:name,
-    desc:`Тут крыша соперника. Платишь за постой <span class="bad">−$${fmt(rent)}</span>.`,
+  const rent=Math.round(d.inc*0.8); S.money=Math.max(0,S.money-rent); S.oppMoney=(S.oppMoney||0)+rent;
+  log('s','💸',`Постой у Германа: <b>${name}</b> · <b>−$${fmt(rent)}</b>`);
+  openModal({ kind:"Район Германа", artImg:ART(d.art), title:name,
+    desc:`Тут крыша Скляровских. Платишь за постой <span class="bad">−$${fmt(rent)}</span>.`,
     btns:[["Заплатил","btn wood",()=>{closeModal();afterTile();}]] });
   renderHUD();
 }
 function tileSpecial(name){
-  if(name.startsWith("Старт")){ openModal({kind:"Общак",art:`<span class="big">🏁</span>`,title:"Старт · Общак",desc:"Штаб семьи. Проходя круг, собираешь доход с районов.",btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name.startsWith("Старт")){ openModal({kind:"Общак",art:`<span class="big">🏁</span>`,title:"Старт · Общак",desc:"Штаб семьи. Проходя круг — получка $500 + доход с районов.",btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="Сундук"){ chest(); return; }
   if(name==="Случай"){ card(); return; }
   if(name==="Разгрузочный"){ openModal({kind:"Разгрузочный день",art:`<span class="big">🍽️</span>`,title:"Голодание",
       desc:"Выдержишь сутки — награда. В прототипе: <span class='money'>+2 силы, +2 уважения</span>.",
-      btns:[["Держу!","btn green",()=>{S.power+=2;S.respect+=2;toast("+2 силы · +2 уважения");closeModal();afterTile();renderHUD();}],["Не сегодня","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+      btns:[["Держу!","btn green",()=>{S.power+=2;S.respect+=2;log('g','🍽️','<b>Разгрузочный день</b> выдержан: +2 силы · +2 уважения');toast("+2 силы · +2 уважения");closeModal();afterTile();renderHUD();}],["Не сегодня","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="Облава"){ let loss=Math.min(S.money,150+S.day*20); const tailed=S.tail; if(tailed){loss=Math.min(S.money,loss*2);S.tail=false;} S.money-=loss; renderHUD();
-    openModal({kind:"Опасность",art:`<span class="big">🚨</span>`,title:"Облава",desc:`Менты чешут гавань${tailed?" — и у тебя <b>хвост</b>, бьют вдвое":""}. <span class='bad'>−$${fmt(loss)}</span>. Слово недели спасло бы.`,btns:[["Пронесло","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+    log('n','🚨',`Облава${tailed?" (с хвостом, вдвое)":""}: <b>−$${fmt(loss)}</b>`);
+    openModal({kind:"Опасность",art:`<span class="big">🚨</span>`,title:"Облава",desc:`Менты чешут гавань${tailed?" — и у тебя <b>хвост</b>, бьют вдвое":""}. <span class='bad'>−$${fmt(loss)}</span>.`,btns:[["Пронесло","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="КПЗ"){ openModal({kind:"КПЗ",art:`<span class="big">🚔</span>`,title:"Обезьянник",desc:"Просто проходишь мимо — ты держишь слово. Сорвал бы — пропустил ход.",btns:[["Мимо","btn wood",()=>{closeModal();afterTile();}]]}); return; }
-  if(name==="Контрабанда"){ openModal({kind:"Аукцион",art:`<span class="big">⚓</span>`,title:"Контрабанда",desc:"Пришёл сухогруз. В прототипе — редкий лот: <span class='money'>+3 хода</span>.",btns:[["Взять","btn green",()=>{S.moves+=3;toast("+3 хода");closeModal();afterTile();renderHUD();}],["Пас","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name==="Контрабанда"){ openModal({kind:"Аукцион",art:`<span class="big">⚓</span>`,title:"Контрабанда",desc:"Пришёл сухогруз. Редкий лот: <span class='money'>+3 хода</span>.",btns:[["Взять","btn green",()=>{S.moves+=3;log('g','⚓','Контрабанда: <b>+3 хода</b>');toast("+3 хода");closeModal();afterTile();renderHUD();}],["Пас","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="Стрелка"){
     const oppIdx=Object.keys(S.owners).filter(i=>S.owners[i]==="opp");
     const fit=S.dayPct>=85, strong=S.power>=2;
     if(!oppIdx.length){
-      const win=fit; if(win)S.respect+=2;
+      const win=fit; if(win){S.respect+=2; log('g','🥊','Стрелка без ставки: <b>+2 уважения</b>');}
       openModal({kind:"Стрелка",art:`<span class="big">🥊</span>`,title:"Стрелка",
-        desc: win?"У Скляровских пока нет районов — показал силу на словах. <span class='money'>+2 уважения</span>.":"Сегодня слабоват для разборок. В другой раз.",
+        desc: win?"У Германа пока нет районов — показал характер. <span class='money'>+2 уважения</span>.":"Сегодня слабоват для разборок.",
         btns:[["Ок","btn wood",()=>{closeModal();afterTile();renderHUD();}]]}); return;
     }
     const can=fit&&strong;
     const take=()=>{ const i=oppIdx[Math.floor((S.day*3)%oppIdx.length)]; S.power-=2; S.owners[i]="me";
+      log('g','🥊',`<b>Стрелка!</b> Ты отжал <b>${ORDER[i]}</b> у Германа (−2⚡)`);
       toast(ORDER[i]+" отжат у Скляровских!"); closeModal(); afterTile(); renderBoard(); renderHUD(); };
     openModal({kind:"Стрелка",art:`<span class="big">🥊</span>`,title:"Стрелка",
-      desc: can?`Забиваешь стрелку Скляровским за район. Ставка — <b>2 силы</b>. Твоя дисциплина сегодня крепче — заберёшь точку.`
+      desc: can?`Забиваешь стрелку Герману за район. Ставка — <b>2 силы</b>. Твоя дисциплина сегодня крепче — заберёшь точку.`
         : `Отжать район: нужен <b>день ≥85%</b> и <b>2 силы</b>. Сейчас: день ${S.dayPct}% · сила ${S.power}.`,
       btns:[ can?["Отжать район · −2⚡","btn red",take]:null, ["Разойтись миром","btn wood",()=>{closeModal();afterTile();}] ].filter(Boolean)}); return; }
   if(name==="Босс"){
-    const b=S.boss||{hp:8,max:8,dead:false};
+    const b=S.boss;
     if(b.dead){
       openModal({kind:"Смотрящий недели",art:`<span class="big">👑</span>`,title:"Босс выбит",
-        desc:"Старый смотрящий сломан твоим режимом. Квартал дышит свободно до следующей недели.",
+        desc:"Старый смотрящий сломан. Квартал дышит свободно до следующей недели.",
         btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]}); return;
     }
     let segs=""; for(let i=0;i<b.max;i++) segs+= i<b.hp?"🟥":"⬛";
     const can=S.dayPct>=85&&S.power>=1;
     const hit=()=>{ S.power-=1; b.hp=Math.max(0,b.hp-2); b.dmg=(b.dmg||0)+2;
       let msg="Жёсткий удар! −2 терпения";
-      if(b.hp<=0){ b.dead=true; S.money+=500; S.respect+=5; msg="🎩 БОСС ВЫБИТ! +$500 · +5 уважения"; }
+      log('g','🎩','Личный удар по смотрящему: <b>−2</b> терпения (−1⚡)');
+      if(b.hp<=0){ b.dead=true; S.money+=500; S.respect+=5; msg="🎩 БОСС ВЫБИТ! +$500 · +5 уважения";
+        log('g','👑','<b>Смотрящий ВЫБИТ!</b> +$500 · +5 уважения'); }
       toast(msg); closeModal(); afterTile(); renderHUD(); save(); };
     openModal({kind:"Смотрящий недели",art:`<span class="big">🎩</span>`,title:"Босс",
-      desc:`Терпение: <b>${b.hp}/${b.max}</b><br>${segs}<br><br>Каждый твой день ≥85% бьёт его на −1 (сотка −2). Тут, на его земле, можно добить лично: <b>1 сила</b> → <span class='money'>−2 терпения</span>.`+(can?"":`<br><span class='bad'>Для удара: день ≥85% и 1 сила (сейчас ${S.dayPct}% · ${S.power}⚡).</span>`),
+      desc:`Терпение: <b>${b.hp}/${b.max}</b><br>${segs}<br><br>Каждый твой день ≥85% бьёт −1 (сотка −2). На его земле можно добить лично: <b>1 сила</b> → <span class='money'>−2 терпения</span>.`+(can?"":`<br><span class='bad'>Для удара: день ≥85% и 1 сила (сейчас ${S.dayPct}% · ${S.power}⚡).</span>`),
       btns:[ can?["Ударить лично · −1⚡","btn red",hit]:null, ["Отойти","btn wood",()=>{closeModal();afterTile();}] ].filter(Boolean)}); return; }
   openModal({kind:"Клетка",art:`<span class="big">🏙️</span>`,title:name,desc:"…",btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]});
 }
@@ -486,6 +628,7 @@ function chest(){
     : tier==="Серебряный"?[["👣","+4 хода",()=>S.moves+=4],["money","+$400",()=>S.money+=400],["💪","+3 силы",()=>S.power+=3]]
     : [["👣","+2 хода",()=>S.moves+=2],["money","+$200",()=>S.money+=200],["🎖","+1 уважение",()=>S.respect+=1]];
   const pick = pool[Math.floor((S.day*7+S.pos)%pool.length)]; pick[2]();
+  log('g','🎁',`${tier} сундук: <b>${pick[1]}</b>`);
   renderHUD(); save();
   openModal({kind:tier+" сундук",art:`<span class="big">${emo}</span>`,title:"Сундук!",
     reward:[[pick[0].length<=2?pick[0]:"🎁",pick[1]]],
@@ -496,26 +639,27 @@ function card(){
   const art=`<img src="${CARD_ART(c.id)}" alt="" onerror="this.outerHTML='&lt;span class=&quot;big&quot;&gt;🃏&lt;/span&gt;'">`;
   if(c.jump){
     const idx=ORDER.indexOf(c.jump);
+    log('g','🃏',`Карта «<b>${c.t}</b>»: прыжок на ${c.jump}`);
     openModal({kind:"Карта случая · "+c.kind,art,title:c.t,desc:c.d,
       btns:[["Поехали на "+c.jump,"btn",()=>{ closeModal(); S.pos=idx; renderBoard(S.pos); save(); setTimeout(landed,350); }]]});
     return;
   }
-  c.f(S); renderHUD(); save();
+  c.f(S); log(c.kind==='беда'?'n':'g','🃏',`Карта «<b>${c.t}</b>» — ${c.kind}`); renderHUD(); save();
   openModal({kind:"Карта случая · "+c.kind,art,title:c.t,desc:c.d,btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]});
 }
 
-/* ── КОНЕЦ ДНЯ ── */
-/* Теневой соперник: Скляровские живут свой день и скупают город */
+/* ═══════════ КОНЕЦ ДНЯ / СОПЕРНИК ═══════════ */
 function oppTurn(){
   const pcts=[86,100,72,93,86,58,100]; const pct=pcts[(S.day-1)%pcts.length];
   if(pct>=85){ S.oppMoney+=450; S.oppDays++; }
-  const oppOwned=Object.values(S.owners).filter(o=>o==="opp").length;
+  log('s','📅',`<b>Герман</b> закрыл день на <b>${pct}%</b>${pct>=85?" · +$450":""}`);
+  const oppOwned=oppCount();
   if(oppOwned<4){
-    // самый дешёвый свободный район
     let best=null;
     ORDER.forEach((n,i)=>{ const d=DIST[n]; if(d&&!S.owners[i]&&(!best||d.price<DIST[ORDER[best]].price)) best=i; });
     if(best!=null && S.oppMoney>=DIST[ORDER[best]].price){
       S.oppMoney-=DIST[ORDER[best]].price; S.owners[best]="opp";
+      log('s','🏙',`<b>Герман</b> взял под крышу <b>${ORDER[best]}</b>`);
       setTimeout(()=>toast("🌹 Скляровские взяли "+ORDER[best]),700);
     }
   }
@@ -523,36 +667,122 @@ function oppTurn(){
 function endDay(){
   oppTurn();
   if(S.day>=S.maxDay){ save(); return summary(); }
-  S.day++; S.phase="day-open"; save(); startDay();
+  S.day++; S.phase="day-open"; S.done={}; S.dayPct=null; save();
+  renderHUD(); go("day");
   toast("День "+S.day+" · новый заход");
 }
 
-/* ── ИТОГ НЕДЕЛИ ── */
+/* ═══════════ БОСС-ВКЛАДКА ═══════════ */
+function renderBoss(){
+  const b=S.boss;
+  let segs=""; for(let i=0;i<b.max;i++) segs+=`<i class="${i<b.hp?'on':''}"></i>`;
+  $("#boss-body").innerHTML=`
+  <div class="artframe steel">
+    <div class="img" style="background-image:url('${BOSS_META.art}')"></div>
+    <div class="scrim"></div>
+    <div class="cap">
+      <div class="kick">Смотрящий · неделя 1</div>
+      <div class="name">${BOSS_META.name}</div>
+      <div class="sub">Держит <b>${BOSS_META.holds}</b></div>
+    </div>
+  </div>
+  ${b.dead?`
+  <div class="card" style="text-align:center;border-color:var(--gold)">
+    <div style="font-size:40px">👑</div><h4>Смотрящий выбит</h4>
+    <p>Ты сломал его режимом. Награда получена: <b>${BOSS_META.reward}</b>.</p>
+  </div>`:`
+  <div class="card">
+    <h4>Терпение · ${b.hp}/${b.max}</h4>
+    <div class="hpbar">${segs}</div>
+    <div class="kv"><span class="pill">твой урон: ${b.dmg||0}</span><span class="pill">осталось дней: ${Math.max(0,S.maxDay-S.day+1)}</span></div>
+  </div>
+  <div class="card">
+    <h4>Как бить</h4>
+    <p>• Каждый закрытый день <b>≥85%</b> бьёт автоматически: <b>−1</b> терпения, сотка — <b>−2</b>.<br>
+    • Попал на его клетку — добей лично: <b>1 сила → −2</b>.<br>
+    • Выбьешь до конца недели — <span style="color:#8CE59A;font-weight:800">${BOSS_META.reward}</span>.</p>
+  </div>`}
+  <div class="card"><p class="note" style="margin:0;border:0;padding:0">${BOSS_META.lore}</p></div>`;
+}
+
+/* ═══════════ ХРОНИКА ═══════════ */
+let chronF="all";
+function renderChron(){
+  const F=[["all","Всё"],["g","Мой клан"],["s","Герман"],["n","Город"]];
+  $("#chron-f").innerHTML=F.map(([k,l])=>`<button class="${chronF===k?'on':''}" data-k="${k}">${l}</button>`).join("");
+  document.querySelectorAll("#chron-f button").forEach(b=>b.onclick=()=>{chronF=b.dataset.k;renderChron();});
+  const items=S.log.filter(e=>chronF==="all"||e.side===chronF);
+  let html="", lastDay=null;
+  if(!items.length) html=`<div class="card"><p>Хроника пуста — город ждёт первого хода.</p></div>`;
+  items.forEach(e=>{
+    if(e.d!==lastDay){ html+=`<div class="day-tag">День ${e.d}</div>`; lastDay=e.d; }
+    html+=`<div class="ln ${e.side}"><span class="ico">${e.ico}</span><span class="tx">${e.txt}</span><span class="dd">Д${e.d}</span></div>`;
+  });
+  $("#chron-feed").innerHTML=html;
+}
+
+/* ═══════════ ДОСЬЕ ═══════════ */
+function renderDossier(){
+  const t=titleOf(S.respect);
+  const ladder=TITLES.map((x,i)=>{
+    const done=S.respect>=x[1]&&x[0]!==t[0]; const cur=x[0]===t[0];
+    return `<div class="lrow ${done?'done':''} ${cur?'cur':''}"><div class="lseal">${i+1}</div><b>${x[0]}</b><span class="req">${x[1]}🎖 · лимит ${x[2]}</span></div>`;
+  }).join("");
+  const days=Array.from({length:S.maxDay},(_,i)=>{
+    const rec=S.days.find(d=>d.day===i+1);
+    if(!rec) return `<b>${i+1}</b>`;
+    const cls=rec.pct>=100?'crit':rec.pct>=85?'ok':'bad';
+    return `<b class="${cls}" title="${rec.pct}%">${rec.pct}</b>`;
+  }).join("");
+  $("#dossier-body").innerHTML=`
+  <div class="artframe">
+    <div class="img" style="background-image:url('assets/art/carleone-clean.png');background-position:50% 18%"></div>
+    <div class="scrim"></div>
+    <div class="cap">
+      <div class="kick">${t[0]}</div>
+      <div class="name">Лео Карлеоне</div>
+      <div class="sub">«Волк с Уолл-стрит» · vs Герман Скляровский</div>
+    </div>
+  </div>
+  <div class="sh">Прогресс дней<div class="f"></div></div>
+  <div class="card"><div class="days">${days}</div>
+    <p class="note">Число = % дня. Золото — сотка, зелёное — зачёт (≥85%), красное — слабый.</p></div>
+  <div class="sh">Звания<div class="f"></div></div>
+  <div class="card">${ladder}</div>
+  <div class="sh">Твоя семья<div class="f"></div></div>
+  <div class="card"><div class="kv">
+    <span class="pill">районы: ${myCount(S)}</span><span class="pill">серия: 🔥${S.streak}</span>
+    <span class="pill">деньги: $${fmt(S.money)}</span><span class="pill">сила: ${S.power}⚡</span>
+    <span class="pill">уважение: ${S.respect}🎖</span><span class="pill">босс: ${S.boss.dead?"выбит":S.boss.hp+"/"+S.boss.max}</span>
+  </div></div>
+  <div class="card"><h4>Слово недели · скоро</h4><p>Обет («без сахара», «без скролла») с баффом за неделю и штрафом за срыв — включим в боевой версии на двоих.</p></div>`;
+}
+
+/* ═══════════ ИТОГ ═══════════ */
 function summary(){
   S.phase="summary"; save(); show("s-sum");
-  const score = myCount(S)*10 + S.respect + Math.floor(S.money/100) + S.power;
-  const oppOwned=Object.values(S.owners).filter(o=>o==="opp").length;
-  const oppScore = oppOwned*10 + (S.oppDays||0)*5 + Math.floor((S.oppMoney||0)/100);
+  const score = myCount(S)*10 + S.respect + Math.floor(S.money/100) + S.power + (S.boss.dead?10:0);
+  const oppScore = oppCount()*10 + (S.oppDays||0)*5 + Math.floor((S.oppMoney||0)/100);
   const win=score>=oppScore;
   $("#s-sum").innerHTML=`
-    <div class="brand" style="padding-top:34px"><h1>${win?"ПОБЕДА":"ИТОГ"}</h1><p>Первая неделя в Южноморске</p></div>
+    <div class="brand" style="padding-top:24px"><h1>${win?"ПОБЕДА":"ИТОГ"}</h1><p>Первая неделя в Южноморске</p></div>
     <div class="sumcard">
-      <h2>🥂 Ты ${score} : ${oppScore} Скляровские 🌹</h2>
-      <p style="color:var(--txt2);margin:2px 0 0">${win?"Твой режим крепче — город это чувствует. Звание: "+titleOf(S.respect)[0]+".":"Скляровские впереди — но месяц длинный. Держи серию, отжимай районы."}</p>
+      <h2>🥂 Ты ${score} : ${oppScore} Герман 🌹</h2>
+      <p style="color:var(--txt2);margin:2px 0 0">${win?"Твой режим крепче — город это чувствует. Звание: "+titleOf(S.respect)[0]+".":"Герман впереди — но месяц длинный. Держи серию, отжимай районы."}</p>
       <div class="sumgrid">
         <div class="s"><b>${myCount(S)}</b><span>Районов</span></div>
         <div class="s"><b>$${fmt(S.money)}</b><span>Общак</span></div>
         <div class="s"><b>${S.respect}</b><span>Уважение</span></div>
-        <div class="s"><b>🔥${S.streak}</b><span>Серия</span></div>
+        <div class="s"><b>${S.boss.dead?"✓":"—"}</b><span>Босс выбит</span></div>
       </div>
       <button class="btn" id="again">↺ Сыграть неделю заново</button>
       <div style="height:9px"></div>
       <a href="design.html" class="btn wood" style="display:block;text-decoration:none;text-align:center">📖 Как всё устроено</a>
     </div>`;
-  $("#again").onclick=()=>{ S=fresh(); save(); show("s-setup"); renderSetup(); };
+  $("#again").onclick=()=>{ S=fresh(); save(); location.reload(); };
 }
 
-/* ── МОДАЛКА ── */
+/* ═══════════ МОДАЛКА ═══════════ */
 function openModal({kind,art,artImg,title,desc,reward,btns}){
   const rh = reward&&reward.length ? `<div class="reward">${reward.map(r=>`<span class="rchip">${r[0].length<=3?r[0]:`<img src="${ICON(r[0])}" style="width:16px;height:16px">`} ${r[1]}</span>`).join("")}</div>`:"";
   $("#modal-root").innerHTML=`<div class="scrim" id="scrim"><div class="modal">
@@ -565,16 +795,16 @@ function openModal({kind,art,artImg,title,desc,reward,btns}){
 }
 function closeModal(){ $("#modal-root").innerHTML=""; }
 
-/* ── СБРОС / БУТ ── */
-$("#reset").onclick=()=>{ if(confirm("Сбросить прогресс и собрать протокол заново?")){ S=fresh(); save(); location.reload(); } };
+/* ═══════════ БУТ ═══════════ */
+$("#reset").onclick=()=>{ if(confirm("Сбросить прогресс и собрать протокол заново?")){ localStorage.removeItem(KEY); location.reload(); } };
 (function boot(){
   try{ if(window.Telegram&&Telegram.WebApp){ Telegram.WebApp.ready(); Telegram.WebApp.expand&&Telegram.WebApp.expand(); } }catch(e){}
   if(!load()) S=fresh();
-  if(S.phase&&S.phase!=="setup"){ show("s-game"); renderHUD(); renderBoard();
-    if(S.phase==="summary"){ summary(); }
-    else if(S.phase==="day-open"||S.phase==="rolled"){ startDay(); }
-    else { afterTile(); } // moving/tile — досидим на завершении дня
-  } else { renderSetup(); }
+  if(S.phase && S.phase!=="setup"){
+    if(S.phase==="summary"){ $("#s-setup").classList.remove("on"); $("#game-root").classList.remove("hidden"); $("#nav").classList.remove("hidden"); renderHUD(); summary(); return; }
+    if(S.phase==="moving"||S.phase==="tile") S.phase="tile-done"; // не виснем посреди хода
+    enterGame();
+  } else { renderSetup(); markPreset(S.proto.length<=3?'fast':'full'); }
 })();
 </script>
 </body>
