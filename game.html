@@ -561,9 +561,10 @@ function walk(steps){
     if(left<=0){ landed(); return; }
     S.pos=(S.pos+1)%ORDER.length;
     if(S.pos===0){
-      const inc=income(); S.money+=500+inc;
-      log('g','🏁',`Круг пройден: получка <b>+$500</b>${inc?` · районы +$${fmt(inc)}`:""}`);
-      toast("Круг! Получка +$500"+(inc>0?(" · районы +$"+fmt(inc)):""));
+      let pay=500+income(); if(S.perkPayout) pay=Math.round(pay*1.1);
+      S.money+=pay;
+      log('g','🏁',`Круг пройден: получка <b>+$${fmt(pay)}</b>${S.perkPayout?" (Чистые книги +10%)":""}`);
+      toast("Круг! Получка +$"+fmt(pay));
     }
     left--; renderHUD(); renderBoard(S.pos); save();
     setTimeout(step,260);
@@ -709,7 +710,7 @@ function card(){
 /* ═══════════ КОНЕЦ ДНЯ / СОПЕРНИК ═══════════ */
 function oppTurn(){
   const pcts=[86,100,72,93,86,58,100]; const pct=pcts[(S.day-1)%pcts.length];
-  if(pct>=85){ S.oppMoney+=450; S.oppDays++; }
+  if(pct>=85){ S.oppMoney+=450; S.oppDays++; S.weekStats.oppDays++; if(pct>=100)S.weekStats.oppSotki=(S.weekStats.oppSotki||0)+1; }
   log('s','📅',`<b>Герман</b> закрыл день на <b>${pct}%</b>${pct>=85?" · +$450":""}`);
   const oppOwned=oppCount();
   if(oppOwned<4){
@@ -724,43 +725,83 @@ function oppTurn(){
 }
 function endDay(){
   oppTurn();
+  if(S.day%7===0){ save(); return shodka(); }
+  nextDay();
+}
+function nextDay(){
   if(S.day>=S.maxDay){ save(); return summary(); }
   S.day++; S.phase="day-open"; S.done={}; S.dayPct=null; save();
   renderHUD(); go("day");
   toast("День "+S.day+" · новый заход");
 }
+/* СХОДКА: развязка босс-контракта + флаг недели + эскалация */
+function shodka(){
+  const B=curBoss(); const win=B.count(S)>=B.need;
+  let stakeTxt="";
+  if(B.id==="buhgalter"){
+    if(win){ S.money+=600; S.perkPayout=true; stakeTxt=`<span class='money'>+$600</span> и «Чистые книги»: получка теперь <b>+10%</b>.`; log('g','👑','<b>Сан Саныч сломан!</b> +$600 · получка +10%'); }
+    else { const cut=Math.floor(S.money*0.2); S.money-=cut; stakeTxt=`<span class='bad'>−$${fmt(cut)}</span> — Бухгалтер срезал пятую часть общака.`; log('n','🎩',`Контракт провален: Сан Саныч срезал <b>−$${fmt(cut)}</b>`); }
+  }
+  if(B.id==="prokuror"){
+    if(win){ S.perkImmuneWeek=true; S.respect+=8; stakeTxt=`«Корочка»: <span class='money'>иммунитет к облавам</span> на неделю + <b>+8 уважения</b>.`; log('g','👑','<b>Прокурор отступил!</b> Корочка + 8 уважения'); }
+    else { let best=null; for(const i in S.owners) if(S.owners[i]==="me"&&(best===null||DIST[ORDER[i]].price>DIST[ORDER[best]].price)) best=+i;
+      if(best!=null){ S.frozen=best; stakeTxt=`<span class='bad'>${ORDER[best]} — под следствием</span>: без дохода всю неделю.`; log('n','🎩',`Прокурор заморозил <b>${ORDER[best]}</b>`); }
+      else stakeTxt="Морозить нечего — но осадок остался."; }
+  }
+  // флаг недели
+  const my=S.weekStats.days*2+S.weekStats.sotki;
+  const op=(S.weekStats.oppDays||0)*2+(S.weekStats.oppSotki||0);
+  const flagMine=my>=op;
+  if(flagMine){ S.flags.push(S.week); log('g','🚩',`<b>Флаг недели ${S.week} — твой!</b> (+15 влияния в финале)`); }
+  else { S.oppFlags.push(S.week); log('s','🚩',`Флаг недели ${S.week} забрал <b>Герман</b>`); }
+  // сброс недели + эскалация
+  S.weekStats={days:0,sotki:0,oppDays:0,oppSotki:0};
+  if(S.week>=2 && S.frozen!=null && !win) {} else if(B.id!=="prokuror") S.frozen=null;
+  S.perkNoOblava = titleOf(S.respect)[1]>=45 ? 1 : 0; // Авторитет+
+  const last=S.day>=S.maxDay;
+  const nextB=BOSSES[Math.min(S.week+1,2)];
+  openModal({kind:`Сходка · неделя ${S.week}`,art:`<span class="big">${win?"👑":"🌫"}</span>`,title:win?"Контракт закрыт":"Контракт провален",
+    desc:`<b>${B.name}:</b> ${B.count(S)>=B.need?"задача выполнена":"задача не выполнена"} (${B.count(S)}/${B.need}).<br>${stakeTxt}<br><br>
+      🚩 <b>Флаг недели:</b> ${flagMine?"ТВОЙ":"у Германа"} — счёт по неделям <b>${S.flags.length}:${S.oppFlags.length}</b>.`+
+      (last?"":`<br><br>Со следующей недели город держит <b>${nextB.name}</b>. ${nextB.press}`),
+    btns:[[last?"К финалу месяца":"В новую неделю","btn",()=>{ if(!last){ S.week=Math.min(S.week+1,2); } closeModal(); nextDay(); }]]});
+  save(); renderHUD();
+}
 
 /* ═══════════ БОСС-ВКЛАДКА ═══════════ */
 function renderBoss(){
-  const b=S.boss;
-  let segs=""; for(let i=0;i<b.max;i++) segs+=`<i class="${i<b.hp?'on':''}"></i>`;
+  const B=curBoss();
+  const cur=B.count(S), need=B.need;
+  const daysLeft=7-((S.day-1)%7)- (S.phase==="day-open"?0:1) + 1;
+  let segs=""; for(let i=0;i<need;i++) segs+=`<i class="${i<cur?'on':''}"></i>`;
   $("#boss-body").innerHTML=`
   <div class="artframe steel">
-    <div class="img" style="background-image:url('${BOSS_META.art}')"></div>
+    <div class="img" style="background-image:url('${B.art}')"></div>
     <div class="shade"></div>
     <div class="cap">
-      <div class="kick">Смотрящий · неделя 1</div>
-      <div class="name">${BOSS_META.name}</div>
-      <div class="sub">Держит <b>${BOSS_META.holds}</b></div>
+      <div class="kick">Смотрящий · неделя ${S.week}</div>
+      <div class="name">${B.name}</div>
+      <div class="sub">Держит <b>${B.holds}</b></div>
     </div>
   </div>
-  ${b.dead?`
-  <div class="card" style="text-align:center;border-color:var(--gold)">
-    <div style="font-size:40px">👑</div><h4>Смотрящий выбит</h4>
-    <p>Ты сломал его режимом. Награда получена: <b>${BOSS_META.reward}</b>.</p>
-  </div>`:`
   <div class="card">
-    <h4>Терпение · ${b.hp}/${b.max}</h4>
+    <h4>⚡ Давит всю неделю</h4><p>${B.press}</p>
+  </div>
+  <div class="card" style="border-color:var(--gold)">
+    <h4>📜 Задача недели · ${cur}/${need}</h4>
     <div class="hpbar">${segs}</div>
-    <div class="kv"><span class="pill">твой урон: ${b.dmg||0}</span><span class="pill">осталось дней: ${Math.max(0,S.maxDay-S.day+1)}</span></div>
+    <p>${B.task} Развязка — на воскресной Сходке (осталось дней: <b>${Math.max(1,7-((S.day-1)%7))}</b>).</p>
   </div>
   <div class="card">
-    <h4>Как бить</h4>
-    <p>• Каждый закрытый день <b>≥85%</b> бьёт автоматически: <b>−1</b> терпения, сотка — <b>−2</b>.<br>
-    • Попал на его клетку — добей лично: <b>1 сила → −2</b>.<br>
-    • Выбьешь до конца недели — <span style="color:#8CE59A;font-weight:800">${BOSS_META.reward}</span>.</p>
-  </div>`}
-  <div class="card"><p class="note" style="margin:0;border:0;padding:0">${BOSS_META.lore}</p></div>`;
+    <h4>🎰 Ставка</h4>
+    <p>✅ Выполнил: <span style="color:#8CE59A;font-weight:700">${B.stakeWin}</span><br>
+    ❌ Провалил: <span style="color:#ff9e9e;font-weight:700">${B.stakeLose}</span></p>
+  </div>
+  <div class="card">
+    <h4>🚩 Флаги недель · ${S.flags.length}:${S.oppFlags.length}</h4>
+    <p>Каждое воскресенье Сходка сравнивает вашу неделю с Германом. Победитель забирает флаг — <b>+15 влияния в финале, навсегда</b>.</p>
+  </div>
+  <div class="card"><p class="note" style="margin:0;border:0;padding:0">${B.lore}</p></div>`;
 }
 
 /* ═══════════ ХРОНИКА ═══════════ */
