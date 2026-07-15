@@ -95,6 +95,9 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
 .bt.own-opp::after{content:"";position:absolute;inset:0;border-radius:9px;box-shadow:inset 0 0 0 2px #FF5A5A,inset 0 0 12px rgba(255,80,80,.5)}
 .bt .tok{position:absolute;top:2px;right:2px;width:15px;height:15px;border-radius:50%;z-index:5;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.6)}
 .bt .tok.me{background:radial-gradient(circle at 40% 35%,#FFE39A,#D6891C)}
+.bt .ownf{position:absolute;bottom:1px;right:2px;font-size:9px;z-index:4;filter:drop-shadow(0 1px 2px #000)}
+.bt .stars{position:absolute;bottom:1px;left:3px;font-size:8px;line-height:1;color:#FFD54A;z-index:4;text-shadow:0 1px 2px #000,0 0 5px rgba(255,190,74,.7)}
+.bt .frz{position:absolute;top:1px;right:2px;font-size:10px;z-index:6;filter:drop-shadow(0 1px 2px #000)}
 .bt.hot{animation:hot .5s ease}
 @keyframes hot{0%{transform:scale(1)}45%{transform:scale(1.12);filter:brightness(1.25)}100%{transform:scale(1)}}
 .board__c{grid-row:2/-2;grid-column:2/-2;display:grid;place-items:center;text-align:center;gap:4px;border:2px dashed var(--line2);border-radius:14px;
@@ -567,7 +570,8 @@ function walk(steps){
   };
   setTimeout(step,200);
 }
-function income(){ let s=0; for(const i in S.owners) if(S.owners[i]==="me"){ const d=DIST[ORDER[i]]; if(d)s+=d.inc; } return s; }
+function income(){ let s=0; for(const i in S.owners) if(S.owners[i]==="me"&&S.frozen!=+i){ const d=DIST[ORDER[i]]; if(d)s+=Math.round(d.inc*LVL_MULT[lvlOf(i)-1]); } return s; }
+function haveFullSet(g){ let need=0,have=0; ORDER.forEach((n,i)=>{ const d=DIST[n]; if(d&&d.g===g){ need++; if(S.owners[i]==="me")have++; } }); return need>0&&need===have; }
 
 /* ═══════════ КЛЕТКА ═══════════ */
 function landed(){
@@ -595,9 +599,27 @@ function tileBuy(name,d){
            ["Пройти мимо","btn wood",()=>{closeModal();afterTile();}] ].filter(x=>x[2]!==null||x[1]==="btn") });
 }
 function tileMine(name,d){
-  openModal({ kind:"Твой район", artImg:ART(d.art), title:name,
-    desc:`Тут ты хозяин. Доход <span class="money">$${d.inc}/круг</span> капает, когда проходишь Старт.`,
-    btns:[["Ясно","btn wood",()=>{closeModal();afterTile();}]] });
+  const i=S.pos, lv=lvlOf(i);
+  const isBrig = titleOf(S.respect)[1]>=25; // Бригадир+: стройка −10%
+  const NAMES=["Ларёк","Точка","Бизнес"];
+  const incNow=Math.round(d.inc*LVL_MULT[lv-1]);
+  let buildBtn=null, extra="";
+  if(lv===1){
+    const cost=isBrig?270:300;
+    buildBtn = S.money>=cost ? [`Построить «Точку» · $${cost}`,"btn green",()=>{S.money-=cost;S.lvl[i]=2;
+      log('g','🏗',`<b>Стройка:</b> ${name} → «Точка» (доход и дань ×1.6)`);toast(name+": Точка ★");closeModal();afterTile();renderBoard();renderHUD();}]
+      : [`Точка: не хватает $${(isBrig?270:300)-S.money}`,"btn",null];
+    extra=`Следующий уровень: <b>Точка</b> — доход и дань <b>×1.6</b>.`;
+  } else if(lv===2){
+    const cost=isBrig?540:600, canSet=haveFullSet(d.g);
+    if(canSet) buildBtn = S.money>=cost ? [`Построить «Бизнес» · $${cost}`,"btn green",()=>{S.money-=cost;S.lvl[i]=3;
+      log('g','🏗',`<b>Стройка:</b> ${name} → «Бизнес» (доход и дань ×2.5)`);toast(name+": Бизнес ★★");closeModal();afterTile();renderBoard();renderHUD();}]
+      : [`Бизнес: не хватает $${cost-S.money}`,"btn",null];
+    extra = canSet?`Следующий уровень: <b>Бизнес</b> — <b>×2.5</b>.`:`<span class='bad'>Для «Бизнеса» нужен весь цвет-набор этого района.</span>`;
+  } else extra=`Максимальный уровень — «Бизнес» ★★.`;
+  openModal({ kind:`Твой район · ${NAMES[lv-1]}${lv>1?" "+"★".repeat(lv-1):""}`, artImg:ART(d.art), title:name,
+    desc:`Доход <span class="money">$${incNow}/круг</span>${S.frozen===i?" <span class='bad'>(под следствием — заморожен)</span>":""}. ${extra}`,
+    btns:[ buildBtn, ["Дальше","btn wood",()=>{closeModal();afterTile();}] ].filter(x=>x&&(x[2]!==null||x[1]==="btn")) });
 }
 function tilePay(name,d){
   const rent=Math.round(d.inc*0.8); S.money=Math.max(0,S.money-rent); S.oppMoney=(S.oppMoney||0)+rent;
@@ -614,9 +636,20 @@ function tileSpecial(name){
   if(name==="Разгрузочный"){ openModal({kind:"Разгрузочный день",art:`<span class="big">🍽️</span>`,title:"Голодание",
       desc:"Выдержишь сутки — награда. В прототипе: <span class='money'>+2 силы, +2 уважения</span>.",
       btns:[["Держу!","btn green",()=>{S.power+=2;S.respect+=2;log('g','🍽️','<b>Разгрузочный день</b> выдержан: +2 силы · +2 уважения');toast("+2 силы · +2 уважения");closeModal();afterTile();renderHUD();}],["Не сегодня","btn wood",()=>{closeModal();afterTile();}]]}); return; }
-  if(name==="Облава"){ let loss=Math.min(S.money,150+S.day*20); const tailed=S.tail; if(tailed){loss=Math.min(S.money,loss*2);S.tail=false;} S.money-=loss; renderHUD();
-    log('n','🚨',`Облава${tailed?" (с хвостом, вдвое)":""}: <b>−$${fmt(loss)}</b>`);
-    openModal({kind:"Опасность",art:`<span class="big">🚨</span>`,title:"Облава",desc:`Менты чешут гавань${tailed?" — и у тебя <b>хвост</b>, бьют вдвое":""}. <span class='bad'>−$${fmt(loss)}</span>.`,btns:[["Пронесло","btn wood",()=>{closeModal();afterTile();}]]}); return; }
+  if(name==="Облава"){
+    // перки-иммунитеты: «Корочка» (победа над Прокурором) / звание Авторитет (1 раз/нед)
+    if(S.perkImmuneWeek || S.perkNoOblava>0){
+      const why=S.perkImmuneWeek?"«Корочка» Прокурора":"звание Авторитет";
+      if(!S.perkImmuneWeek) S.perkNoOblava--;
+      log('g','🛡',`Облава прошла мимо: <b>${why}</b>`);
+      openModal({kind:"Опасность",art:`<span class="big">🛡</span>`,title:"Облава — мимо",desc:`Менты сунулись, но ${why} прикрыла. Ни цента не отдал.`,btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]}); return;
+    }
+    let loss=Math.min(S.money,150+S.day*20);
+    const tailed=S.tail; if(tailed){loss=Math.min(S.money,loss*2);S.tail=false;}
+    const prok=curBoss().id==="prokuror"; if(prok) loss=Math.min(S.money,loss*2);
+    S.money-=loss; renderHUD();
+    log('n','🚨',`Облава${tailed?" (хвост)":""}${prok?" (Прокурор, вдвое)":""}: <b>−$${fmt(loss)}</b>`);
+    openModal({kind:"Опасность",art:`<span class="big">🚨</span>`,title:"Облава",desc:`Менты чешут гавань${tailed?" — и у тебя <b>хвост</b>":""}${prok?" — а <b>Прокурор</b> удвоил облавы":""}. <span class='bad'>−$${fmt(loss)}</span>.`,btns:[["Пронесло","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="КПЗ"){ openModal({kind:"КПЗ",art:`<span class="big">🚔</span>`,title:"Обезьянник",desc:"Просто проходишь мимо — ты держишь слово. Сорвал бы — пропустил ход.",btns:[["Мимо","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="Контрабанда"){ openModal({kind:"Аукцион",art:`<span class="big">⚓</span>`,title:"Контрабанда",desc:"Пришёл сухогруз. Редкий лот: <span class='money'>+3 хода</span>.",btns:[["Взять","btn green",()=>{S.moves+=3;log('g','⚓','Контрабанда: <b>+3 хода</b>');toast("+3 хода");closeModal();afterTile();renderHUD();}],["Пас","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="Стрелка"){
@@ -637,23 +670,13 @@ function tileSpecial(name){
         : `Отжать район: нужен <b>день ≥85%</b> и <b>2 силы</b>. Сейчас: день ${S.dayPct}% · сила ${S.power}.`,
       btns:[ can?["Отжать район · −2⚡","btn red",take]:null, ["Разойтись миром","btn wood",()=>{closeModal();afterTile();}] ].filter(Boolean)}); return; }
   if(name==="Босс"){
-    const b=S.boss;
-    if(b.dead){
-      openModal({kind:"Смотрящий недели",art:`<span class="big">👑</span>`,title:"Босс выбит",
-        desc:"Старый смотрящий сломан. Квартал дышит свободно до следующей недели.",
-        btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]}); return;
-    }
-    let segs=""; for(let i=0;i<b.max;i++) segs+= i<b.hp?"🟥":"⬛";
-    const can=S.dayPct>=85&&S.power>=1;
-    const hit=()=>{ S.power-=1; b.hp=Math.max(0,b.hp-2); b.dmg=(b.dmg||0)+2;
-      let msg="Жёсткий удар! −2 терпения";
-      log('g','🎩','Личный удар по смотрящему: <b>−2</b> терпения (−1⚡)');
-      if(b.hp<=0){ b.dead=true; S.money+=500; S.respect+=5; msg="🎩 БОСС ВЫБИТ! +$500 · +5 уважения";
-        log('g','👑','<b>Смотрящий ВЫБИТ!</b> +$500 · +5 уважения'); }
-      toast(msg); closeModal(); afterTile(); renderHUD(); save(); };
-    openModal({kind:"Смотрящий недели",art:`<span class="big">🎩</span>`,title:"Босс",
-      desc:`Терпение: <b>${b.hp}/${b.max}</b><br>${segs}<br><br>Каждый твой день ≥85% бьёт −1 (сотка −2). На его земле можно добить лично: <b>1 сила</b> → <span class='money'>−2 терпения</span>.`+(can?"":`<br><span class='bad'>Для удара: день ≥85% и 1 сила (сейчас ${S.dayPct}% · ${S.power}⚡).</span>`),
-      btns:[ can?["Ударить лично · −1⚡","btn red",hit]:null, ["Отойти","btn wood",()=>{closeModal();afterTile();}] ].filter(Boolean)}); return; }
+    const B=curBoss(); const can=S.power>=1;
+    const shake=()=>{ S.power-=1; S.money+=200;
+      log('g','🎩',`Потряс кассу ${B.name}: <b>+$200</b> (−1⚡)`);
+      toast("+$200 из кассы босса"); closeModal(); afterTile(); renderHUD(); save(); };
+    openModal({kind:`Смотрящий недели ${S.week}`,art:`<span class="big">🎩</span>`,title:B.name,
+      desc:`<b>Задача недели:</b> ${B.task}<br>Прогресс: <b>${B.count(S)}/${B.need}</b> · развязка на Сходке.<br><br>Ты на его земле — можно рискнуть и <b>потрясти кассу</b>: 1 сила → <span class='money'>+$200</span>.`,
+      btns:[ can?["Потрясти кассу · −1⚡","btn red",shake]:null, ["Отойти","btn wood",()=>{closeModal();afterTile();}] ].filter(Boolean)}); return; }
   openModal({kind:"Клетка",art:`<span class="big">🏙️</span>`,title:name,desc:"…",btns:[["Дальше","btn wood",()=>{closeModal();afterTile();}]]});
 }
 function chest(){
