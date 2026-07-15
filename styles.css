@@ -508,13 +508,28 @@ body.is-karta #city-bg{ opacity:1; visibility:visible; }
 
 /* Лестница титулов */
 .ladder{ display:flex; flex-direction:column; gap:0; }
-.ladder__row{ display:flex; align-items:center; gap:12px; padding:8px 2px; position:relative; }
-.ladder__node{ width:16px; height:16px; border-radius:50%; flex:0 0 auto; z-index:2;
-  border:2px solid var(--line-2); background:var(--panel); }
-.ladder__row.done .ladder__node{ background:var(--me); border-color:var(--me); }
-.ladder__row.cur .ladder__node{ background:var(--me); border-color:var(--me-hi);
-  box-shadow:0 0 0 4px var(--me-soft), var(--me-glow); }
-.ladder__line{ position:absolute; left:9px; top:0; bottom:0; width:2px; background:var(--line); z-index:1; }
+.ladder__row{ display:flex; align-items:center; gap:13px; padding:8px 2px; position:relative; }
+/* Печать ранга — шестигранник со знаком отличия */
+.ladder__seal{ width:30px; height:30px; flex:0 0 auto; z-index:2; display:grid; place-items:center;
+  clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  background:var(--panel-2); box-shadow:inset 0 0 0 1.5px var(--line-2); transition:.16s; }
+.ladder__row.done .ladder__seal{ background:linear-gradient(180deg,var(--me-hi),var(--me-lo));
+  box-shadow:inset 0 0 0 1.5px var(--me-hi); }
+.ladder__row.cur .ladder__seal{ background:linear-gradient(180deg,var(--me-hi),var(--me));
+  box-shadow:inset 0 0 0 1.5px var(--me-hi), 0 0 0 3px var(--me-soft), var(--me-glow);
+  animation:seal-pulse 2.6s ease-in-out infinite; }
+.rankem{ display:inline-flex; align-items:center; justify-content:center; gap:2px; line-height:0; }
+.rankem svg{ width:16px; height:16px; color:var(--gold-ink); }
+.rankem .rg{ display:block; }
+.rankem .pip{ width:4px; height:4px; border-radius:50%; background:var(--ink-3); }
+.rankem .chev{ width:7px; height:7px; border-right:2px solid var(--ink-3); border-bottom:2px solid var(--ink-3);
+  transform:rotate(45deg) translateY(-1px); }
+.rankem .star{ width:9px; height:9px; background:var(--ink-3);
+  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%); }
+.ladder__row.done .rankem .pip, .ladder__row.cur .rankem .pip{ background:var(--me-ink); }
+.ladder__row.done .rankem .chev, .ladder__row.cur .rankem .chev{ border-color:var(--me-ink); }
+.ladder__row.done .rankem .star, .ladder__row.cur .rankem .star{ background:var(--me-ink); }
+.ladder__line{ position:absolute; left:14px; top:0; bottom:0; width:2px; background:var(--line); z-index:1; }
 .ladder__row.done .ladder__line, .ladder__row.cur .ladder__line{ background:var(--me); }
 .ladder__row:first-child .ladder__line{ top:50%; }
 .ladder__row:last-child .ladder__line{ bottom:50%; }
@@ -525,6 +540,11 @@ body.is-karta #city-bg{ opacity:1; visibility:visible; }
 .ladder__req{ font:700 11px/1 "Space Mono"; color:var(--ink-3); }
 .ladder__row.cur .ladder__req{ color:var(--me); }
 .ladder__crown{ color:var(--gold-hi); }
+.rankem--crown svg{ width:18px; height:18px; color:var(--gold-hi);
+  filter:drop-shadow(0 0 5px rgba(231,181,74,.55)); }
+.ladder__row.done .rankem--crown svg, .ladder__row.cur .rankem--crown svg{ color:var(--gold-ink); filter:none; }
+@keyframes seal-pulse{ 0%,100%{ box-shadow:inset 0 0 0 1.5px var(--me-hi), 0 0 0 3px var(--me-soft), 0 0 10px var(--me-soft); }
+  50%{ box-shadow:inset 0 0 0 1.5px var(--me-hi), 0 0 0 5px var(--me-soft), 0 0 20px var(--me-soft); } }
 .next-hint{ margin-top:10px; padding:10px 12px; border-radius:11px; background:var(--me-soft);
   border:1px solid var(--line); font:500 13px/1.4 "Manrope"; color:var(--ink-2); }
 .next-hint b{ color:var(--me); font-family:"Space Mono"; }
@@ -578,11 +598,17 @@ body.is-karta #city-bg{ opacity:1; visibility:visible; }
   color:var(--attack-ink); background:linear-gradient(180deg,var(--attack-hi),var(--attack)); }
 
 .proto{ display:flex; flex-direction:column; gap:7px; }
-.proto__item{ display:flex; align-items:center; gap:12px; width:100%; text-align:left; cursor:pointer;
-  background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px;
+.proto__item{ display:flex; align-items:center; gap:11px; width:100%; text-align:left; cursor:pointer;
+  background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:9px 12px 9px 9px;
   transition:.14s; position:relative; overflow:hidden; }
 .proto__item:active{ transform:scale(.995); }
-.proto__box{ width:24px; height:24px; border-radius:7px; flex:0 0 auto; display:grid; place-items:center;
+/* золотая иконка-понятие (слой 2) */
+.proto__pic{ width:36px; height:36px; flex:0 0 auto; display:grid; place-items:center; }
+.proto__pic img{ width:36px; height:36px; object-fit:contain; transition:.16s;
+  filter:saturate(.82) brightness(.86) drop-shadow(0 2px 3px rgba(0,0,0,.5)); opacity:.9; }
+.proto__item.on .proto__pic img{ opacity:1; transform:scale(1.05);
+  filter:drop-shadow(0 0 9px var(--me-soft)) drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
+.proto__box{ width:24px; height:24px; border-radius:999px; flex:0 0 auto; display:grid; place-items:center;
   border:2px solid var(--line-2); background:var(--panel-2); transition:.14s; color:transparent; }
 .proto__box svg{ width:15px; height:15px; }
 .proto__item.on{ border-color:var(--me); background:linear-gradient(90deg,var(--me-soft),transparent 80%); }
