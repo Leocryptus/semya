@@ -326,15 +326,24 @@ function renderLore(){
 }
 
 /* ── БУТ ── */
+function activate(id){
+  $$(".tab").forEach(x=>x.classList.toggle("on",x.dataset.id===id));
+  $$(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+id));
+  try{ history.replaceState(null,"","?tab="+id); }catch(e){}
+}
 function boot(){
   $("#h-title").textContent=BIBLE.title||"СЕМЬЯ";
+  $("#foot-date").textContent="2026-07-15";
+  const want=new URLSearchParams(location.search).get("tab");
+  const start=TABS.some(t=>t.id===want)?want:TABS[0].id;
   const tabsEl=$("#tabs"), main=$("#main");
-  TABS.forEach((t,i)=>{
-    const b=document.createElement("button"); b.className="tab"+(i===0?" on":""); b.dataset.id=t.id;
+  TABS.forEach(t=>{
+    const on=t.id===start;
+    const b=document.createElement("button"); b.className="tab"+(on?" on":""); b.dataset.id=t.id;
     b.innerHTML=`<span class="ic">${t.ic}</span>${t.name}`;
-    b.onclick=()=>{ $$(".tab").forEach(x=>x.classList.toggle("on",x===b)); $$(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t.id)); window.scrollTo({top:0,behavior:"smooth"}); };
+    b.onclick=()=>{ activate(t.id); window.scrollTo({top:0,behavior:"smooth"}); };
     tabsEl.appendChild(b);
-    const sec=document.createElement("section"); sec.className="panel"+(i===0?" on":""); sec.id="p-"+t.id;
+    const sec=document.createElement("section"); sec.className="panel"+(on?" on":""); sec.id="p-"+t.id;
     sec.innerHTML=t.render(); main.appendChild(sec);
   });
 }
