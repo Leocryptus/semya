@@ -60,35 +60,50 @@
 /* ─────────────────────────  2 · БАЗА  ───────────────────────── */
 *,*::before,*::after{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; }
-html{ background:var(--bg); -webkit-text-size-adjust:100%; }
+html{ background:var(--ink); -webkit-text-size-adjust:100%; }
 body{
   font-family:"Manrope",system-ui,sans-serif; font-size:15px; line-height:1.5;
-  color:var(--paper); background:var(--bg);
+  color:var(--paper);
+  /* Тёмная кожа/дерево — радиальный градиент ink→leather */
+  background:
+    radial-gradient(135% 90% at 50% -8%, var(--wood) 0%, var(--leather) 34%, var(--ink2) 70%, var(--ink) 100%) fixed;
   overflow-x:hidden; overscroll-behavior-y:none;
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   user-select:none; -webkit-tap-highlight-color:transparent;
 }
-/* Бетонная текстура — тонко, поверх холста */
+/* Кожаная текстура — тонко, поверх холста */
 body::before{
   content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
   background:url("assets/tex-concrete.png") center/cover no-repeat;
-  opacity:.055; mix-blend-mode:screen;
+  opacity:.06; mix-blend-mode:overlay;
 }
-/* Тёплый виньет-градиент сверху под шапку */
+/* Тёплый золотой виньет-градиент сверху под шапку */
 body::after{
-  content:""; position:fixed; inset:0 0 auto 0; height:340px; z-index:0; pointer-events:none;
-  background:radial-gradient(120% 80% at 50% -10%, rgba(230,180,80,.05), transparent 60%);
+  content:""; position:fixed; inset:0 0 auto 0; height:360px; z-index:0; pointer-events:none;
+  background:radial-gradient(120% 80% at 50% -10%, rgba(231,181,74,.08), transparent 62%);
 }
 img{ max-width:100%; display:block; }
 button{ font-family:inherit; color:inherit; }
 ::-webkit-scrollbar{ width:0; height:0; }
 
 /* Типо-хелперы */
-.t-display{ font-family:"Rubik",serif; font-weight:900; letter-spacing:-.02em; }
-.t-serif{ font-family:"Rubik",serif; }
-.t-cond{ font-family:"Rubik",sans-serif; text-transform:uppercase; letter-spacing:.05em; }
+.t-display{ font-family:"Rubik",sans-serif; font-weight:900; letter-spacing:-.01em; }
+.t-serif{ font-family:"Rubik",sans-serif; }
+.t-cond{ font-family:"Rubik",sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
 .num{ font-family:"Space Mono",monospace; font-weight:700; font-variant-numeric:tabular-nums; }
 .italic{ font-style:italic; }
+
+/* «ЧАНКИ-ЗОЛОТО» — фирменный заголовок как логотип «МАФИЯ» */
+.goldtxt{
+  font-family:"Rubik",sans-serif; font-weight:900; letter-spacing:.01em;
+  background:var(--gold-grad); -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+  -webkit-text-stroke:.6px rgba(31,20,5,.55);
+  filter:drop-shadow(0 1px 0 rgba(0,0,0,.6)) drop-shadow(0 0 12px rgba(231,181,74,.28));
+}
+.neon-crimson{ color:var(--crimson-neon);
+  text-shadow:0 0 6px rgba(255,59,63,.55), 0 0 16px rgba(192,39,46,.4); }
+.neon-violet{ color:#C58BEF; text-shadow:0 0 6px rgba(142,63,190,.6), 0 0 16px rgba(142,63,190,.4); }
 
 /* ─────────────────────────  3 · КАРКАС  ───────────────────────── */
 #app{ position:relative; z-index:1; min-height:100vh; min-height:100dvh; }
@@ -100,18 +115,39 @@ main#screen{
 @keyframes screen-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
 
 .section-h{
-  display:flex; align-items:center; gap:8px; margin:22px 2px 12px;
-  font:700 15px/1 "Rubik"; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-2);
+  display:flex; align-items:center; gap:9px; margin:22px 2px 12px;
+  font:900 15px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em;
+  background:var(--gold-grad); -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 1px 0 rgba(0,0,0,.5));
 }
-.section-h::before{ content:""; width:7px; height:7px; transform:rotate(45deg);
-  background:var(--me); box-shadow:0 0 8px var(--me); flex:0 0 auto; }
-.section-h .fill{ flex:1; height:1px; background:linear-gradient(90deg,var(--line-2),transparent); }
+.section-h::before{ content:""; width:8px; height:8px; transform:rotate(45deg);
+  background:var(--gold); box-shadow:0 0 10px var(--gold); flex:0 0 auto;
+  -webkit-text-fill-color:initial; }
+.section-h .fill{ flex:1; height:2px; -webkit-text-fill-color:initial;
+  background:linear-gradient(90deg,var(--gold-lo),transparent); border-radius:2px; opacity:.6; }
 
 .card{
-  position:relative; background:linear-gradient(180deg,var(--panel),#151109);
+  position:relative; background:linear-gradient(180deg,var(--panel),var(--ink2));
   border:1px solid var(--line); border-radius:var(--r-card);
-  box-shadow:var(--shadow-1), inset 0 1px 0 rgba(245,236,216,.04);
+  box-shadow:var(--shadow-1), inset 0 1px 0 rgba(245,214,137,.06);
   padding:14px; overflow:hidden;
+}
+/* «Прошитая» пергаментная карточка (документ Семьи) */
+.card--paper{
+  background:linear-gradient(180deg,var(--parchment),var(--parchment2));
+  color:var(--ink-text); border:1px solid var(--gold-deep);
+  box-shadow:var(--shadow-1), inset 0 0 0 2px rgba(255,255,255,.25);
+}
+.card--paper::after{ content:""; position:absolute; inset:5px; border-radius:9px; pointer-events:none;
+  border:1.5px dashed rgba(80,52,20,.45); }
+.card--paper *{ position:relative; z-index:1; }
+/* Ключевая карточка — золотая фаска-рамка */
+.card--key{ border:0; box-shadow:var(--shadow-2);
+  background:
+    linear-gradient(180deg,var(--panel),var(--ink2)) padding-box,
+    var(--gold-grad) border-box;
+  border:2px solid transparent;
 }
 .muted{ color:var(--ink-2); } .dim{ color:var(--ink-3); }
 .row{ display:flex; align-items:center; gap:10px; }
@@ -121,16 +157,20 @@ main#screen{
 header.top{
   position:sticky; top:0; z-index:40;
   padding:calc(var(--safe-t) + 10px) 16px 9px;
-  background:linear-gradient(180deg,rgba(13,11,8,.96) 60%,rgba(13,11,8,.72));
+  background:linear-gradient(180deg,rgba(14,11,8,.97) 55%,rgba(20,16,11,.78));
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
+  border-bottom:1px solid var(--gold-lo);
+  box-shadow:0 2px 0 rgba(0,0,0,.5), 0 10px 24px -12px rgba(231,181,74,.25);
 }
 .top__brand{ display:flex; align-items:center; gap:9px; min-width:0; }
 .top__crest{ width:30px; height:30px; color:var(--me); flex:0 0 auto;
   filter:drop-shadow(0 0 10px var(--me-glow,transparent)); }
 .top__crest svg{ width:100%; height:100%; }
 .top__clan{ min-width:0; }
-.top__clan b{ display:block; font:800 15px/1.05 "Rubik"; color:var(--paper);
+.top__clan b{ display:block; font:900 16px/1.05 "Rubik"; letter-spacing:.01em;
+  background:linear-gradient(178deg,var(--me-hi),var(--me) 55%,var(--me-lo));
+  -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 8px var(--me-glow));
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .top__clan span{ display:block; font:600 9.5px/1 "Rubik"; text-transform:uppercase;
   letter-spacing:.12em; color:var(--me); margin-top:3px; }
@@ -199,27 +239,33 @@ header.top{
 /* ─────────────────────────  6 · НИЖНЯЯ НАВИГАЦИЯ  ───────────────────────── */
 .nav{
   position:fixed; bottom:0; inset-inline:0; z-index:45; height:calc(var(--nav-h) + var(--safe-b));
-  padding-bottom:var(--safe-b);
-  display:grid; grid-template-columns:repeat(5,1fr);
-  background:rgba(20,17,12,.94); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  border-top:1px solid var(--line);
+  padding:0 8px var(--safe-b);
+  display:grid; grid-template-columns:repeat(5,1fr); align-items:center;
+  background:linear-gradient(180deg,rgba(28,20,13,.96),rgba(16,12,8,.98));
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--gold-lo);
+  box-shadow:0 -2px 0 rgba(0,0,0,.5), 0 -12px 30px -14px rgba(231,181,74,.28);
 }
-.nav__item{ appearance:none; background:none; border:0; cursor:pointer;
+.nav__item{ appearance:none; background:none; border:0; cursor:pointer; position:relative;
+  min-height:48px; border-radius:var(--r-chip);
   display:grid; place-items:center; gap:3px; color:var(--ink-3);
-  font:700 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.06em;
-  transition:color .16s, transform .12s; }
+  font:800 9px/1 "Rubik"; text-transform:uppercase; letter-spacing:.05em;
+  transition:color .16s, transform .12s, background .16s; }
 .nav__item svg{ width:23px; height:23px; transition:transform .16s; }
 .nav__item:active{ transform:scale(.9); }
-.nav__item.is-active{ color:var(--me); }
-.nav__item.is-active svg{ filter:drop-shadow(0 0 8px var(--me-glow)); }
+.nav__item.is-active{ color:var(--gold-ink);
+  background:radial-gradient(120% 120% at 50% 20%,var(--gold-lite),var(--gold) 60%,var(--gold-deep));
+  box-shadow:var(--gold-glow), inset 0 1px 0 rgba(255,255,255,.4); }
+.nav__item.is-active svg{ filter:drop-shadow(0 1px 0 rgba(0,0,0,.35)); }
 .nav__badge{ position:absolute; top:6px; margin-left:20px; width:8px; height:8px; border-radius:50%;
   background:var(--attack); box-shadow:0 0 8px var(--attack); }
-.nav__cta{ position:relative; }
-.nav__cta .disc{ margin-top:-16px; width:54px; height:54px; border-radius:50%;
+.nav__cta{ position:relative; background:none !important; box-shadow:none !important; color:var(--ink-3); }
+.nav__cta.is-active{ color:var(--gold-hi); }
+.nav__cta .disc{ margin-top:-16px; width:56px; height:56px; border-radius:50%;
   display:grid; place-items:center; color:var(--me-ink);
-  background:radial-gradient(circle at 50% 34%,var(--me-hi),var(--me));
-  box-shadow:var(--me-glow), var(--shadow-1), inset 0 1px 0 rgba(255,255,255,.4);
-  border:1px solid var(--me-hi); }
+  background:radial-gradient(circle at 50% 34%,var(--me-hi),var(--me) 62%,var(--me-lo));
+  box-shadow:var(--me-glow), var(--shadow-1), inset 0 1px 0 rgba(255,255,255,.45);
+  border:1.5px solid var(--me-hi); }
 .nav__cta .disc svg{ width:26px; height:26px; }
 .nav__cta.is-active .disc{ transform:translateY(-2px); }
 .nav__cta .lbl{ margin-top:-6px; }
