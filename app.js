@@ -314,11 +314,6 @@ function render(){
 }
 
 /* ───────────────────────  1 · КАРТА (ночной город)  ─────────────────────── */
-// Мини-вывеска-здание для каждого района (emoji, без зависимости от картинок)
-const BUILD = {
-  port:'⚓', tsum:'🏬', rynok:'🛒', bank:'🏦', cosmos:'🎰', avto:'🔧',
-  club:'🍸', azs:'⛽', lombard:'💍', sklad:'🏭', vokzal:'🚉', telegraf:'📡', hotel:'🏨', verf:'🛳️'
-};
 function plotOwnerClass(d){
   if(d.lock && !d.owner) return 'plot--locked';
   if(!d.owner) return 'plot--free';

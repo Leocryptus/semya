@@ -205,8 +205,13 @@ header.top{
   font:700 15px/1 "Space Mono"; white-space:nowrap;
 }
 .chip svg{ width:16px; height:16px; flex:0 0 auto; }
+.chip .chip-pic{ width:21px; height:21px; flex:0 0 auto; object-fit:contain; margin:-2px 0;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
 .chip--money{ color:var(--gold); } .chip--resp{ color:var(--gold-hi); } .chip--musc{ color:var(--attack); }
+.chip--money span{ color:var(--gold-hi); } .chip--resp span{ color:var(--gold-hi); } .chip--musc span{ color:#FFB9A0; }
 .chip--tap{ cursor:pointer; transition:.12s; } .chip--tap:active{ transform:scale(.95); }
+/* базовый арт-спрайт */
+.pic{ object-fit:contain; }
 
 /* ─────────────────────────  5 · КНОПКИ  ───────────────────────── */
 .btn{
@@ -331,24 +336,29 @@ body.is-karta #city-bg{ opacity:1; visibility:visible; }
 
 /* «Стеклянные» карточки-районы поверх ночного города */
 .plot{
-  --fr:var(--neutral);
+  --fr:var(--neutral); --gl:rgba(150,140,120,.26);
   position:relative; z-index:1; cursor:pointer; overflow:hidden;
-  min-height:96px; padding:9px 7px 8px; border-radius:14px;
-  display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:3px;
+  min-height:120px; padding:9px 7px 9px; border-radius:15px;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:3px;
   text-align:center; appearance:none;
-  background:linear-gradient(180deg,rgba(26,20,13,.62),rgba(10,8,5,.78));
+  background:linear-gradient(180deg,rgba(28,22,14,.55),rgba(9,7,4,.82));
   backdrop-filter:blur(7px) saturate(1.05); -webkit-backdrop-filter:blur(7px) saturate(1.05);
   border:1.5px solid var(--fr);
   box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
   transition:transform .12s, box-shadow .18s, filter .12s;
 }
 .plot:active{ transform:scale(.95); filter:brightness(1.08); }
-/* «крыша/козырёк» здания — тёплая полоса сверху */
-.plot__roof{ position:absolute; left:0; right:0; top:0; height:26px; pointer-events:none;
-  background:linear-gradient(180deg,rgba(0,0,0,.35),transparent);
-  border-radius:12px 12px 0 0; }
-.plot__ico{ font-size:25px; line-height:1; margin-top:1px;
-  filter:drop-shadow(0 2px 3px rgba(0,0,0,.7)); }
+/* Сцена здания-арта (слой 2) */
+.plot__stage{ position:relative; width:100%; height:66px; display:grid; place-items:center; margin-bottom:1px; }
+.plot__glow{ position:absolute; z-index:0; width:80%; height:64%; bottom:5px; border-radius:50%;
+  background:radial-gradient(closest-side, var(--gl), transparent 72%); filter:blur(5px); pointer-events:none; }
+.plot__stage::after{ content:""; position:absolute; z-index:0; bottom:3px; width:54%; height:9px; border-radius:50%;
+  background:radial-gradient(closest-side, rgba(0,0,0,.5), transparent 70%); }
+.plot__art{ position:relative; z-index:1; height:64px; width:auto; max-width:96%; object-fit:contain;
+  filter:drop-shadow(0 5px 6px rgba(0,0,0,.5)); animation:plot-float 4.4s ease-in-out infinite; will-change:transform; }
+/* стаггер «парения» по позиции в сетке 3×N */
+.plot:nth-child(3n+2) .plot__art{ animation-delay:-1.5s; }
+.plot:nth-child(3n)   .plot__art{ animation-delay:-2.9s; animation-duration:4.9s; }
 .plot__name{ font:800 10px/1.05 "Rubik"; text-transform:uppercase; letter-spacing:.02em;
   color:var(--paper); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .plot__inc{ display:inline-flex; align-items:center; gap:3px; font:700 10.5px/1 "Space Mono"; color:var(--gold-hi); }
@@ -360,28 +370,40 @@ body.is-karta #city-bg{ opacity:1; visibility:visible; }
 .plot__pips{ display:flex; gap:3px; height:6px; align-items:center; margin-top:1px; }
 .plot__pips i{ width:5px; height:5px; border-radius:50%; background:var(--gold-hi); box-shadow:0 0 4px var(--gold-hi); }
 .plot__pips i.fort{ width:6px; height:6px; border-radius:1px; background:var(--ok); box-shadow:0 0 4px rgba(70,162,78,.6); transform:rotate(45deg); }
-.plot__lockbadge{ position:absolute; top:5px; right:6px; font-size:12px; z-index:2;
-  filter:drop-shadow(0 0 5px rgba(79,168,224,.8)); }
+.plot__lockbadge{ position:absolute; top:6px; right:7px; z-index:3; width:15px; height:15px; color:var(--blue);
+  filter:drop-shadow(0 0 6px rgba(79,168,224,.85)); }
+.plot__lockbadge svg{ width:100%; height:100%; }
 
-/* Рамка-свечение владельца */
-.plot--gold{ --fr:var(--gold);
-  box-shadow:0 5px 12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08), 0 0 16px rgba(231,181,74,.4); }
+/* Рамка-свечение владельца + неон-пульс */
+.plot--gold{ --fr:var(--gold); --gl:rgba(231,181,74,.5);
+  animation:plot-neon-g 3.4s ease-in-out infinite; }
 .plot--gold .plot__name{ color:var(--gold-hi); text-shadow:0 0 7px rgba(231,181,74,.55); }
-.plot--rose{ --fr:var(--crimson-neon);
-  box-shadow:0 5px 12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08), 0 0 16px rgba(255,59,63,.42); }
+.plot--rose{ --fr:var(--crimson-neon); --gl:rgba(255,59,63,.46);
+  animation:plot-neon-r 3.4s ease-in-out infinite; }
 .plot--rose .plot__name{ color:var(--crimson-neon); text-shadow:0 0 7px rgba(255,59,63,.6); }
 .plot--rose .plot__inc{ color:var(--crimson-neon); }
 .plot--rose .plot__pips i{ background:var(--crimson-neon); box-shadow:0 0 4px var(--crimson-neon); }
-.plot--free{ --fr:var(--neutral); }
+.plot--free{ --fr:var(--neutral); --gl:rgba(150,140,120,.24);
+  box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08); }
 .plot--free .plot__name{ color:var(--ink-2); }
 .plot--free .plot__inc{ color:var(--ink-2); }
-.plot--locked{ --fr:var(--blue);
-  background:linear-gradient(180deg,rgba(26,36,48,.66),rgba(16,24,32,.82));
+.plot--free .plot__art{ filter:saturate(.92) brightness(.9) drop-shadow(0 5px 6px rgba(0,0,0,.5)); }
+.plot--locked{ --fr:var(--blue); --gl:rgba(79,168,224,.4);
+  background:linear-gradient(180deg,rgba(26,36,48,.6),rgba(14,22,30,.84));
   box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08), 0 0 16px rgba(79,168,224,.4); }
 .plot--locked .plot__name{ color:var(--blue); text-shadow:0 0 7px rgba(79,168,224,.55); }
+.plot--locked .plot__art{ filter:grayscale(.55) brightness(.72) drop-shadow(0 5px 6px rgba(0,0,0,.6)); }
 /* Твой район — золотое двойное кольцо-подсветка */
-.plot.is-mine::after{ content:""; position:absolute; inset:2px; border-radius:11px; pointer-events:none;
+.plot.is-mine::after{ content:""; position:absolute; inset:2px; border-radius:12px; pointer-events:none; z-index:2;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.18), inset 0 0 16px var(--me-soft); }
+
+@keyframes plot-float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-4px); } }
+@keyframes plot-neon-g{
+  0%,100%{ box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08), 0 0 13px rgba(231,181,74,.32); }
+  50%{ box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08), 0 0 26px rgba(231,181,74,.6); } }
+@keyframes plot-neon-r{
+  0%,100%{ box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08), 0 0 13px rgba(255,59,63,.34); }
+  50%{ box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08), 0 0 26px rgba(255,59,63,.62); } }
 
 .legend{ display:flex; flex-wrap:wrap; gap:9px 14px; justify-content:center; margin-top:14px;
   padding:11px 12px; border-radius:12px;
