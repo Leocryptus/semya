@@ -443,7 +443,9 @@ function load(){ try{const r=localStorage.getItem(KEY); if(r){S=JSON.parse(r);
   return true;}}catch(e){} return false; }
 const LVL_MULT=[1,1.6,2.5];
 function lvlOf(i){ return S.lvl[i]||1; }
-function curBoss(){ return BOSSES[Math.min(S.week,2)]; }
+function curBoss(){ return BOSSES[((S.week-1)%2)+1]; }
+function flagsMine(){ return MP ? (S.flags[MY]=S.flags[MY]||[]) : (S.flags=S.flags||[]); }
+function flagsOpp(){ return MP ? (S.flags[OPP_CLAN]=S.flags[OPP_CLAN]||[]) : (S.oppFlags=S.oppFlags||[]); }
 function save(){ try{ localStorage.setItem(MP?MPKEY:KEY, JSON.stringify(S)); }catch(e){} }
 const $=s=>document.querySelector(s);
 const fmt=n=>(n<0?"−":"")+Math.abs(n).toLocaleString("ru-RU").replace(/,/g," ");
@@ -546,7 +548,8 @@ function renderBoard(hotIdx){
 function renderCity(){
   renderBoard();
   const free=ORDER.filter((n,i)=>DIST[n]&&!S.owners[i]).length;
-  $("#city-count").innerHTML=`<b class="c1">${myCount(S)}<em>Твои</em></b><b style="color:#FF9E9E">${oppCount()}<em>Германа</em></b><b>${free}<em>Ничейные</em></b>`;
+  const oppNm = MP ? (S.oppName||"Соперник") : "Герман";
+  $("#city-count").innerHTML=`<b class="c1">${myCount(S)}<em>Твои</em></b><b style="color:#FF9E9E">${oppCount()}<em>${oppNm}</em></b><b>${free}<em>Ничейные</em></b>`;
   const h=$("#hint-city"), slot=$("#act-city");
   if(S.phase==="day-open"||S.phase==="rolled"){ h.innerHTML=`Сначала закрой день — вкладка <b>🎲 День</b>.`; slot.innerHTML=""; }
   else if(S.phase==="tile-done"){ h.innerHTML=`Ход сделан.`; slot.innerHTML=`<button class="btn wood" id="end-day">Завершить день ${S.day}</button>`; $("#end-day").onclick=endDay; }
@@ -560,7 +563,17 @@ function renderDayTab(){
     h.innerHTML=`Закрой свой день по-честному. <b>Ядро</b> обязательно.`;
     slot.innerHTML=`<div class="checks" id="checks"></div><div style="height:10px"></div><button class="btn" id="finish-day">Подбить день</button>`;
     renderChecks();
-    $("#checks").onclick=e=>{ const c=e.target.closest(".chk"); if(!c)return; const i=+c.dataset.i; S.done[i]=!S.done[i]; c.classList.toggle("on",S.done[i]); save(); };
+    $("#checks").onclick=e=>{ const c=e.target.closest(".chk"); if(!c)return;
+      if(c.dataset.w!==undefined){
+        const i=+c.dataset.w, p=S.proto[i];
+        if((S.weeklyDone||[]).includes(p.name)){ toast("Уже закрыто на этой неделе"); return; }
+        S.weeklyDone=S.weeklyDone||[]; S.weeklyDone.push(p.name);
+        S.power+=2; S.respect+=2; c.classList.add("on"); c.style.opacity=.6;
+        log('g',p.emoji||'📅',`<b>Недельное:</b> ${p.name} — +2 силы · +2 уважения`);
+        if(MP&&BATCH) BATCH.events.push({t:"weekly",text:`📅 <b>${MPD.state.players[MY].name}</b> закрыл недельное: ${p.name}`});
+        toast("+2 силы · +2 уважения"); renderHUD(); save(); return;
+      }
+      const i=+c.dataset.i; S.done[i]=!S.done[i]; c.classList.toggle("on",S.done[i]); save(); };
     $("#finish-day").onclick=dayResult;
   } else if(S.phase==="rolled"){
     h.innerHTML=`Ходы начислены — выходи в город.`;
@@ -573,12 +586,26 @@ function renderDayTab(){
   } else { h.innerHTML="Идёшь по городу…"; slot.innerHTML=""; }
 }
 function renderChecks(){
-  $("#checks").innerHTML=S.proto.map((p,i)=>`
-    <div class="chk ${S.done[i]?'on':''} ${p.core?'core':''}" data-i="${i}">
+  const row=(p,i)=>`
+    <div class="chk ${S.done[i]?'on':''} ${(p.core||p.weight>=3)?'core':''}" data-i="${i}">
       ${p.icon?`<img src="${ICON(p.icon)}">`:`<span class="em">${p.emoji||"◆"}</span>`}
-      <span class="t">${p.name}${p.core?' <span class="core">ядро</span>':''}</span>
+      <span class="t">${p.name}${(p.core||p.weight>=3)?' <span class="core">ядро</span>':''}${p.weight?` <small style="color:var(--txt3)">в${p.weight}</small>`:""}</span>
       <span class="box">✓</span>
-    </div>`).join("");
+    </div>`;
+  const daily=S.proto.map((p,i)=>({p,i})).filter(x=>!x.p.weekly);
+  const weekly=S.proto.map((p,i)=>({p,i})).filter(x=>x.p.weekly);
+  let html=daily.map(x=>row(x.p,x.i)).join("");
+  if(weekly.length){
+    html+=`<div style="margin:8px 2px 2px;font:400 12px/1 var(--disp);color:#FFD873;text-transform:uppercase">📅 Недельные (не в %, бонус при закрытии)</div>`;
+    html+=weekly.map(x=>{
+      const used=(S.weeklyDone||[]).includes(x.p.name);
+      return `<div class="chk ${used?'on':''}" data-w="${x.i}" style="${used?'opacity:.6':''}">
+        ${x.p.icon?`<img src="${ICON(x.p.icon)}">`:`<span class="em">${x.p.emoji||"◆"}</span>`}
+        <span class="t">${x.p.name} <small style="color:var(--txt3)">${x.p.hint||""}</small></span>
+        <span class="box">✓</span></div>`;
+    }).join("");
+  }
+  $("#checks").innerHTML=html;
 }
 function dayResult(){
   // daily-пункты (weekly — отдельная секция, в % не идут)
@@ -611,6 +638,12 @@ function dayResult(){
   if(B.id==="prokuror"){ S.money=Math.max(0,S.money-50); pressTxt="Допрос у Прокурора: −$50"; }
   if(pressTxt){ log('n','🎩',pressTxt); setTimeout(()=>toast(pressTxt),1600); }
   log('g','📅',`<b>Ты</b> закрыл день ${S.day} на <b>${pct}%</b>${cash?` · +$${cash}`:""}${moves?` · ${moves} ходов`:""}`);
+  if(MP&&BATCH){
+    const nm=MPD.state.players[MY].name;
+    BATCH.events.push(pct>=100?{t:"day100",text:`🏆 <b>СОТКА!</b> ${nm} закрыл день ${S.day} на 100% · 🎲 ${moves} ходов · 🔥 серия ${S.streak}`}
+      : pct>=85?{t:"day",text:`💪 <b>${nm}</b> закрыл день ${S.day} на ${pct}% · 🎲 ${moves} ходов`}
+      : {t:"weak",text:`🌫 <b>${nm}</b>: день ${S.day} слабый (${pct}%)`});
+  }
   S.moves+=moves; S.phase="rolled"; save(); renderHUD();
   const verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо — ядро не добил.":"Ядро сорвано — день не в счёт.";
   openModal({
@@ -649,8 +682,8 @@ function landed(){
   S.phase="tile"; const name=ORDER[S.pos]; const d=DIST[name]; const own=S.owners[S.pos];
   renderHUD(); save();
   if(d && !own){ tileBuy(name,d); }
-  else if(d && own==="me"){ tileMine(name,d); }
-  else if(d && own==="opp"){ tilePay(name,d); }
+  else if(d && own===ownVal()){ tileMine(name,d); }
+  else { tilePay(name,d); }
   else tileSpecial(name);
 }
 function afterTile(){ S.phase="tile-done"; save(); renderCity(); renderDayTab(); }
@@ -659,8 +692,9 @@ function tileBuy(name,d){
   const price = S.discount? Math.floor(d.price/2) : d.price;
   const can=S.money>=price && !atLimit;
   const disc = S.discount? ` <span class='money'>(скидка 50%!)</span>`:"";
-  const buy = ()=>{ S.money-=price; S.owners[S.pos]="me"; if(S.discount){S.discount=false;}
+  const buy = ()=>{ S.money-=price; S.owners[S.pos]=ownVal(); if(S.discount){S.discount=false;}
     log('g','🏙',`<b>Ты</b> взял под крышу <b>${name}</b> за $${fmt(price)}`);
+    if(MP&&BATCH) BATCH.events.push({t:"buy",text:`🏙 <b>${MPD.state.players[MY].name}</b> взял под крышу <b>${name}</b> за $${fmt(price)}`});
     toast(name+" — твой!"); closeModal(); afterTile(); renderBoard(); renderHUD(); };
   openModal({ kind:"Свободный район", artImg:ART(d.art), title:name,
     desc:`Цена <b>$${fmt(price)}</b>${disc} · доход <span class="money">$${d.inc}/круг</span>. Возьмёшь под крышу?`+
@@ -730,7 +764,7 @@ function tileSpecial(name){
   if(name==="КПЗ"){ openModal({kind:"КПЗ",art:`<span class="big">🚔</span>`,title:"Обезьянник",desc:"Просто проходишь мимо — ты держишь слово. Сорвал бы — пропустил ход.",btns:[["Мимо","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="Контрабанда"){ openModal({kind:"Аукцион",art:`<span class="big">⚓</span>`,title:"Контрабанда",desc:"Пришёл сухогруз. Редкий лот: <span class='money'>+3 хода</span>.",btns:[["Взять","btn green",()=>{S.moves+=3;log('g','⚓','Контрабанда: <b>+3 хода</b>');toast("+3 хода");closeModal();afterTile();renderHUD();}],["Пас","btn wood",()=>{closeModal();afterTile();}]]}); return; }
   if(name==="Стрелка"){
-    const oppIdx=Object.keys(S.owners).filter(i=>S.owners[i]==="opp");
+    const oppIdx=Object.keys(S.owners).filter(i=>S.owners[i]===oppVal());
     const fit=S.dayPct>=85, strong=S.power>=2;
     if(!oppIdx.length){
       const win=fit; if(win){S.respect+=2; log('g','🥊','Стрелка без ставки: <b>+2 уважения</b>');}
@@ -739,9 +773,10 @@ function tileSpecial(name){
         btns:[["Ок","btn wood",()=>{closeModal();afterTile();renderHUD();}]]}); return;
     }
     const can=fit&&strong;
-    const take=()=>{ const i=oppIdx[Math.floor((S.day*3)%oppIdx.length)]; S.power-=2; S.owners[i]="me";
-      log('g','🥊',`<b>Стрелка!</b> Ты отжал <b>${ORDER[i]}</b> у Германа (−2⚡)`);
-      toast(ORDER[i]+" отжат у Скляровских!"); closeModal(); afterTile(); renderBoard(); renderHUD(); };
+    const take=()=>{ const i=oppIdx[Math.floor((S.day*3)%oppIdx.length)]; S.power-=2; S.owners[i]=ownVal();
+      log('g','🥊',`<b>Стрелка!</b> Ты отжал <b>${ORDER[i]}</b> (−2⚡)`);
+      if(MP&&BATCH) BATCH.events.push({t:"strelka",text:`⚔️ <b>${MPD.state.players[MY].name}</b> отжал <b>${ORDER[i]}</b> на стрелке!`});
+      toast(ORDER[i]+" отжат!"); closeModal(); afterTile(); renderBoard(); renderHUD(); };
     openModal({kind:"Стрелка",art:`<span class="big">🥊</span>`,title:"Стрелка",
       desc: can?`Забиваешь стрелку Герману за район. Ставка — <b>2 силы</b>. Твоя дисциплина сегодня крепче — заберёшь точку.`
         : `Отжать район: нужен <b>день ≥85%</b> и <b>2 силы</b>. Сейчас: день ${S.dayPct}% · сила ${S.power}.`,
@@ -800,6 +835,10 @@ function oppTurn(){
   }
 }
 function endDay(){
+  if(MP){
+    if(S.day%7===0){ save(); return shodka(); }
+    save(); return mpFinishDay();
+  }
   oppTurn();
   if(S.day%7===0){ save(); return shodka(); }
   nextDay();
@@ -826,10 +865,11 @@ function shodka(){
   }
   // флаг недели
   const my=S.weekStats.days*2+S.weekStats.sotki;
-  const op=(S.weekStats.oppDays||0)*2+(S.weekStats.oppSotki||0);
+  const ows = MP ? ((MPD.state.players[OPP_CLAN]||{}).weekStats||{}) : {days:S.weekStats.oppDays||0,sotki:S.weekStats.oppSotki||0};
+  const op=(ows.days||0)*2+(ows.sotki||0);
   const flagMine=my>=op;
-  if(flagMine){ S.flags.push(S.week); log('g','🚩',`<b>Флаг недели ${S.week} — твой!</b> (+15 влияния в финале)`); }
-  else { S.oppFlags.push(S.week); log('s','🚩',`Флаг недели ${S.week} забрал <b>Герман</b>`); }
+  if(flagMine){ flagsMine().push(S.week); log('g','🚩',`<b>Флаг недели ${S.week} — твой!</b> (+15 влияния в финале)`); }
+  else { flagsOpp().push(S.week); log('s','🚩',`Флаг недели ${S.week} забрал <b>Герман</b>`); }
   // сброс недели + эскалация
   S.weekStats={days:0,sotki:0,oppDays:0,oppSotki:0};
   if(S.week>=2 && S.frozen!=null && !win) {} else if(B.id!=="prokuror") S.frozen=null;
@@ -838,9 +878,9 @@ function shodka(){
   const nextB=BOSSES[Math.min(S.week+1,2)];
   openModal({kind:`Сходка · неделя ${S.week}`,art:`<span class="big">${win?"👑":"🌫"}</span>`,title:win?"Контракт закрыт":"Контракт провален",
     desc:`<b>${B.name}:</b> ${win?"задача выполнена":"задача не выполнена"} (${cur}/${B.need}).<br>${stakeTxt}<br><br>
-      🚩 <b>Флаг недели:</b> ${flagMine?"ТВОЙ":"у Германа"} — счёт по неделям <b>${S.flags.length}:${S.oppFlags.length}</b>.`+
+      🚩 <b>Флаг недели:</b> ${flagMine?"ТВОЙ":"у Германа"} — счёт по неделям <b>${flagsMine().length}:${flagsOpp().length}</b>.`+
       (last?"":`<br><br>Со следующей недели город держит <b>${nextB.name}</b>. ${nextB.press}`),
-    btns:[[last?"К финалу месяца":"В новую неделю","btn",()=>{ if(!last){ S.week=Math.min(S.week+1,2); } closeModal(); nextDay(); }]]});
+    btns:[[last?"К финалу месяца":"В новую неделю","btn",()=>{ if(!last){ S.week=MP?S.week+1:Math.min(S.week+1,2); } closeModal(); if(MP){ save(); mpFinishDay(); } else nextDay(); }]]});
   save(); renderHUD();
 }
 
@@ -874,7 +914,7 @@ function renderBoss(){
     ❌ Провалил: <span style="color:#ff9e9e;font-weight:700">${B.stakeLose}</span></p>
   </div>
   <div class="card">
-    <h4>🚩 Флаги недель · ${S.flags.length}:${S.oppFlags.length}</h4>
+    <h4>🚩 Флаги недель · ${flagsMine().length}:${flagsOpp().length}</h4>
     <p>Каждое воскресенье Сходка сравнивает вашу неделю с Германом. Победитель забирает флаг — <b>+15 влияния в финале, навсегда</b>.</p>
   </div>
   <div class="card"><p class="note" style="margin:0;border:0;padding:0">${B.lore}</p></div>`;
@@ -928,7 +968,7 @@ function renderDossier(){
   <div class="card"><div class="kv">
     <span class="pill">районы: ${myCount(S)}</span><span class="pill">серия: 🔥${S.streak}</span>
     <span class="pill">деньги: $${fmt(S.money)}</span><span class="pill">сила: ${S.power}⚡</span>
-    <span class="pill">уважение: ${S.respect}🎖</span><span class="pill">🚩 флаги: ${S.flags.length}:${S.oppFlags.length}</span>
+    <span class="pill">уважение: ${S.respect}🎖</span><span class="pill">🚩 флаги: ${flagsMine().length}:${flagsOpp().length}</span>
   </div></div>
   <div class="card"><h4>Слово недели · скоро</h4><p>Обет («без сахара», «без скролла») с баффом за неделю и штрафом за срыв — включим в боевой версии на двоих.</p></div>`;
 }
@@ -937,8 +977,8 @@ function renderDossier(){
 function summary(){
   S.phase="summary"; save(); show("s-sum");
   let build=0; for(const i in S.lvl) if(S.owners[i]==="me") build+=(S.lvl[i]-1)*5;
-  const score = myCount(S)*10 + build + S.respect + Math.floor(S.money/100) + S.power + S.flags.length*15;
-  const oppScore = oppCount()*10 + (S.oppDays||0)*5 + Math.floor((S.oppMoney||0)/100) + S.oppFlags.length*15;
+  const score = myCount(S)*10 + build + S.respect + Math.floor(S.money/100) + S.power + flagsMine().length*15;
+  const oppScore = oppCount()*10 + (S.oppDays||0)*5 + Math.floor((S.oppMoney||0)/100) + flagsOpp().length*15;
   const win=score>=oppScore;
   $("#s-sum").innerHTML=`
     <div class="brand" style="padding-top:24px"><h1>${win?"ПОБЕДА":"ИТОГ"}</h1><p>Две недели в Южноморске</p></div>
@@ -949,7 +989,7 @@ function summary(){
         <div class="s"><b>${myCount(S)}</b><span>Районов</span></div>
         <div class="s"><b>$${fmt(S.money)}</b><span>Общак</span></div>
         <div class="s"><b>${S.respect}</b><span>Уважение</span></div>
-        <div class="s"><b>🚩 ${S.flags.length}:${S.oppFlags.length}</b><span>Флаги недель</span></div>
+        <div class="s"><b>🚩 ${flagsMine().length}:${flagsOpp().length}</b><span>Флаги недель</span></div>
       </div>
       <button class="btn" id="again">↺ Сыграть заново</button>
       <div style="height:9px"></div>
