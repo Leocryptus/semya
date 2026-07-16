@@ -7,6 +7,7 @@
 <title>СЕМЬЯ · Южноморск 1994</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@600;700;800;900&family=Manrope:wght@500;600;700;800&family=Space+Mono:wght@700&display=swap">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="mp-state.js"></script>
 <style>
 :root{
   --gold:#FFC24B; --gold-lite:#FFE39A; --gold-deep:#D6891C; --gold-ink:#3A2408;
@@ -369,6 +370,60 @@ const CARDS = [
 /* ═══════════ СОСТОЯНИЕ ═══════════ */
 const KEY="semya_proto_v1";
 let S=null;
+/* ═══════════ MP: общий город на двоих (стейт с Pages, ходы через sendData боту) ═══════════ */
+const qs=new URLSearchParams(location.search);
+const TG_UID = (window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user&&Telegram.WebApp.initDataUnsafe.user.id) || qs.get("uid") || null;
+const MPD = window.__MP__ || null;
+const MP = !!(MPD && TG_UID && MPD.uids && MPD.uids[String(TG_UID)]);
+const MY = MP ? MPD.uids[String(TG_UID)] : "g";
+const OPP_CLAN = MY==="g" ? "s" : "g";
+const CAN_SEND = !!(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData&&Telegram.WebApp.isVersionAtLeast&&Telegram.WebApp.sendData);
+const MPKEY="semya_mp_local_v1", PENDKEY="semya_mp_pending_v1";
+let BATCH=null; // копится за день: {day, streakBefore, rolls, transfers:[], events:[], logAdd:[]}
+/* PRNG как у бота: fnv1a + mulberry32 — кубики с солью дня (нельзя просчитать заранее) */
+function _fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h>>>0;}
+function _mul32(seed){return function(){seed=(seed+0x6D2B79F5)|0;let t=seed;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
+function rollDice(salt,uid,day,pct,streakBefore){
+  const rnd=_mul32(_fnv(salt+"|"+uid+"|"+day)); const d3=()=>1+Math.floor(rnd()*3);
+  if(pct<50) return {rolls:[],moves:0,bonus:0};
+  const rolls = pct<85 ? [d3()] : [d3(),d3()];
+  const bonus = (pct>=100?1:0) + (streakBefore>=7?2:streakBefore>=3?1:0);
+  return {rolls,moves:rolls.reduce((a,b)=>a+b,0)+bonus,bonus};
+}
+function mpSalt(day){ return (MPD.state.salt||{})[String(day)] || "s"; }
+function mpToLocal(){
+  const st=MPD.state, me=st.players[MY];
+  const local={phase: me.dayPct==null?"day-open":"tile-done", tab:"day",
+    day:me.day, maxDay:st.maxDay, week:st.week, pos:me.pos, moves:me.moves, money:me.money,
+    power:me.power, respect:me.respect, streak:me.streak, dayPct:me.dayPct, done:{},
+    days:me.days||[], weekStats:me.weekStats||{days:0,sotki:0}, discount:!!me.discount, tail:!!me.tail,
+    weeklyDone:me.weeklyDone||[], proto:(me.proto||[]).map(a=>({...a})),
+    owners:st.owners||{}, lvl:st.lvl||{}, flags:st.flags||{g:[],s:[]}, log:st.log||[],
+    oppPos: st.players[OPP_CLAN].pos, oppName: st.players[OPP_CLAN].name||"Соперник"
+  };
+  return local;
+}
+function mpFreshBatch(){ BATCH={day:S.day, streakBefore:S.streak, rolls:[], transfers:[], events:[], logAdd:[]}; }
+function mpLog(side,ico,txt){ const e={d:S.day,side,ico,txt}; S.log.unshift(e); if(BATCH)BATCH.logAdd.push(e); if(S.log.length>120)S.log.length=120; }
+function mpBuildPayload(){
+  return JSON.stringify({clan:MY, day:BATCH.day, streakBefore:BATCH.streakBefore, rolls:BATCH.rolls,
+    endPlayer:{pos:S.pos,moves:S.moves,money:S.money,power:S.power,respect:S.respect,streak:S.streak,
+      day:S.day+1, dayPct:null, days:S.days, weekStats:S.weekStats, discount:S.discount, tail:S.tail,
+      weeklyDone:S.weeklyDone, proto:S.proto, movesRolled:BATCH.movesRolled||0, name:MPD.state.players[MY].name, uid:TG_UID},
+    shared:{owners:S.owners,lvl:S.lvl,week:S.week,flags:S.flags,logAdd:BATCH.logAdd},
+    transfers:BATCH.transfers, events:BATCH.events});
+}
+function mpFinishDay(){
+  const payload=mpBuildPayload();
+  try{ localStorage.setItem(PENDKEY,payload); }catch(e){}
+  if(CAN_SEND){
+    try{ Telegram.WebApp.sendData(payload); localStorage.removeItem(MPKEY); return; }catch(e){}
+  }
+  // MenuButton-запуск: sendData недоступен — просим открыть через кнопку
+  openModal({kind:"Синхронизация",art:'<span class="big">📮</span>',title:"Ход собран",
+    desc:"Апка открыта не через кнопку <b>🎮 Играть</b> в личке бота — отправить ход городу отсюда нельзя.<br>Открой игру той кнопкой и нажми «Отправить ход» на старте.",
+    btns:[["Понял","btn wood",()=>{closeModal();}]]});
+}
 function fresh(){ return {
   phase:"setup", day:1, maxDay:14, week:1, pos:0, moves:0, money:500, power:0, respect:0, streak:0,
   proto:SETUP_FAST.map(x=>({...x, cnt:x.def})), done:{}, owners:{}, lvl:{}, dayPct:null,
@@ -389,13 +444,15 @@ function load(){ try{const r=localStorage.getItem(KEY); if(r){S=JSON.parse(r);
 const LVL_MULT=[1,1.6,2.5];
 function lvlOf(i){ return S.lvl[i]||1; }
 function curBoss(){ return BOSSES[Math.min(S.week,2)]; }
-function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
+function save(){ try{ localStorage.setItem(MP?MPKEY:KEY, JSON.stringify(S)); }catch(e){} }
 const $=s=>document.querySelector(s);
 const fmt=n=>(n<0?"−":"")+Math.abs(n).toLocaleString("ru-RU").replace(/,/g," ");
-function myCount(s){ return Object.values((s||S).owners).filter(o=>o==="me").length; }
-function oppCount(){ return Object.values(S.owners).filter(o=>o==="opp").length; }
+function ownVal(){ return MP?MY:"me"; }
+function oppVal(){ return MP?OPP_CLAN:"opp"; }
+function myCount(s){ return Object.values((s||S).owners).filter(o=>o===ownVal()).length; }
+function oppCount(){ return Object.values(S.owners).filter(o=>o===oppVal()).length; }
 function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("show"),2000); }
-function log(side,ico,txt){ S.log.unshift({d:S.day, side, ico, txt}); if(S.log.length>80)S.log.length=80; }
+function log(side,ico,txt){ if(MP){ mpLog(side,ico,txt); return; } S.log.unshift({d:S.day, side, ico, txt}); if(S.log.length>80)S.log.length=80; }
 
 /* ═══════════ НАВИГАЦИЯ/ЭКРАНЫ ═══════════ */
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id)); }
@@ -469,11 +526,13 @@ function renderBoard(hotIdx){
   let html="";
   for(let i=0;i<n;i++){
     const [rr,cc]=cells[Math.round(i*P/n)%P]; const name=ORDER[i]; const d=DIST[name];
-    const start=name.startsWith("Старт"); const own=S.owners[i];
+    const start=name.startsWith("Старт"); const ownRaw=S.owners[i];
+    const own = ownRaw ? (ownRaw===ownVal() ? "me" : "opp") : null;
     const gc=d?GC[d.g]:null;
     const body = d ? `<img class="art" src="${ART(d.art)}" alt="">` : `<span class="em">${SPEC_EM[name]||"🏙️"}</span>`;
     let toks=""; if(S.pos===i) toks+=`<span class="tok me"></span>`;
-    if(own) toks+=`<span class="ownf">${own==="me"?"🥂":"🌹"}</span>`;
+    if(MP && S.oppPos===i) toks+=`<span class="tok opp" style="background:radial-gradient(circle at 40% 35%,#ff9a9a,#c0272e);top:auto;bottom:2px;right:auto;left:2px"></span>`;
+    if(own){ const flag = MP ? (ownRaw==="g"?"🥂":"🌹") : (own==="me"?"🥂":"🌹"); toks+=`<span class="ownf">${flag}</span>`; }
     const lv=lvlOf(i); if(own&&lv>1) toks+=`<span class="stars">${"★".repeat(lv-1)}</span>`;
     if(S.frozen===i) toks+=`<span class="frz">⛔</span>`;
     const cls=["bt", start?"start":"", d?"":"special", own==="me"?"own-me":own==="opp"?"own-opp":"", (hotIdx===i?"hot":"")].join(" ");
@@ -522,14 +581,25 @@ function renderChecks(){
     </div>`).join("");
 }
 function dayResult(){
-  const total=S.proto.length; const doneN=S.proto.filter((_,i)=>S.done[i]).length;
-  const coreOk=S.proto.every((p,i)=>!p.core||S.done[i]);
-  let pct=Math.round(doneN/total*100); if(!coreOk) pct=Math.min(pct,60);
+  // daily-пункты (weekly — отдельная секция, в % не идут)
+  const daily=S.proto.map((p,i)=>({p,i})).filter(x=>!x.p.weekly);
+  const wsum=daily.reduce((a,x)=>a+(x.p.weight||1)*Math.max(1,x.p.cnt||1),0)||1;
+  const wdone=daily.filter(x=>S.done[x.i]).reduce((a,x)=>a+(x.p.weight||1)*Math.max(1,x.p.cnt||1),0);
+  const coreOk=daily.every(x=>!(x.p.core||x.p.weight>=3)||S.done[x.i]);
+  let pct=Math.round(wdone/wsum*100); if(!coreOk) pct=Math.min(pct,60);
   S.dayPct=pct; S.days.push({day:S.day,pct});
-  let moves= pct>=100?6 : pct>=85?4 : pct>=50?2 : 0;
-  const sbonus = S.streak>=7?2 : S.streak>=3?1 : 0; if(moves>0) moves+=sbonus;
+  let moves, rollsInfo=null;
+  if(MP){
+    const r=rollDice(mpSalt(S.day), String(TG_UID), S.day, pct, S.streak);
+    moves=r.moves; rollsInfo=r; BATCH.rolls=r.rolls; BATCH.movesRolled=r.moves;
+  } else {
+    moves = pct>=100?6 : pct>=85?4 : pct>=50?2 : 0;
+    const sbonus = S.streak>=7?2 : S.streak>=3?1 : 0; if(moves>0) moves+=sbonus;
+  }
   const t0=titleOf(S.respect); if(moves>0 && t0[0]==="Положенец") moves+=1; // перк звания
-  const coreDone=S.proto.filter((p,i)=>p.core&&S.done[i]).length; S.power+=coreDone;
+  const sbonusShown = MP ? (rollsInfo?rollsInfo.bonus:0) : (S.streak>=7?2:S.streak>=3?1:0);
+  const sbonus=sbonusShown;
+  const coreDone=S.proto.filter((p,i)=>(p.core||p.weight>=3)&&!p.weekly&&S.done[i]).length; S.power+=coreDone;
   const cash = pct>=100?300 : pct>=85?200 : pct>=50?100 : 0; S.money+=cash;
   const prevT=titleOf(S.respect)[0];
   if(pct>=85){ S.streak++; S.respect += pct>=100?3:2; S.weekStats.days++; if(pct>=100)S.weekStats.sotki++; }
@@ -545,7 +615,7 @@ function dayResult(){
   const verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо — ядро не добил.":"Ядро сорвано — день не в счёт.";
   openModal({
     kind:"Итог дня · "+pct+"%", art:`<span class="big">${pct>=100?"🏆":pct>=85?"💪":pct>=50?"🙂":"😮‍💨"}</span>`,
-    title: moves>0?`+${moves} ходов`:"0 ходов",
+    title: moves>0?((MP&&rollsInfo&&rollsInfo.rolls.length)?`🎲 ${rollsInfo.rolls.join(" + 🎲 ")}${rollsInfo.bonus?` +${rollsInfo.bonus}`:""} = ${moves}`:`+${moves} ходов`):"0 ходов",
     reward:[["👣",moves+" ходов"], cash?["money","+$"+cash]:null, ["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:null, pct>=85?["📜",curBoss().count(S)+"/"+curBoss().need+" к боссу"]:null, sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
     desc:verdict+(moves>0?" Жми «Выйти в город».":" Ходов нет — сегодня стоишь. Завтра поднимайся."),
     btns: moves>0?[["▶ Выйти в город","btn",()=>{closeModal(); const m=S.moves; S.moves=0; go("city"); walk(m);}]]
@@ -623,10 +693,16 @@ function tileMine(name,d){
     btns:[ buildBtn, ["Дальше","btn wood",()=>{closeModal();afterTile();}] ].filter(x=>x&&(x[2]!==null||x[1]==="btn")) });
 }
 function tilePay(name,d){
-  const rent=Math.round(d.inc*0.8); S.money=Math.max(0,S.money-rent); S.oppMoney=(S.oppMoney||0)+rent;
-  log('s','💸',`Постой у Германа: <b>${name}</b> · <b>−$${fmt(rent)}</b>`);
-  openModal({ kind:"Район Германа", artImg:ART(d.art), title:name,
-    desc:`Тут крыша Скляровских. Платишь за постой <span class="bad">−$${fmt(rent)}</span>.`,
+  const lvm=LVL_MULT[lvlOf(S.pos)-1]||1;
+  const rent=Math.round(d.inc*0.8*lvm);
+  S.money=Math.max(0,S.money-rent);
+  const oppName = MP ? (S.oppName||"соперник") : "Герман";
+  if(MP){ BATCH.transfers.push({clan:OPP_CLAN,field:"money",delta:rent});
+          BATCH.events.push({t:"rent",text:`💸 <b>${MPD.state.players[MY].name}</b> заплатил за постой в <b>${name}</b>: $${fmt(rent)} → ${oppName}`}); }
+  else { S.oppMoney=(S.oppMoney||0)+rent; }
+  log('s','💸',`Постой у ${oppName}: <b>${name}</b> · <b>−$${fmt(rent)}</b>`);
+  openModal({ kind:`Район соперника${lvm>1?" ★":""}`, artImg:ART(d.art), title:name,
+    desc:`Тут чужая крыша${lvm>1?" (прокачана ×"+lvm+")":""}. Платишь за постой <span class="bad">−$${fmt(rent)}</span>.`,
     btns:[["Заплатил","btn wood",()=>{closeModal();afterTile();}]] });
   renderHUD();
 }
@@ -899,6 +975,28 @@ function closeModal(){ $("#modal-root").innerHTML=""; }
 $("#reset").onclick=()=>{ if(confirm("Сбросить прогресс и собрать протокол заново?")){ localStorage.removeItem(KEY); location.reload(); } };
 (function boot(){
   try{ if(window.Telegram&&Telegram.WebApp){ Telegram.WebApp.ready(); Telegram.WebApp.expand&&Telegram.WebApp.expand(); } }catch(e){}
+  if(MP){
+    // общий город: протокол и стейт из бота
+    let local=null; try{ local=JSON.parse(localStorage.getItem(MPKEY)||"null"); }catch(e){}
+    const srv=mpToLocal();
+    if(local && local.day===srv.day && srv.dayPct==null && local.dayPct!=null){
+      S=local; // незавершённая локальная сессия этого дня
+    } else { S=srv; try{localStorage.removeItem(MPKEY);}catch(e){} }
+    // pending-батч прошлого дня, если апка тогда была без sendData
+    let pend=null; try{ pend=localStorage.getItem(PENDKEY); }catch(e){}
+    if(pend && CAN_SEND){
+      const pd=JSON.parse(pend);
+      if(pd.day < S.day || (pd.day===S.day && S.dayPct==null)){
+        setTimeout(()=>openModal({kind:"Синхронизация",art:'<span class="big">📮</span>',title:"Неотправленный ход",
+          desc:"Есть собранный ход за день "+pd.day+". Отправить городу? (апка закроется)",
+          btns:[["📮 Отправить ход","btn",()=>{Telegram.WebApp.sendData(pend);}],
+                ["Позже","btn wood",()=>closeModal()]]}),600);
+      } else { try{localStorage.removeItem(PENDKEY);}catch(e){} }
+    }
+    if(!BATCH || BATCH.day!==S.day) mpFreshBatch();
+    document.title="СЕМЬЯ · "+(MY==="g"?"Карлеоне":"Скляровские");
+    enterGame(); return;
+  }
   if(!load()) S=fresh();
   if(S.phase && S.phase!=="setup"){
     if(S.phase==="summary"){ $("#s-setup").classList.remove("on"); $("#game-root").classList.remove("hidden"); $("#nav").classList.remove("hidden"); renderHUD(); summary(); return; }
