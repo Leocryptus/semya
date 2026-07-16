@@ -378,7 +378,7 @@ const MP = !!(MPD && TG_UID && MPD.uids && MPD.uids[String(TG_UID)]);
 const MY = MP ? MPD.uids[String(TG_UID)] : "g";
 const OPP_CLAN = MY==="g" ? "s" : "g";
 const CAN_SEND = !!(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData&&Telegram.WebApp.isVersionAtLeast&&Telegram.WebApp.sendData);
-const MPKEY="semya_mp_local_v1", PENDKEY="semya_mp_pending_v1";
+const MPKEY="semya_mp_local_"+ (MPD&&MPD.uids&&MPD.uids[String((window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user&&Telegram.WebApp.initDataUnsafe.user.id)||new URLSearchParams(location.search).get("uid")||"x")]||"x"), PENDKEY=MPKEY+"_pending";
 let BATCH=null; // копится за день: {day, streakBefore, rolls, transfers:[], events:[], logAdd:[]}
 /* PRNG как у бота: fnv1a + mulberry32 — кубики с солью дня (нельзя просчитать заранее) */
 function _fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h>>>0;}
