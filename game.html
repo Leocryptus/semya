@@ -683,7 +683,7 @@ function landed(){
   renderHUD(); save();
   if(d && !own){ tileBuy(name,d); }
   else if(d && own===ownVal()){ tileMine(name,d); }
-  else { tilePay(name,d); }
+  else if(d){ tilePay(name,d); }
   else tileSpecial(name);
 }
 function afterTile(){ S.phase="tile-done"; save(); renderCity(); renderDayTab(); }
