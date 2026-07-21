@@ -70,6 +70,22 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
 .pitem .t{flex:1;min-width:0}.pitem .t b{display:block;font:800 14.5px/1.15 "Rubik";color:#4A3312}.pitem .t span{font-size:12px;color:#7a5a2c}
 .core{display:inline-block;margin-left:6px;font:800 8.5px/1 "Rubik";letter-spacing:.06em;color:#fff;background:#e23b3b;padding:3px 5px;border-radius:5px;vertical-align:middle}
 .rep{display:inline-block;margin-left:5px;font:800 8.5px/1 "Rubik";letter-spacing:.05em;color:#fff;background:#7B4FCF;padding:3px 5px;border-radius:5px;vertical-align:middle}
+
+/* ва-банк */
+.vb{display:flex;align-items:center;gap:11px;width:100%;border-radius:13px;padding:11px 13px;margin-bottom:9px;text-align:left;
+ border:2px solid #B0446E;background:linear-gradient(100deg,rgba(255,77,120,.18),rgba(255,190,74,.10));cursor:default}
+.btn-vb{cursor:pointer;border-color:var(--gold-deep);background:linear-gradient(100deg,rgba(255,190,74,.20),rgba(255,77,120,.12));
+ box-shadow:0 5px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.14);transition:.14s}
+.btn-vb:active{transform:translateY(1px)}
+.vb__i{font-size:23px;flex:0 0 auto;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+.vb__t{flex:1;min-width:0}
+.vb__t b{display:block;font:400 13.5px/1.2 var(--disp);color:#FFE3A6;letter-spacing:.02em}
+.vb__t span{display:block;font:600 11.5px/1.4 "Rubik";color:var(--txt3);margin-top:3px}
+.vb__go{font:400 17px/1 var(--disp);color:var(--gold);flex:0 0 auto}
+.vb.on{border-color:var(--gold);background:linear-gradient(100deg,rgba(255,190,74,.28),rgba(255,77,120,.14));animation:vbp 2.2s infinite}
+.vb.on .vb__t b{color:#FFF0CE}
+@keyframes vbp{50%{box-shadow:0 0 20px rgba(255,190,74,.35)}}
+.vb.off{opacity:.55;border-color:var(--line2);background:rgba(0,0,0,.22)}
 .stp{display:inline-flex;border-radius:11px;overflow:hidden;box-shadow:var(--sh-btn);flex:0 0 auto}
 .stp button{width:32px;height:32px;border:0;cursor:pointer;font:800 20px/1 "Rubik";color:var(--gold-ink);background:var(--gg)}
 .stp .v{min-width:38px;text-align:center;font:700 15px/32px "Space Mono";color:#4A3312;background:var(--cream2)}
@@ -591,7 +607,8 @@ function renderDayTab(){
   const h=$("#hint-day"), slot=$("#act-day");
   if(S.phase==="day-open"){
     h.innerHTML=`Закрой свой день по-честному. <b>Ядро</b> обязательно.`;
-    slot.innerHTML=`<div class="checks" id="checks"></div><div style="height:10px"></div><button class="btn" id="finish-day">Подбить день</button>`;
+    slot.innerHTML=`<div id="vabank-slot"></div><div class="checks" id="checks"></div><div style="height:10px"></div><button class="btn" id="finish-day">Подбить день</button>`;
+    renderVabank();
     renderChecks();
     $("#checks").onclick=e=>{
       // микро-шаг ритуала
@@ -633,6 +650,49 @@ function renderDayTab(){
     $("#end-day2").onclick=endDay;
   } else { h.innerHTML="Идёшь по городу…"; slot.innerHTML=""; }
 }
+/* ═══ ВА-БАНК: объявляется утром, до первой галочки ═══
+   сотка → награды дня ×2 + клеймо · не сотка → 0 ходов и серия минус ступень
+   лимит 3 в неделю, соперник видит объявление сразу */
+const VABANK_WEEK_LIMIT=3;
+function vabankUsedThisWeek(){ return (S.vabankLog||[]).filter(v=>v.week===S.week).length; }
+function canVabank(){
+  if(S.vabank) return false;                                   // уже объявлен
+  if(Object.values(S.done||{}).some(Boolean)) return false;     // день начат — поздно
+  return vabankUsedThisWeek() < VABANK_WEEK_LIMIT;
+}
+function renderVabank(){
+  const slot=$("#vabank-slot"); if(!slot) return;
+  const left=VABANK_WEEK_LIMIT-vabankUsedThisWeek();
+  if(S.vabank){
+    slot.innerHTML=`<div class="vb on"><span class="vb__i">🎲</span>
+      <span class="vb__t"><b>ВА-БАНК ОБЪЯВЛЕН</b><span>Только сотка. Награды ×2, иначе день пустой.</span></span></div>`;
+    return;
+  }
+  if(!canVabank()){
+    slot.innerHTML = left<=0
+      ? `<div class="vb off"><span class="vb__i">🎲</span><span class="vb__t"><b>Ва-банк на этой неделе исчерпан</b><span>Три раза в неделю — потолок. Вернётся в понедельник.</span></span></div>`
+      : `<div class="vb off"><span class="vb__i">🎲</span><span class="vb__t"><b>Ва-банк — только до первой галочки</b><span>День уже начат. Ставку поднимают на старте, не по ходу.</span></span></div>`;
+    return;
+  }
+  slot.innerHTML=`<button class="vb btn-vb" id="vb-go"><span class="vb__i">🎲</span>
+    <span class="vb__t"><b>ПОЙТИ ВА-БАНК</b><span>Сотка — всё ×2. Меньше — ноль ходов и серия вниз. Осталось ${left}/${VABANK_WEEK_LIMIT}</span></span>
+    <span class="vb__go">▸</span></button>`;
+  $("#vb-go").onclick=()=>{
+    openModal({kind:"Ва-банк", art:`<span class="big">🎲</span>`, title:"Поднять ставку?",
+      desc:`Если закроешь день на <b>100%</b> — все награды дня удваиваются и получишь клеймо.<br><br>`+
+           `Если <b>меньше сотки</b>, даже 99% — день даёт <b>ноль ходов</b>, а серия падает на ступень.<br><br>`+
+           `Соперник увидит объявление сразу. Отменить нельзя.`,
+      btns:[["🎲 Иду ва-банк","btn",()=>{
+              S.vabank=true; S.vabankLog=(S.vabankLog||[]).concat([{day:S.day,week:S.week}]);
+              save(); closeModal(); renderVabank(); toast("Ва-банк объявлен. Только сотка.");
+              log('g','🎲',`<b>Ты</b> идёшь ва-банк на день ${S.day}`);
+              if(MP&&BATCH) BATCH.events.push({t:"vabank",
+                text:`🎲 <b>${MPD.state.players[MY].name}</b> идёт ВА-БАНК на день ${S.day}!\nСотка — всё ×2. Меньше — день пустой.`});
+            }],
+            ["Не сегодня","btn wood",()=>closeModal()]]});
+  };
+}
+
 /* составные пункты (ритуалы): S.sub[i] = массив галочек микро-шагов,
    родитель закрыт только когда закрыты все шаги.
    OPEN_SUB — какие ритуалы развёрнуты (только вид, в сейв не идёт) */
@@ -719,14 +779,24 @@ function dayResult(){
     const sbonus = S.streak>=7?2 : S.streak>=3?1 : 0; if(moves>0) moves+=sbonus;
   }
   const t0=titleOf(S.respect); if(moves>0 && t0[0]==="Положенец") moves+=1; // перк звания
+  // ва-банк: сотка удваивает, недобор обнуляет ходы и роняет серию
+  const vb=!!S.vabank, vbWin=vb&&pct>=100;
+  if(vb){ if(vbWin) moves*=2; else moves=0; }
   moves=Math.min(moves,8); // потолок дня: на доске 24 клетки, иначе один день = полный круг
   const sbonusShown = MP ? (rollsInfo?rollsInfo.bonus:0) : (S.streak>=7?2:S.streak>=3?1:0);
   const sbonus=sbonusShown;
   const coreDone=S.proto.filter((p,i)=>(p.core||p.weight>=3)&&!p.weekly&&S.done[i]).length; S.power+=coreDone;
-  const cash = pct>=100?300 : pct>=85?200 : pct>=50?100 : 0; S.money+=cash;
+  let cash = pct>=100?300 : pct>=85?200 : pct>=50?100 : 0;
+  if(vbWin) cash*=2;                                   // ва-банк удваивает и деньги
+  S.money+=cash;
   const prevT=titleOf(S.respect)[0];
-  if(pct>=85){ S.streak++; S.respect += pct>=100?3:2; S.weekStats.days++; if(pct>=100)S.weekStats.sotki++; }
+  if(pct>=85){ S.streak++; S.respect += (pct>=100?3:2)*(vbWin?2:1); S.weekStats.days++; if(pct>=100)S.weekStats.sotki++; }
   else { S.streak=0; }
+  // проигранный ва-банк роняет серию на ступень (не в ноль — день всё же прожит)
+  if(vb&&!vbWin&&S.streak>0) S.streak=Math.max(0,S.streak-3);
+  if(vbWin){ S.stamps=(S.stamps||0)+1; log('g','🏅',`<b>Ва-банк взят!</b> Награды ×2 · +1 клеймо`); }
+  else if(vb){ log('n','🎲',`<b>Ва-банк сорван</b> (${pct}%) — день без ходов, серия просела`); }
+  S.vabank=false;
   const newT=titleOf(S.respect); if(newT[0]!==prevT){ setTimeout(()=>toast(`Новое звание: ${newT[0]}! Лимит районов ${newT[2]}${newT[3]!=="—"?" · "+newT[3]:""}`),900); log('g','🎖',`<b>Ты</b> поднялся до звания <b>${newT[0]}</b>`); }
   // давление босс-контракта недели
   const B=curBoss(); let pressTxt="";
@@ -741,7 +811,9 @@ function dayResult(){
       : {t:"weak",text:`🌫 <b>${nm}</b>: день ${S.day} слабый (${pct}%)`});
   }
   S.moves+=moves; S.phase="rolled"; save(); renderHUD();
-  let verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо по объёму, но ядро закрыл.":"Ядро сорвано — день не в счёт.";
+  let verdict = vbWin ? "ВА-БАНК ВЗЯТ! Сотка при поднятой ставке — город такое запоминает."
+              : (vb ? `Ва-банк сорван на ${pct}%. Ставка сгорела, ходов нет. Завтра поднимайся.`
+              : (pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо по объёму, но ядро закрыл.":"Ядро сорвано — день не в счёт."));
   // дела с отчётом: судья умножает ходы (×0.8…×1.3) — считает бот, тут только напоминаем
   const needRep=daily.filter(x=>x.p.report&&S.done[x.i]).length;
   if(needRep) verdict += ` Сдай ${needRep===1?"отчёт по делу":"отчёты по делам"} боту (/report) — судья ставит ★, они умножают ходы.`;
