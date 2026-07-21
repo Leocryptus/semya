@@ -69,6 +69,7 @@ h1,h2,h3{font-family:var(--disp);font-weight:400}
 .pitem .em{font-size:26px;width:34px;text-align:center;flex:0 0 auto}
 .pitem .t{flex:1;min-width:0}.pitem .t b{display:block;font:800 14.5px/1.15 "Rubik";color:#4A3312}.pitem .t span{font-size:12px;color:#7a5a2c}
 .core{display:inline-block;margin-left:6px;font:800 8.5px/1 "Rubik";letter-spacing:.06em;color:#fff;background:#e23b3b;padding:3px 5px;border-radius:5px;vertical-align:middle}
+.rep{display:inline-block;margin-left:5px;font:800 8.5px/1 "Rubik";letter-spacing:.05em;color:#fff;background:#7B4FCF;padding:3px 5px;border-radius:5px;vertical-align:middle}
 .stp{display:inline-flex;border-radius:11px;overflow:hidden;box-shadow:var(--sh-btn);flex:0 0 auto}
 .stp button{width:32px;height:32px;border:0;cursor:pointer;font:800 20px/1 "Rubik";color:var(--gold-ink);background:var(--gg)}
 .stp .v{min-width:38px;text-align:center;font:700 15px/32px "Space Mono";color:#4A3312;background:var(--cream2)}
@@ -738,7 +739,10 @@ function dayResult(){
       : {t:"weak",text:`🌫 <b>${nm}</b>: день ${S.day} слабый (${pct}%)`});
   }
   S.moves+=moves; S.phase="rolled"; save(); renderHUD();
-  const verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо по объёму, но ядро закрыл.":"Ядро сорвано — день не в счёт.";
+  let verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо по объёму, но ядро закрыл.":"Ядро сорвано — день не в счёт.";
+  // дела с отчётом: судья умножает ходы (×0.8…×1.3) — считает бот, тут только напоминаем
+  const needRep=daily.filter(x=>x.p.report&&S.done[x.i]).length;
+  if(needRep) verdict += ` Сдай ${needRep===1?"отчёт по делу":"отчёты по делам"} боту (/report) — судья ставит ★, они умножают ходы.`;
   openModal({
     kind:"Итог дня · "+pct+"%", art:`<span class="big">${pct>=100?"🏆":pct>=85?"💪":pct>=50?"🙂":"😮‍💨"}</span>`,
     title: moves>0?((MP&&rollsInfo&&rollsInfo.rolls.length)?`🎲 ${rollsInfo.rolls.join(" + 🎲 ")}${rollsInfo.bonus?` +${rollsInfo.bonus}`:""} = ${moves}`:`+${moves} ходов`):"0 ходов",
