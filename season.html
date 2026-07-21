@@ -102,6 +102,12 @@ h1,h2,h3,h4{font-family:var(--disp);font-weight:400;margin:0}
  background:#e23b3b;padding:3px 5px;border-radius:5px;vertical-align:middle}
 .rep{display:inline-block;margin-left:5px;font:800 8.5px/1 "Rubik";letter-spacing:.05em;color:#fff;
  background:#7B4FCF;padding:3px 5px;border-radius:5px;vertical-align:middle}
+.cnt{display:inline-block;margin-left:5px;font:800 8.5px/1 "Rubik";letter-spacing:.04em;color:#6b4a1d;
+ background:rgba(0,0,0,.09);border:1px solid rgba(107,74,29,.3);padding:3px 6px;border-radius:5px;vertical-align:middle}
+.steps{display:grid;gap:3px;margin-top:6px}
+.step{display:flex;align-items:center;gap:7px;font:600 11.5px/1.35 "Rubik";color:#6b4a1d;
+ background:rgba(0,0,0,.055);border-radius:7px;padding:5px 8px}
+.step .se{font-size:13px;flex:0 0 auto}
 
 /* ── неделя ── */
 .wk{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px}
@@ -192,7 +198,7 @@ h1,h2,h3,h4{font-family:var(--disp);font-weight:400;margin:0}
 
   <div class="card">
     <h4>🚀 До старта осталось</h4>
-    <div class="ck done"><div class="bx">✓</div><div class="tx"><b>Протокол Лео собран</b><span>17 пунктов · Σ весов 30 · три жирных дела</span></div></div>
+    <div class="ck done"><div class="bx">✓</div><div class="tx"><b>Протокол Лео собран</b><span>15 пунктов · Σ весов 28 · 4 ядра · 3 ритуала с шагами</span></div></div>
     <div class="ck done"><div class="bx">✓</div><div class="tx"><b>Механики согласованы</b><span>веса ставит игрок · Слово недели · ★-множитель за отчёты</span></div></div>
     <div class="ck"><div class="bx"></div><div class="tx"><b>Герман добирает жирные пункты</b><span>нужно 2–4 дела веса 3 — с результатом и артефактом</span></div></div>
     <div class="ck"><div class="bx"></div><div class="tx"><b>Взаимная виза протоколов</b><span>каждый смотрит список соперника: 👍 принял / ⚔️ оспорил</span></div></div>
@@ -224,10 +230,10 @@ h1,h2,h3,h4{font-family:var(--disp);font-weight:400;margin:0}
 <!-- ═══ ПРОТОКОЛ ЛЕО ═══ -->
 <div class="pane" id="p-leo">
   <div class="stats">
-    <div class="stat"><b>17</b><span>пунктов</span></div>
-    <div class="stat"><b>30</b><span>Σ весов</span></div>
-    <div class="stat"><b>3</b><span>жирных</span></div>
-    <div class="stat"><b>4</b><span>с отчётом</span></div>
+    <div class="stat"><b>15</b><span>пунктов</span></div>
+    <div class="stat"><b>28</b><span>Σ весов</span></div>
+    <div class="stat"><b>4</b><span>ядро</span></div>
+    <div class="stat"><b>3</b><span>ритуала</span></div>
   </div>
   <div id="leoProto"></div>
   <div class="card">
@@ -236,6 +242,7 @@ h1,h2,h3,h4{font-family:var(--disp);font-weight:400;margin:0}
       <div class="wkc"><div class="em">🍽</div><b>Голодание</b><span>1 полный день</span></div>
       <div class="wkc"><div class="em">🎥</div><b>Большое видео</b><span>YouTube · снятое мной · отчёт</span></div>
       <div class="wkc"><div class="em">🪑</div><b>Скука 1 час</b><span>сидеть и смотреть в стену</span></div>
+      <div class="wkc"><div class="em">🗺</div><b>Мостик недельный</b><span>выбор приоритетов · 2 часа · отчёт</span></div>
     </div>
   </div>
 </div>
@@ -318,24 +325,28 @@ h1,h2,h3,h4{font-family:var(--disp);font-weight:400;margin:0}
 const LEO = [
  {b:'☀️ УТРО',items:[
   {em:'⏰',n:'Подъём по графику недели',d:'неделя 1 — 9:30 · дальше 9:00, 8:30, 8:00',w:1},
-  {em:'🌅',n:'Утренний ритуал',d:'свет в глаза 10 мин · вода 500 мл с солью · холодный душ 1–3 мин · дыхание сидя на суше · медитация 10 мин · телефон не трогать полтора часа',w:2}]},
+  {em:'🌅',n:'Утренний ритуал',w:2,sub:[
+    ['☀️','Свет в глаза 10 мин'],['💧','Вода 500 мл + соль'],['🚿','Холодный душ 1–3 мин'],
+    ['🫁','Дыхание по Хофу — сидя, не в душе'],['🧘','Медитация 10 мин'],['📵','Телефон не трогать 1.5 часа']]},
+  {em:'🍳',n:'Завтрак низкоуглеводный',d:'белок и жир, углеводы по минимуму',w:1}]},
  {b:'🧱 РАБОТА',items:[
   {em:'🎯',n:'Топ-гол 1',d:'90 минут, телефон в другой комнате',w:3,core:1,rep:1},
   {em:'🎯',n:'Топ-гол 2',d:'90 минут, телефон в другой комнате',w:3,core:1,rep:1},
   {em:'🎬',n:'Опубликованный рилс',d:'один в день — считается публикация, не съёмка',w:3,core:1,rep:1},
-  {em:'⚓',n:'Рабочий ритуал',d:'якорь 60–120 сек перед стартом · NSDR между блоками · мелочёвка только после топ-гола',w:1}]},
+  {em:'⚓',n:'Рабочий ритуал',w:1,sub:[
+    ['⚓','Якорь 60–120 сек перед топ-голом 1'],['⚓','Якорь 60–120 сек перед топ-голом 2'],
+    ['🛌','NSDR 10–20 мин между блоками'],['📥','Мелочёвка только после топ-гола']]},
+  {em:'🥩',n:'Обед низкоуглеводный',d:'белок и овощи — углеводы оставляем на вечер',w:1}]},
  {b:'🏋️ ТЕЛО',items:[
-  {em:'🏋️',n:'Спорт 40–50 минут',d:'по ротации дня: пн низ · вт верх · ср зона 2 · чт прыжки · пт верх · сб игра · вс лёгкое',w:2,core:1},
-  {em:'🚶',n:'Прогулка 40 минут',d:'утро или вечер — неважно, просто гулять',w:1},
-  {em:'🍬',n:'Без сахара',d:'весь день, включая соусы',w:2},
-  {em:'🍳',n:'Завтрак низкоуглеводный',d:'белок и жир, углеводы по минимуму',w:1},
-  {em:'🥩',n:'Обед низкоуглеводный',d:'белок и овощи — углеводы оставляем на вечер',w:1},
-  {em:'💊',n:'Добавки',d:'креатин 5 г · омега-3 · белок к норме 168 г',w:1}]},
+  {em:'🏋️',n:'Спорт 40–50 минут',d:'баскетбол / зал',w:2,core:1},
+  {em:'🍬',n:'Без сахара',d:'весь день, включая соусы',w:2}]},
  {b:'🌙 ВЕЧЕР',items:[
-  {em:'🧭',n:'Капитанский мостик',d:'30 минут, завершение рабочего дня: план на завтра и выбор завтрашних топ-голов',w:2,rep:1},
+  {em:'🧭',n:'Капитанский мостик',d:'30 минут, завершение дня: план на завтра и выбор завтрашних топ-голов',w:2,rep:1},
   {em:'📵',n:'Без техники за 2 часа до сна',d:'никаких экранов, только книга',w:2},
   {em:'📖',n:'Книга 45 минут',d:'печатная лучше, аудио допустимо',w:2},
-  {em:'🌙',n:'Вечерний ритуал',d:'закатный свет · горячий душ, потом прохладная спальня · медитация 10–15 минут',w:2},
+  {em:'🌙',n:'Вечерний ритуал',w:2,sub:[
+    ['🌇','Закатный свет 2–10 мин'],['🚿','Горячий душ'],
+    ['❄️','Прохладная тёмная спальня'],['🧘','Медитация 10–15 мин']]},
   {em:'😴',n:'Отбой',d:'до полуночи',w:1}]}
 ];
 const GER = [
@@ -355,15 +366,25 @@ const GER = [
  {b:'🌙 ВЕЧЕР',items:[
   {em:'😴',n:'Отбой вовремя',d:'раз в день',w:1}]}
 ];
+function steps(n){ var d=n%10, dd=n%100;
+  if(d===1&&dd!==11) return 'шаг';
+  if(d>=2&&d<=4&&(dd<12||dd>14)) return 'шага';
+  return 'шагов'; }
 function render(data,el,cls){
   el.innerHTML = data.map(function(blk){
     var sum = blk.items.reduce(function(a,i){return a+i.w},0);
     return '<div class="blk"><div class="blkh"><span class="t">'+blk.b+'</span>'+
       '<span class="w">'+blk.items.length+' · Σ'+sum+'</span></div>'+
       blk.items.map(function(i){
-        return '<div class="item '+cls+'"><span class="em">'+i.em+'</span>'+
-        '<span class="t"><b>'+i.n+(i.core?'<span class="core">ЯДРО</span>':'')+(i.rep?'<span class="rep">ОТЧЁТ</span>':'')+'</b>'+
-        '<span>'+i.d+'</span></span><span class="wt">'+i.w+'</span></div>';
+        var body = i.sub
+          ? '<span class="steps">'+i.sub.map(function(s){
+              return '<span class="step"><span class="se">'+s[0]+'</span>'+s[1]+'</span>';
+            }).join('')+'</span>'
+          : '<span>'+i.d+'</span>';
+        return '<div class="item '+cls+(i.sub?' has-sub':'')+'"><span class="em">'+i.em+'</span>'+
+        '<span class="t"><b>'+i.n+(i.core?'<span class="core">ЯДРО</span>':'')+(i.rep?'<span class="rep">ОТЧЁТ</span>':'')+
+        (i.sub?'<span class="cnt">'+i.sub.length+' '+steps(i.sub.length)+'</span>':'')+'</b>'+
+        body+'</span><span class="wt">'+i.w+'</span></div>';
       }).join('')+'</div>';
   }).join('');
 }
