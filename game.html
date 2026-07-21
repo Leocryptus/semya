@@ -738,7 +738,7 @@ function dayResult(){
       : {t:"weak",text:`🌫 <b>${nm}</b>: день ${S.day} слабый (${pct}%)`});
   }
   S.moves+=moves; S.phase="rolled"; save(); renderHUD();
-  const verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо — ядро не добил.":"Ядро сорвано — день не в счёт.";
+  const verdict = pct>=100?"Чистая сотка! Город уважает." : pct>=85?"Крепкий день." : pct>=50?"Так себе, но фишка идёт." : coreOk?"Слабо по объёму, но ядро закрыл.":"Ядро сорвано — день не в счёт.";
   openModal({
     kind:"Итог дня · "+pct+"%", art:`<span class="big">${pct>=100?"🏆":pct>=85?"💪":pct>=50?"🙂":"😮‍💨"}</span>`,
     title: moves>0?((MP&&rollsInfo&&rollsInfo.rolls.length)?`🎲 ${rollsInfo.rolls.join(" + 🎲 ")}${rollsInfo.bonus?` +${rollsInfo.bonus}`:""} = ${moves}`:`+${moves} ходов`):"0 ходов",
