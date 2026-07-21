@@ -607,8 +607,9 @@ function renderDayTab(){
   const h=$("#hint-day"), slot=$("#act-day");
   if(S.phase==="day-open"){
     h.innerHTML=`Закрой свой день по-честному. <b>Ядро</b> обязательно.`;
-    slot.innerHTML=`<div id="vabank-slot"></div><div class="checks" id="checks"></div><div style="height:10px"></div><button class="btn" id="finish-day">Подбить день</button>`;
+    slot.innerHTML=`<div id="vabank-slot"></div><div id="rest-slot"></div><div class="checks" id="checks"></div><div style="height:10px"></div><button class="btn" id="finish-day">${S.rest?"Закрыть день отдыха":"Подбить день"}</button>`;
     renderVabank();
+    renderRest();
     renderChecks();
     $("#checks").onclick=e=>{
       // микро-шаг ритуала
@@ -660,8 +661,45 @@ function canVabank(){
   if(Object.values(S.done||{}).some(Boolean)) return false;     // день начат — поздно
   return vabankUsedThisWeek() < VABANK_WEEK_LIMIT;
 }
+/* ═══ ДЕНЬ ОТДЫХА: 3 на весь сезон ═══
+   день не считается ни успехом, ни провалом: наград нет, но серия замирает,
+   а не рвётся. Для форс-мажора — уехал, заболел, выпал. */
+const REST_TOTAL=3;
+function restUsed(){ return (S.restLog||[]).length; }
+function renderRest(){
+  const slot=$("#rest-slot"); if(!slot) return;
+  const left=REST_TOTAL-restUsed();
+  if(S.rest){
+    slot.innerHTML=`<div class="vb on" style="border-color:#49B6F0;background:linear-gradient(100deg,rgba(73,182,240,.20),rgba(73,182,240,.06))">
+      <span class="vb__i">🛌</span><span class="vb__t"><b>ДЕНЬ ОТДЫХА ВЗЯТ</b>
+      <span>Наград нет, но серия не рвётся. Осталось ${left}.</span></span></div>`;
+    return;
+  }
+  if(S.vabank||left<=0) { slot.innerHTML=""; return; }   // с ва-банком не сочетается
+  slot.innerHTML=`<button class="vb btn-vb" id="rest-go" style="border-color:#3d7fa8;background:linear-gradient(100deg,rgba(73,182,240,.14),rgba(0,0,0,.2))">
+    <span class="vb__i">🛌</span><span class="vb__t"><b>ВЗЯТЬ ДЕНЬ ОТДЫХА</b>
+    <span>Форс-мажор: наград не будет, но серия уцелеет. Осталось ${left} на сезон</span></span>
+    <span class="vb__go">▸</span></button>`;
+  $("#rest-go").onclick=()=>{
+    openModal({kind:"День отдыха", art:`<span class="big">🛌</span>`, title:`Взять паузу? Осталось ${left}`,
+      desc:`День <b>не считается</b> — ни ходов, ни денег, ни уважения.<br><br>`+
+           `Но и провалом он не будет: <b>серия замирает и не рвётся</b>, ядро не спросят.<br><br>`+
+           `К задаче босса этот день тоже не зачтётся — в этом цена.<br><br>`+
+           `<b>Три штуки на весь сезон.</b> Соперник увидит.`,
+      btns:[["🛌 Беру паузу","btn",()=>{
+              S.rest=true; S.restLog=(S.restLog||[]).concat([{day:S.day,week:S.week}]);
+              save(); closeModal(); renderDayTab();   // перерисовать целиком: меняется и кнопка дня
+              toast("День отдыха взят. Серия цела.");
+              log('n','🛌',`<b>Ты</b> взял день отдыха (${restUsed()}/${REST_TOTAL})`);
+              if(MP&&BATCH) BATCH.events.push({t:"rest",
+                text:`🛌 <b>${MPD.state.players[MY].name}</b> берёт день отдыха на день ${S.day}.\nОсталось ${REST_TOTAL-restUsed()} из ${REST_TOTAL}.`});
+            }],
+            ["Нет, играю","btn wood",()=>closeModal()]]});
+  };
+}
 function renderVabank(){
   const slot=$("#vabank-slot"); if(!slot) return;
+  if(S.rest){ slot.innerHTML=""; return; }               // в день отдыха ставок нет
   const left=VABANK_WEEK_LIMIT-vabankUsedThisWeek();
   if(S.vabank){
     slot.innerHTML=`<div class="vb on"><span class="vb__i">🎲</span>
@@ -760,6 +798,20 @@ function renderChecks(){
   $("#checks").innerHTML=html;
 }
 function dayResult(){
+  // день отдыха: наград нет, но серия и ядро не спрашиваются — день просто выпадает
+  if(S.rest){
+    S.dayPct=null; S.days.push({day:S.day,pct:null,rest:true});
+    S.phase="tile-done"; S.moves=0; S.rest=false; save(); renderHUD();
+    log('n','🛌',`День ${S.day} — пауза. Серия ${S.streak} цела.`);
+    if(MP&&BATCH){ BATCH.events.push({t:"rest",
+      text:`🛌 <b>${MPD.state.players[MY].name}</b> закрыл день ${S.day} как день отдыха.`}); }
+    openModal({kind:"День отдыха", art:`<span class="big">🛌</span>`, title:"Пауза принята",
+      desc:`Наград за сегодня нет — и не должно быть.<br><br>`+
+           `<b>Серия ${S.streak} цела</b>, ядро не спрошено. Осталось пауз: <b>${REST_TOTAL-restUsed()}</b>.<br><br>`+
+           `Завтра возвращаешься в игру.`,
+      btns:[["Завершить день","btn wood",()=>{closeModal();endDay();}]]});
+    return;
+  }
   // ритуалы: пересчитать родителей от микро-шагов, чтобы % считался честно
   S.proto.forEach((p,i)=>{ if(p&&p.sub&&p.sub.length) syncGroup(i); });
   // daily-пункты (weekly — отдельная секция, в % не идут)
