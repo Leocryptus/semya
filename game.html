@@ -1269,7 +1269,15 @@ function scoreSide(who){
     days=S.oppDays||0; respect=days*2; power=Math.floor(days/2);
   }
   const flags=(who==="me"?flagsMine():flagsOpp()).length;
-  return districts*10 + build + respect + power + days*3 + flags*15;
+  // собранный цвет-набор = отдельная награда (канон GAME_BIBLE: наборы ×10)
+  let sets=0;
+  const groups=[...new Set(ORDER.map(n=>DIST[n]&&DIST[n].g).filter(Boolean))];
+  groups.forEach(gr=>{
+    let need=0,have=0;
+    ORDER.forEach((n,i)=>{ const d=DIST[n]; if(d&&d.g===gr){ need++; if(S.owners[i]===val)have++; } });
+    if(need>0&&need===have) sets++;
+  });
+  return districts*10 + build + sets*10 + respect + power + days*3 + flags*15;
 }
 function summary(){
   S.phase="summary"; save(); show("s-sum");
