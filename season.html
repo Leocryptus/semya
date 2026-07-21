@@ -1,0 +1,398 @@
+<!doctype html><html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ЧЕЛЕНДЖ · Сезон 1 — штаб</title>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@400;600;800&family=Manrope:wght@400;600;800&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#FFC24B; --gold-lite:#FFE39A; --gold-deep:#D6891C; --gold-ink:#3A2408;
+  --wood:#3A2617; --wood2:#4E3220; --wood-hi:#654327; --wood-dk:#241610;
+  --red:#FF4D4D; --blue:#49B6F0; --violet:#B466F0; --green:#5BC66A; --rose:#FF6B9D;
+  --cream:#F7E9C9; --cream2:#EAD5A6; --inkp:#3A2A16;
+  --paper:#FFF6DF; --txt:#F6EACB; --txt2:#DBC08C; --txt3:#B0925E;
+  --panel:#2A1B10; --line:#5A3C22; --line2:#7A5230;
+  --gg:linear-gradient(180deg,var(--gold-lite),var(--gold) 44%,var(--gold-deep));
+  --wg:linear-gradient(180deg,var(--wood-hi),var(--wood2) 60%,var(--wood));
+  --disp:"Russo One","Rubik",sans-serif;
+  --sh-btn:0 4px 0 rgba(0,0,0,.35),0 8px 16px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.4),inset 0 -3px 0 rgba(0,0,0,.25);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{background:#1a0f08}
+body{font-family:"Manrope",system-ui,sans-serif;color:var(--txt);-webkit-font-smoothing:antialiased;
+ background:radial-gradient(120% 60% at 50% -6%,rgba(73,182,240,.10),transparent 55%),radial-gradient(90% 50% at 90% 6%,rgba(255,77,77,.10),transparent 55%),linear-gradient(180deg,#2b1a0f,#1a0f08 55%) fixed;
+ overflow-x:hidden}
+img{display:block;max-width:100%}
+#app{max-width:820px;margin:0 auto;min-height:100dvh;padding:0 13px 40px}
+h1,h2,h3,h4{font-family:var(--disp);font-weight:400;margin:0}
+
+/* ── шапка ── */
+.top{padding:20px 0 14px;text-align:center}
+.logo{font:400 clamp(26px,7vw,40px)/1 var(--disp);letter-spacing:.02em;
+ background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 3px 0 var(--gold-ink)) drop-shadow(0 7px 14px rgba(0,0,0,.6))}
+.sub{font:600 12.5px/1.5 "Rubik";color:var(--txt3);margin-top:7px;letter-spacing:.04em;text-transform:uppercase}
+.state{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:8px 15px;border-radius:999px;
+ background:rgba(255,194,75,.11);border:1px solid var(--line2);font:700 12.5px/1 "Rubik";color:var(--gold)}
+.state .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(255,194,75,.2);animation:pls 1.8s infinite}
+@keyframes pls{50%{opacity:.35;transform:scale(.85)}}
+
+/* ── табы ── */
+.tabs{display:flex;gap:6px;margin:18px 0 14px;overflow-x:auto;padding-bottom:3px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid var(--line2);background:var(--wg);color:var(--txt2);
+ border-radius:12px;padding:10px 15px;font:400 13.5px/1 var(--disp);cursor:pointer;white-space:nowrap;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.tab.on{background:var(--gg);color:var(--gold-ink);border-color:var(--gold-lite);box-shadow:var(--sh-btn)}
+.pane{display:none;animation:in .28s ease}.pane.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(9px)}to{opacity:1}}
+
+/* ── карточки ── */
+.card{background:var(--wg);border:1px solid var(--line2);border-radius:16px;padding:15px 16px;
+ box-shadow:0 8px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.12);margin-bottom:12px}
+.card h4{font-size:15.5px;color:#FFEFC6;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.card p{margin:0 0 8px;font-size:14px;line-height:1.55;color:var(--txt)}
+.card p:last-child{margin-bottom:0}
+.note{font:600 italic 13px/1.55 "Rubik";color:var(--txt3);margin-top:10px;padding-left:12px;border-left:3px solid var(--line2)}
+
+/* ── скорборд ── */
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:stretch;margin-bottom:13px}
+.pl{background:var(--wg);border:2px solid var(--line2);border-radius:17px;padding:14px 12px;text-align:center;position:relative;overflow:hidden;
+ box-shadow:0 9px 22px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.13)}
+.pl.g{border-color:var(--gold-deep);box-shadow:0 9px 22px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.13),0 0 22px rgba(255,194,75,.16)}
+.pl.s{border-color:#B0446E;box-shadow:0 9px 22px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.13),0 0 22px rgba(255,107,157,.16)}
+.pl .ava{width:74px;height:74px;margin:0 auto 9px;border-radius:50%;overflow:hidden;border:3px solid var(--gold-deep);
+ background:#241610;box-shadow:0 5px 14px rgba(0,0,0,.5)}
+.pl.s .ava{border-color:#B0446E}
+.pl .ava img{width:100%;height:100%;object-fit:cover;object-position:50% 16%}
+.pl .crest{font-size:23px;line-height:1;margin-bottom:5px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+.pl .nm{font:400 15px/1.2 var(--disp);color:var(--paper);margin-bottom:2px}
+.pl .cl{font:700 10.5px/1 "Rubik";text-transform:uppercase;letter-spacing:.07em;color:var(--txt3)}
+.pl .score{font:700 34px/1 "Space Mono";color:var(--gold);margin:11px 0 3px;text-shadow:0 2px 0 var(--gold-ink)}
+.pl.s .score{color:var(--rose);text-shadow:0 2px 0 #6B1E3C}
+.pl .scl{font:700 9.5px/1 "Rubik";text-transform:uppercase;letter-spacing:.09em;color:var(--txt3)}
+.vsmid{display:flex;align-items:center;justify-content:center;font:400 22px/1 var(--disp);color:var(--gold-deep);
+ text-shadow:0 2px 0 rgba(0,0,0,.5);padding:0 3px}
+.rdy{margin-top:11px;font:700 10.5px/1.35 "Rubik";padding:6px 9px;border-radius:9px;background:rgba(0,0,0,.28);border:1px solid var(--line)}
+.rdy.ok{color:var(--green);border-color:rgba(91,198,106,.4)}
+.rdy.wait{color:#FFB059;border-color:rgba(255,176,89,.35)}
+
+/* ── статы ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:7px;margin-bottom:13px}
+.stat{background:var(--wg);border:1px solid var(--line2);border-radius:12px;padding:9px 5px;text-align:center;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.stat b{display:block;font:700 17px/1.1 "Space Mono";color:#FFE3A6;margin-bottom:3px}
+.stat span{font:800 8.5px/1.25 "Rubik";text-transform:uppercase;letter-spacing:.04em;color:var(--txt3)}
+
+/* ── протокол ── */
+.blk{margin-bottom:15px}
+.blkh{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:8px;padding:0 3px}
+.blkh .t{font:400 13.5px/1 var(--disp);color:var(--gold);letter-spacing:.03em}
+.blkh .w{font:700 10.5px/1 "Space Mono";color:var(--txt3);background:rgba(0,0,0,.3);padding:5px 8px;border-radius:999px;border:1px solid var(--line)}
+.item{display:flex;align-items:flex-start;gap:11px;background:var(--cream);border:2px solid var(--gold-deep);
+ border-radius:13px;padding:10px 12px;margin-bottom:7px;box-shadow:0 5px 12px rgba(0,0,0,.32)}
+.item.s{border-color:#C4587F}
+.item .em{font-size:22px;line-height:1.15;width:28px;text-align:center;flex:0 0 auto}
+.item .t{flex:1;min-width:0}
+.item .t b{display:block;font:800 14px/1.3 "Rubik";color:#4A3312}
+.item .t span{display:block;font-size:12px;line-height:1.45;color:#7a5a2c;margin-top:2px}
+.wt{flex:0 0 auto;font:700 12px/1 "Space Mono";color:var(--gold-ink);background:var(--gg);
+ border-radius:8px;padding:6px 8px;box-shadow:0 2px 0 rgba(0,0,0,.25);align-self:center}
+.core{display:inline-block;margin-left:6px;font:800 8.5px/1 "Rubik";letter-spacing:.06em;color:#fff;
+ background:#e23b3b;padding:3px 5px;border-radius:5px;vertical-align:middle}
+.rep{display:inline-block;margin-left:5px;font:800 8.5px/1 "Rubik";letter-spacing:.05em;color:#fff;
+ background:#7B4FCF;padding:3px 5px;border-radius:5px;vertical-align:middle}
+
+/* ── неделя ── */
+.wk{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px}
+.wkc{background:linear-gradient(180deg,#2c1c10,#1a100a);border:1px solid var(--line2);border-radius:13px;
+ padding:12px 11px;text-align:center}
+.wkc .em{font-size:25px;margin-bottom:6px}
+.wkc b{display:block;font:800 12.5px/1.3 "Rubik";color:var(--paper);margin-bottom:3px}
+.wkc span{font-size:11px;line-height:1.4;color:var(--txt3)}
+
+/* ── лестница подъёма ── */
+.lad{display:flex;gap:7px;flex-wrap:wrap}
+.lad .st{flex:1;min-width:64px;background:linear-gradient(180deg,#2c1c10,#1a100a);border:1px solid var(--line);
+ border-radius:11px;padding:10px 6px;text-align:center}
+.lad .st.now{border-color:var(--gold);background:linear-gradient(180deg,#4a3016,#2a1a0d);box-shadow:0 0 16px rgba(255,194,75,.2)}
+.lad .st b{display:block;font:700 15px/1 "Space Mono";color:var(--gold);margin-bottom:4px}
+.lad .st.now b{color:var(--gold-lite)}
+.lad .st span{font:700 9px/1 "Rubik";text-transform:uppercase;letter-spacing:.05em;color:var(--txt3)}
+
+/* ── чек-лист ── */
+.ck{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid rgba(122,82,48,.35)}
+.ck:last-child{border-bottom:0}
+.ck .bx{width:23px;height:23px;flex:0 0 auto;border-radius:7px;border:2px solid var(--line2);
+ display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(0,0,0,.25)}
+.ck.done .bx{background:var(--green);border-color:var(--green);color:#0d2a12}
+.ck .tx{flex:1;font-size:13.5px;line-height:1.5}
+.ck .tx b{display:block;color:var(--paper);font:800 13.5px/1.4 "Rubik";margin-bottom:2px}
+.ck .tx span{color:var(--txt3);font-size:12.5px}
+.ck.done .tx b{color:var(--txt3);text-decoration:line-through}
+
+/* ── боссы ── */
+.boss{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(180deg,#2c1c10,#1a100a);
+ border:1px solid var(--line2);border-radius:14px;padding:12px;margin-bottom:9px}
+.boss .p{width:56px;height:56px;flex:0 0 auto;border-radius:11px;overflow:hidden;border:2px solid var(--line2);background:#241610}
+.boss .p img{width:100%;height:100%;object-fit:cover;object-position:50% 15%}
+.boss .i{flex:1;min-width:0}
+.boss .i b{display:block;font:400 14px/1.25 var(--disp);color:var(--gold);margin-bottom:4px}
+.boss .i span{display:block;font-size:12.5px;line-height:1.5;color:var(--txt2)}
+.boss .wknum{font:700 9.5px/1 "Rubik";color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+
+.foot{text-align:center;padding:22px 0 8px;font:600 11.5px/1.6 "Rubik";color:var(--txt3)}
+.foot a{color:var(--gold-deep)}
+</style></head><body><div id="app">
+
+<div class="top">
+  <div class="logo">ЧЕЛЕНДЖ · СЕЗОН 1</div>
+  <div class="sub">Карлеоне × Скляровские · 30 дней</div>
+  <div class="state"><span class="dot"></span><span id="stateTxt">Онбординг — старт завтра</span></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" data-p="over">🏛 Обзор</button>
+  <button class="tab" data-p="leo">🥂 Протокол Лео</button>
+  <button class="tab" data-p="ger">🌹 Протокол Германа</button>
+  <button class="tab" data-p="rules">📜 Правила сезона</button>
+</div>
+
+<!-- ═══ ОБЗОР ═══ -->
+<div class="pane on" id="p-over">
+  <div class="vs">
+    <div class="pl g">
+      <div class="ava"><img src="assets/art/carleone-clean.png" alt=""></div>
+      <div class="crest">🥂</div>
+      <div class="nm">ЛЕО</div>
+      <div class="cl">Карлеоне</div>
+      <div class="score" id="scoreG">0</div>
+      <div class="scl">очков</div>
+      <div class="rdy wait" id="rdyG">⏳ протокол собран,<br>ждёт подписи</div>
+    </div>
+    <div class="vsmid">VS</div>
+    <div class="pl s">
+      <div class="ava"><img src="assets/art/sklyarov-clean.png" alt=""></div>
+      <div class="crest">🌹</div>
+      <div class="nm">ГЕРМАН</div>
+      <div class="cl">Скляровские</div>
+      <div class="score" id="scoreS">0</div>
+      <div class="scl">очков</div>
+      <div class="rdy wait" id="rdyS">⏳ ждёт визы<br>и весов</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="stDay">0</b><span>день сезона</span></div>
+    <div class="stat"><b id="stLeft">30</b><span>дней впереди</span></div>
+    <div class="stat"><b id="stWeek">1</b><span>неделя</span></div>
+    <div class="stat"><b>—</b><span>босс недели</span></div>
+    <div class="stat"><b>0:0</b><span>флаги</span></div>
+  </div>
+
+  <div class="card">
+    <h4>🚀 До старта осталось</h4>
+    <div class="ck done"><div class="bx">✓</div><div class="tx"><b>Протокол Лео собран</b><span>17 пунктов · Σ весов 30 · три жирных дела</span></div></div>
+    <div class="ck done"><div class="bx">✓</div><div class="tx"><b>Механики согласованы</b><span>веса ставит игрок · Слово недели · ★-множитель за отчёты</span></div></div>
+    <div class="ck"><div class="bx"></div><div class="tx"><b>Герман добирает жирные пункты</b><span>нужно 2–4 дела веса 3 — с результатом и артефактом</span></div></div>
+    <div class="ck"><div class="bx"></div><div class="tx"><b>Взаимная виза протоколов</b><span>каждый смотрит список соперника: 👍 принял / ⚔️ оспорил</span></div></div>
+    <div class="ck"><div class="bx"></div><div class="tx"><b>Подписи</b><span>после подписи протокол заморожен на 30 дней</span></div></div>
+    <div class="ck"><div class="bx"></div><div class="tx"><b>Первое Слово недели</b><span>каждый объявляет свою аскезу на 7 дней</span></div></div>
+  </div>
+
+  <div class="card">
+    <h4>⏰ Лестница подъёма — Лео</h4>
+    <div class="lad">
+      <div class="st now"><b>9:30</b><span>неделя 1</span></div>
+      <div class="st"><b>9:00</b><span>неделя 2</span></div>
+      <div class="st"><b>8:30</b><span>неделя 3</span></div>
+      <div class="st"><b>8:00</b><span>неделя 4</span></div>
+      <div class="st"><b>7:30</b><span>цель</span></div>
+    </div>
+    <div class="note">Единственный пункт, который двигается внутри замороженного протокола. Планка растёт на каждой воскресной Сходке.</div>
+  </div>
+
+  <div class="card">
+    <h4>🎯 Как считаются очки</h4>
+    <p><b>Вес → сколько ходов выпадет.</b> Процент дня считается по весам: закрыл тяжёлое — процент выше. &lt;50% — ходов нет · 50–84% — один бросок · ≥85% — два · сотка — плюс ход.</p>
+    <p><b>Ядро → потолок.</b> Не закрыл жирное дело — день не поднимется выше 84%, сколько бы мелочи ни отметил. Гигиеной сотку не купишь.</p>
+    <p><b>★ отчёта → множитель.</b> Судья оценивает дело от 1 до 5 звёзд: &lt;3★ ×0.8 · 3★ ×1.0 · 4★ ×1.15 · 5★ ×1.3.</p>
+    <div class="note">Сила клана в финале = закрытые дни ×3 + районы ×5 + стройки ×2 + сеты ×10 + боссы ×15 + сдержанные слова ×10 + голодания ×5 + макс. серия.</div>
+  </div>
+</div>
+
+<!-- ═══ ПРОТОКОЛ ЛЕО ═══ -->
+<div class="pane" id="p-leo">
+  <div class="stats">
+    <div class="stat"><b>17</b><span>пунктов</span></div>
+    <div class="stat"><b>30</b><span>Σ весов</span></div>
+    <div class="stat"><b>3</b><span>жирных</span></div>
+    <div class="stat"><b>4</b><span>с отчётом</span></div>
+  </div>
+  <div id="leoProto"></div>
+  <div class="card">
+    <h4>📅 Раз в неделю</h4>
+    <div class="wk">
+      <div class="wkc"><div class="em">🍽</div><b>Голодание</b><span>1 полный день</span></div>
+      <div class="wkc"><div class="em">🎥</div><b>Большое видео</b><span>YouTube · снятое мной · отчёт</span></div>
+      <div class="wkc"><div class="em">🪑</div><b>Скука 1 час</b><span>сидеть и смотреть в стену</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ПРОТОКОЛ ГЕРМАНА ═══ -->
+<div class="pane" id="p-ger">
+  <div class="stats">
+    <div class="stat"><b>11</b><span>пунктов</span></div>
+    <div class="stat"><b>16</b><span>Σ весов</span></div>
+    <div class="stat"><b>0</b><span>жирных</span></div>
+    <div class="stat"><b>0</b><span>с отчётом</span></div>
+  </div>
+  <div class="card">
+    <h4>⚠️ Протокол ждёт доработки</h4>
+    <p>Нет ни одного дела веса 3 — того, что двигает жизнь вперёд и оставляет артефакт. Сейчас сотка набирается бытовыми галочками, а контур отчётов и звёзд не работает вовсе.</p>
+    <p><b>Нужно:</b> 2–4 пункта из реальной работы — с результатом и пруфом.</p>
+  </div>
+  <div id="gerProto"></div>
+</div>
+
+<!-- ═══ ПРАВИЛА ═══ -->
+<div class="pane" id="p-rules">
+  <div class="card">
+    <h4>🤐 Слово недели</h4>
+    <p>Каждый понедельник берёшь на себя одну вещь на семь дней — сверх протокола. Два вида: <b>отказ</b> (сахар, скролл, сериалы) или <b>испытание</b> (спать на полу, тишина, холод, 24 часа без еды).</p>
+    <p><b>Цену ставишь сам</b> — 🔥1, 🔥2 или 🔥3, насколько тяжело именно тебе. Соперник визирует.</p>
+    <div class="wk" style="margin:11px 0">
+      <div class="wkc"><div class="em">🔥</div><b>🔥1</b><span>+2⚡ +5🎖</span></div>
+      <div class="wkc"><div class="em">🔥🔥</div><b>🔥2</b><span>+4⚡ +10🎖</span></div>
+      <div class="wkc"><div class="em">🔥🔥🔥</div><b>🔥3</b><span>+6⚡ +15🎖</span></div>
+    </div>
+    <p>Платим силой, а не деньгами: ⚡ тратится на боссов и стрелки, но капает медленно. Стойкость превращается в мускулы для войны.</p>
+    <div class="note">Провал не штрафует — просто не получил. Но слово сгорает: на следующей неделе берёшь другое. Одно и то же по кругу обещать нельзя.</div>
+  </div>
+
+  <div class="card">
+    <h4>👑 Боссы — недельные контракты</h4>
+    <p>Босс не бьётся ходами. Он давит всю неделю, даёт задачу и ставку. Развязка — в воскресенье на Сходке. Контракт можно и выиграть, и проиграть.</p>
+    <div class="boss">
+      <div class="p"><img src="assets/art/boss-buhgalter-clean.png" alt=""></div>
+      <div class="i"><div class="wknum">неделя 1</div><b>Сан Саныч · Бухгалтер</b>
+      <span><b>Давит:</b> слабый день дешевеет на $100 · <b>Задача:</b> 5 дней из 7 на ≥85% · <b>Ставка:</b> +$600 и чистые книги / минус пятая часть общака</span></div>
+    </div>
+    <div class="boss">
+      <div class="p"><img src="assets/art/boss-prokuror-clean.png" alt=""></div>
+      <div class="i"><div class="wknum">неделя 2</div><b>Прокурор</b>
+      <span><b>Давит:</b> облавы вдвое злее, допросы по $50 · <b>Задача:</b> четыре сотки · <b>Ставка:</b> корочка-иммунитет / лучший район под следствием</span></div>
+    </div>
+    <div class="boss">
+      <div class="p"><img src="assets/art/boss-sedoy-clean.png" alt=""></div>
+      <div class="i"><div class="wknum">неделя 3</div><b>Седой · вор в законе</b>
+      <span><b>Давит:</b> срыв серии стоит 3🎖 · <b>Задача:</b> серия от 4 дней · <b>Ставка:</b> Вокзал и бесплатная стрелка / −10🎖 позора</span></div>
+    </div>
+    <div class="boss">
+      <div class="p"><img src="assets/art/boss-grek-clean.png" alt=""></div>
+      <div class="i"><div class="wknum">неделя 4 · финал</div><b>Грек</b>
+      <span><b>Давит:</b> передел, $150 в день со всех · <b>Задача:</b> влияние выше порога месяца · <b>Ставка:</b> Верфь и ключ от города / минус 15% финала</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>🚩 Сходка — каждое воскресенье</h4>
+    <p>Развязка контракта с боссом плюс сравнение недели: дни ×2 и сотки. Победитель забирает <b>флаг недели — 15 влияния навсегда</b>. За месяц разыгрывается четыре флага.</p>
+    <p>Там же двигается лестница подъёма и объявляется новое Слово недели.</p>
+  </div>
+
+  <div class="card">
+    <h4>⚖️ Честность</h4>
+    <p>Веса ставит себе каждый сам — только ты знаешь, что тебе тяжело. Но список уходит сопернику целиком: 👍 принял или ⚔️ оспорил конкретный пункт.</p>
+    <p>Оба видят отчёты друг друга. Сотка подтверждается фото. Судья режет микро-задачи, поданные как большое дело.</p>
+    <div class="note">Признался сам, что сорвался — уважение при тебе, штраф не растёт. Город помнит и то, как держат слово, и то, как его сливают.</div>
+  </div>
+</div>
+
+<div class="foot">Штаб сезона · обновляется вместе с игрой<br><a href="game.html">▶ открыть игру</a></div>
+</div>
+
+<script>
+const LEO = [
+ {b:'☀️ УТРО',items:[
+  {em:'⏰',n:'Подъём по графику недели',d:'неделя 1 — 9:30 · дальше 9:00, 8:30, 8:00',w:1},
+  {em:'🌅',n:'Утренний ритуал',d:'свет в глаза 10 мин · вода 500 мл с солью · холодный душ 1–3 мин · дыхание сидя на суше · медитация 10 мин · телефон не трогать полтора часа',w:2}]},
+ {b:'🧱 РАБОТА',items:[
+  {em:'🎯',n:'Топ-гол 1',d:'90 минут, телефон в другой комнате',w:3,core:1,rep:1},
+  {em:'🎯',n:'Топ-гол 2',d:'90 минут, телефон в другой комнате',w:3,core:1,rep:1},
+  {em:'🎬',n:'Опубликованный рилс',d:'один в день — считается публикация, не съёмка',w:3,core:1,rep:1},
+  {em:'⚓',n:'Рабочий ритуал',d:'якорь 60–120 сек перед стартом · NSDR между блоками · мелочёвка только после топ-гола',w:1}]},
+ {b:'🏋️ ТЕЛО',items:[
+  {em:'🏋️',n:'Спорт 40–50 минут',d:'по ротации дня: пн низ · вт верх · ср зона 2 · чт прыжки · пт верх · сб игра · вс лёгкое',w:2,core:1},
+  {em:'🚶',n:'Прогулка 40 минут',d:'утро или вечер — неважно, просто гулять',w:1},
+  {em:'🍬',n:'Без сахара',d:'весь день, включая соусы',w:2},
+  {em:'🍳',n:'Завтрак низкоуглеводный',d:'белок и жир, углеводы по минимуму',w:1},
+  {em:'🥩',n:'Обед низкоуглеводный',d:'белок и овощи — углеводы оставляем на вечер',w:1},
+  {em:'💊',n:'Добавки',d:'креатин 5 г · омега-3 · белок к норме 168 г',w:1}]},
+ {b:'🌙 ВЕЧЕР',items:[
+  {em:'🧭',n:'Капитанский мостик',d:'30 минут, завершение рабочего дня: план на завтра и выбор завтрашних топ-голов',w:2,rep:1},
+  {em:'📵',n:'Без техники за 2 часа до сна',d:'никаких экранов, только книга',w:2},
+  {em:'📖',n:'Книга 45 минут',d:'печатная лучше, аудио допустимо',w:2},
+  {em:'🌙',n:'Вечерний ритуал',d:'закатный свет · горячий душ, потом прохладная спальня · медитация 10–15 минут',w:2},
+  {em:'😴',n:'Отбой',d:'до полуночи',w:1}]}
+];
+const GER = [
+ {b:'☀️ УТРО',items:[
+  {em:'⏰',n:'Подъём в одно время',d:'раз в день',w:1},
+  {em:'📵',n:'Не в телефон с утра',d:'до 9:00',w:1},
+  {em:'🚿',n:'Свет и холодный душ',d:'раз в день',w:1}]},
+ {b:'🏋️ ТЕЛО',items:[
+  {em:'🏋️',n:'Спорт',d:'4 тренировки в неделю',w:2},
+  {em:'🚶',n:'10 000 шагов',d:'каждый день',w:1}]},
+ {b:'🚫 ВЕСЬ ДЕНЬ',items:[
+  {em:'🍬',n:'Без сахара',d:'весь день',w:2},
+  {em:'🚫',n:'Без алкоголя',d:'весь день',w:2},
+  {em:'📵',n:'Без скроллинга',d:'весь день',w:2},
+  {em:'🍽',n:'Голодание',d:'один день в неделю',w:2},
+  {em:'🈁',n:'Личная аскеза',d:'без дрочки',w:1}]},
+ {b:'🌙 ВЕЧЕР',items:[
+  {em:'😴',n:'Отбой вовремя',d:'раз в день',w:1}]}
+];
+function render(data,el,cls){
+  el.innerHTML = data.map(function(blk){
+    var sum = blk.items.reduce(function(a,i){return a+i.w},0);
+    return '<div class="blk"><div class="blkh"><span class="t">'+blk.b+'</span>'+
+      '<span class="w">'+blk.items.length+' · Σ'+sum+'</span></div>'+
+      blk.items.map(function(i){
+        return '<div class="item '+cls+'"><span class="em">'+i.em+'</span>'+
+        '<span class="t"><b>'+i.n+(i.core?'<span class="core">ЯДРО</span>':'')+(i.rep?'<span class="rep">ОТЧЁТ</span>':'')+'</b>'+
+        '<span>'+i.d+'</span></span><span class="wt">'+i.w+'</span></div>';
+      }).join('')+'</div>';
+  }).join('');
+}
+render(LEO,document.getElementById('leoProto'),'');
+render(GER,document.getElementById('gerProto'),'s');
+
+document.querySelectorAll('.tab').forEach(function(t){
+  t.onclick=function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});
+    document.querySelectorAll('.pane').forEach(function(x){x.classList.remove('on')});
+    t.classList.add('on');
+    document.getElementById('p-'+t.dataset.p).classList.add('on');
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+});
+
+// живые данные, если рядом лежит mp-state.js
+if(window.__MP__&&window.__MP__.state){
+  var S=window.__MP__.state, g=S.players&&S.players.g, s=S.players&&S.players.s;
+  if(g&&s){
+    var day=g.day||0;
+    document.getElementById('stDay').textContent=day;
+    document.getElementById('stLeft').textContent=Math.max(0,(S.maxDay||30)-day+1);
+    document.getElementById('stWeek').textContent=S.week||1;
+    var pts=function(p){return (p.days||[]).filter(function(d){return d&&d.pct>=85}).length*3+(p.respect||0)};
+    document.getElementById('scoreG').textContent=pts(g);
+    document.getElementById('scoreS').textContent=pts(s);
+    if(day>0)document.getElementById('stateTxt').textContent='Сезон идёт — день '+day;
+  }
+}
+</script>
+<script src="mp-state.js" onerror=""></script>
+</body></html>
