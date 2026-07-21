@@ -608,6 +608,13 @@ function renderCity(){
   const h=$("#hint-city"), slot=$("#act-city");
   if(S.phase==="day-open"||S.phase==="rolled"){ h.innerHTML=`Сначала закрой день — вкладка <b>🎲 День</b>.`; slot.innerHTML=""; }
   else if(S.phase==="tile-done"){ h.innerHTML=`Ход сделан.`; slot.innerHTML=`<button class="btn wood" id="end-day">Завершить день ${S.day}</button>`; $("#end-day").onclick=endDay; }
+  else if(S.phase==="moving"||S.phase==="tile"){
+    // страховка от залипания: если модалка клетки закрылась мимо или анимация оборвалась,
+    // игрок не должен оставаться без выхода
+    h.innerHTML=`Фишка в пути…`;
+    slot.innerHTML=`<button class="btn wood" id="end-day-force">Завершить день ${S.day}</button>`;
+    $("#end-day-force").onclick=()=>{ closeModal(); S.phase="tile-done"; save(); endDay(); };
+  }
   else { h.innerHTML=""; slot.innerHTML=""; }
 }
 
@@ -659,7 +666,11 @@ function renderDayTab(){
     h.innerHTML=`День ${S.day} отработан на ${S.dayPct}%. Заверши его на вкладке Город.`;
     slot.innerHTML=`<button class="btn wood" id="end-day2">Завершить день ${S.day}</button>`;
     $("#end-day2").onclick=endDay;
-  } else { h.innerHTML="Идёшь по городу…"; slot.innerHTML=""; }
+  } else {
+    h.innerHTML="Идёшь по городу…";
+    slot.innerHTML=`<button class="btn wood" id="end-day3">Завершить день ${S.day}</button>`;
+    $("#end-day3").onclick=()=>{ closeModal(); S.phase="tile-done"; save(); endDay(); };
+  }
 }
 /* ═══ ВА-БАНК: объявляется утром, до первой галочки ═══
    сотка → награды дня ×2 + клеймо · не сотка → 0 ходов и серия минус ступень
@@ -1293,6 +1304,8 @@ function openModal({kind,art,artImg,title,desc,reward,btns}){
       <div class="modal__btns" id="mbtns"></div></div></div></div>`;
   const box=$("#mbtns");
   (btns||[]).forEach(b=>{ const el=document.createElement("button"); el.className="btn "+(b[1]||""); el.textContent=b[0]; if(b[2])el.onclick=b[2]; else el.disabled=true; box.appendChild(el); });
+  // тап мимо окна закрывает его — иначе оверлей перекрывает кнопки экрана
+  const sc=$("#scrim"); if(sc) sc.onclick=e=>{ if(e.target===sc) closeModal(); };
 }
 function closeModal(){ $("#modal-root").innerHTML=""; }
 
