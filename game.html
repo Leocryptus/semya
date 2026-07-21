@@ -719,6 +719,7 @@ function dayResult(){
     const sbonus = S.streak>=7?2 : S.streak>=3?1 : 0; if(moves>0) moves+=sbonus;
   }
   const t0=titleOf(S.respect); if(moves>0 && t0[0]==="Положенец") moves+=1; // перк звания
+  moves=Math.min(moves,8); // потолок дня: на доске 24 клетки, иначе один день = полный круг
   const sbonusShown = MP ? (rollsInfo?rollsInfo.bonus:0) : (S.streak>=7?2:S.streak>=3?1:0);
   const sbonus=sbonusShown;
   const coreDone=S.proto.filter((p,i)=>(p.core||p.weight>=3)&&!p.weekly&&S.done[i]).length; S.power+=coreDone;
@@ -1072,12 +1073,32 @@ function renderDossier(){
 }
 
 /* ═══════════ ИТОГ ═══════════ */
+/* Итоговый счёт — ОДНА формула для обоих (раньше свой и чужой считались по-разному:
+   сопернику не шли стройки, уважение и сила). Деньги в счёт не входят: они инструмент
+   и тай-брейкер, иначе копить выгоднее, чем покупать районы. */
+function scoreSide(who){
+  const val = who==="me" ? ownVal() : oppVal();
+  const districts = Object.values(S.owners).filter(o=>o===val).length;
+  let build=0; for(const i in S.lvl) if(S.owners[i]===val) build += (S.lvl[i]-1)*5;
+  let respect=0, power=0, days=0;
+  if(who==="me"){
+    respect=S.respect||0; power=S.power||0;
+    days=(S.days||[]).filter(d=>d&&d.pct>=85).length;
+  } else if(MP && MPD && MPD.state && MPD.state.players[OPP_CLAN]){
+    const o=MPD.state.players[OPP_CLAN];
+    respect=o.respect||0; power=o.power||0;
+    days=(o.days||[]).filter(d=>d&&d.pct>=85).length;
+  } else {                       // соло: теневой соперник
+    days=S.oppDays||0; respect=days*2; power=Math.floor(days/2);
+  }
+  const flags=(who==="me"?flagsMine():flagsOpp()).length;
+  return districts*10 + build + respect + power + days*3 + flags*15;
+}
 function summary(){
   S.phase="summary"; save(); show("s-sum");
-  let build=0; for(const i in S.lvl) if(S.owners[i]==="me") build+=(S.lvl[i]-1)*5;
-  const score = myCount(S)*10 + build + S.respect + Math.floor(S.money/100) + S.power + flagsMine().length*15;
-  const oppScore = oppCount()*10 + (S.oppDays||0)*5 + Math.floor((S.oppMoney||0)/100) + flagsOpp().length*15;
-  const win=score>=oppScore;
+  const score=scoreSide("me"), oppScore=scoreSide("opp");
+  const win = score>oppScore || (score===oppScore && S.money>=(S.oppMoney||0)); // ничья → общак
+  let build=0; for(const i in S.lvl) if(S.owners[i]===ownVal()) build+=(S.lvl[i]-1)*5;
   $("#s-sum").innerHTML=`
     <div class="brand" style="padding-top:24px"><h1>${win?"ПОБЕДА":"ИТОГ"}</h1><p>Две недели в Южноморске</p></div>
     <div class="sumcard">
