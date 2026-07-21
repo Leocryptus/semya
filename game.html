@@ -707,7 +707,8 @@ function dayResult(){
   const wsum=daily.reduce((a,x)=>a+(x.p.weight||1)*Math.max(1,x.p.cnt||1),0)||1;
   const wdone=daily.filter(x=>S.done[x.i]).reduce((a,x)=>a+(x.p.weight||1)*Math.max(1,x.p.cnt||1),0);
   const coreOk=daily.every(x=>!(x.p.core||x.p.weight>=3)||S.done[x.i]);
-  let pct=Math.round(wdone/wsum*100); if(!coreOk) pct=Math.min(pct,60);
+  // не закрыл ядро → потолок 84% (канон REQUIREMENTS §2; раньше в коде стояло 60% — расхождение)
+  let pct=Math.round(wdone/wsum*100); if(!coreOk) pct=Math.min(pct,84);
   S.dayPct=pct; S.days.push({day:S.day,pct});
   let moves, rollsInfo=null;
   if(MP){
