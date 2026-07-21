@@ -607,7 +607,8 @@ function renderDayTab(){
   const h=$("#hint-day"), slot=$("#act-day");
   if(S.phase==="day-open"){
     h.innerHTML=`Закрой свой день по-честному. <b>Ядро</b> обязательно.`;
-    slot.innerHTML=`<div id="vabank-slot"></div><div id="rest-slot"></div><div class="checks" id="checks"></div><div style="height:10px"></div><button class="btn" id="finish-day">${S.rest?"Закрыть день отдыха":"Подбить день"}</button>`;
+    slot.innerHTML=`<div id="city-slot"></div><div id="vabank-slot"></div><div id="rest-slot"></div><div class="checks" id="checks"></div><div style="height:10px"></div><button class="btn" id="finish-day">${S.rest?"Закрыть день отдыха":"Подбить день"}</button>`;
+    renderCityEvent();
     renderVabank();
     renderRest();
     renderChecks();
@@ -661,6 +662,34 @@ function canVabank(){
   if(Object.values(S.done||{}).some(Boolean)) return false;     // день начат — поздно
   return vabankUsedThisWeek() < VABANK_WEEK_LIMIT;
 }
+/* ═══ СОБЫТИЯ ГОРОДА: бот выкидывает 2-3 раза в неделю, эффект на один день ═══ */
+const CITY_FX={
+  port:    {n:"Забастовка в порту", em:"⚓", d:"Портовые районы без дохода"},
+  fair:    {n:"Ярмарка",            em:"🎪", d:"Плата за постой сегодня вдвое"},
+  curfew:  {n:"Комендантский час",  em:"🚨", d:"Ходы после 22:00 сгорают"},
+  revizor: {n:"Гастроли ревизора",  em:"🕵️", d:"Судья сегодня строже к делам"},
+  cityday: {n:"День города",        em:"🎆", d:"Сотка у обоих — сундук каждому"},
+  oblava:  {n:"Облава",             em:"🚔", d:"Облавы бьют вдвое больнее"},
+  skhod:   {n:"Сходняк торговцев",  em:"🤝", d:"Стройка сегодня дешевле на 20%"},
+  tuman:   {n:"Туман над гаванью",  em:"🌫", d:"Стрелки сегодня не проходят"},
+  gastroli:{n:"Гастроли из столицы",em:"🎭", d:"За каждое дело на 5★ +$100"},
+  nedobor: {n:"Недобор в кассе",    em:"📉", d:"У обоих −$50 на содержание"},
+  fart:    {n:"Фартовый день",      em:"🍀", d:"День ≥85% — бонусный ход сверху"},
+  molva:   {n:"Молва по городу",    em:"📣", d:"Уважение за день идёт вдвойне"},
+};
+function cityToday(){
+  const c = MP && MPD && MPD.state && MPD.state.city;
+  if(!c || !CITY_FX[c.id]) return null;
+  if(Number(c.day)!==Number(S.day)) return null;
+  return {...CITY_FX[c.id], id:c.id};
+}
+function renderCityEvent(){
+  const slot=$("#city-slot"); if(!slot) return;
+  const c=cityToday(); if(!c){ slot.innerHTML=""; return; }
+  slot.innerHTML=`<div class="cityev"><span class="cityev__i">${c.em}</span>
+    <span class="cityev__t"><b>${c.n}</b><span>${c.d}</span></span></div>`;
+}
+
 /* ═══ ДЕНЬ ОТДЫХА: 3 на весь сезон ═══
    день не считается ни успехом, ни провалом: наград нет, но серия замирает,
    а не рвётся. Для форс-мажора — уехал, заболел, выпал. */
@@ -834,15 +863,19 @@ function dayResult(){
   // ва-банк: сотка удваивает, недобор обнуляет ходы и роняет серию
   const vb=!!S.vabank, vbWin=vb&&pct>=100;
   if(vb){ if(vbWin) moves*=2; else moves=0; }
+  const CE=cityToday();
+  if(CE&&CE.id==="fart"&&pct>=85&&moves>0) moves+=1;   // фартовый день — бонусный ход
   moves=Math.min(moves,8); // потолок дня: на доске 24 клетки, иначе один день = полный круг
   const sbonusShown = MP ? (rollsInfo?rollsInfo.bonus:0) : (S.streak>=7?2:S.streak>=3?1:0);
   const sbonus=sbonusShown;
   const coreDone=S.proto.filter((p,i)=>(p.core||p.weight>=3)&&!p.weekly&&S.done[i]).length; S.power+=coreDone;
   let cash = pct>=100?300 : pct>=85?200 : pct>=50?100 : 0;
   if(vbWin) cash*=2;                                   // ва-банк удваивает и деньги
-  S.money+=cash;
+  if(CE&&CE.id==="nedobor") cash-=50;                  // недобор в кассе — бьёт по обоим
+  S.money=Math.max(0,S.money+cash);
   const prevT=titleOf(S.respect)[0];
-  if(pct>=85){ S.streak++; S.respect += (pct>=100?3:2)*(vbWin?2:1); S.weekStats.days++; if(pct>=100)S.weekStats.sotki++; }
+  const respMul=(vbWin?2:1)*((CE&&CE.id==="molva")?2:1);   // молва по городу удваивает уважение
+  if(pct>=85){ S.streak++; S.respect += (pct>=100?3:2)*respMul; S.weekStats.days++; if(pct>=100)S.weekStats.sotki++; }
   else { S.streak=0; }
   // проигранный ва-банк роняет серию на ступень (не в ноль — день всё же прожит)
   if(vb&&!vbWin&&S.streak>0) S.streak=Math.max(0,S.streak-3);
