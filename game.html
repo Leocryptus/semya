@@ -666,7 +666,7 @@ function renderChecks(){
     }
     return `<div class="chk ${S.done[i]?'on':''} ${(p.core||p.weight>=3)?'core':''}" data-i="${i}">
       ${p.icon?`<img src="${ICON(p.icon)}">`:`<span class="em">${p.emoji||"◆"}</span>`}
-      <span class="t">${p.name}${(p.core||p.weight>=3)?' <span class="core">ядро</span>':''}${p.weight?` <small style="color:var(--txt3)">в${p.weight}</small>`:""}</span>
+      <span class="t">${p.name}${(p.core||p.weight>=3)?' <span class="core">ядро</span>':''}${p.report?' <span class="rep">отчёт</span>':''}${p.weight?` <small style="color:var(--txt3)">в${p.weight}</small>`:""}</span>
       <span class="box">✓</span>
     </div>`;
   };
