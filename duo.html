@@ -71,6 +71,7 @@ body{background:var(--bg);color:var(--txt);font:400 15px/1.45 "Manrope",system-u
 
 /* ── месяц ── */
 .grid{display:grid;grid-template-columns:repeat(15,1fr);gap:4px;margin-top:9px}
+.grid+.grid{margin-top:5px}
 .cell{aspect-ratio:1;border-radius:4px;background:var(--dim)}
 .cell.l1{background:rgba(74,222,128,.22)} .cell.l2{background:rgba(74,222,128,.45)}
 .cell.l3{background:rgba(74,222,128,.7)}  .cell.l4{background:var(--me)}
@@ -186,10 +187,7 @@ function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on");
 const HIST_ME=[4,3,4,4,2,0,3,4,4,3,4,2,4,4,null];
 const HIST_OP=[2,3,1,4,3,2,0,3,2,4,3,3,2,1,null];
 function grid(el,arr,pref){
-  $(el).innerHTML=arr.map((v,i)=>{
-    const cls=v==null?"today":(v?pref+v:"");
-    return `<span class="cell ${cls}"></span>`;
-  }).join("")+Array.from({length:15},()=>'<span class="cell"></span>').join("");
+  $(el).innerHTML=arr.map(v=>`<span class="cell ${v==null?"today":(v?pref+v:"")}"></span>`).join("");
 }
 grid("#gridMe",HIST_ME,"l"); grid("#gridOp",HIST_OP,"o");
 $("#gridInfo").textContent="день 15 из 30";
