@@ -846,11 +846,12 @@ function renderChecks(){
   if(weekly.length){
     html+=`<div style="margin:8px 2px 2px;font:400 12px/1 var(--disp);color:#FFD873;text-transform:uppercase">📅 Недельные (не в %, бонус при закрытии)</div>`;
     html+=weekly.map(x=>{
-      const used=(S.weeklyDone||[]).includes(x.p.name);
-      return `<div class="chk ${used?'on':''}" data-w="${x.i}" style="${used?'opacity:.6':''}">
+      const goal=weekGoal(x.p), n=weekCount(x.p.name), full=n>=goal;
+      const dots=goal>1?`<span class="wq">${"●".repeat(n)}${"○".repeat(Math.max(0,goal-n))}</span>`:"";
+      return `<div class="chk ${full?'on':''}" data-w="${x.i}" style="${full?'opacity:.65':''}">
         ${x.p.icon?`<img src="${ICON(x.p.icon)}">`:`<span class="em">${x.p.emoji||"◆"}</span>`}
-        <span class="t">${x.p.name} <small style="color:var(--txt3)">${x.p.hint||""}</small></span>
-        <span class="box">✓</span></div>`;
+        <span class="t">${x.p.name} <small style="color:var(--txt3)">${x.p.hint||""}</small>${dots}</span>
+        <span class="box">${goal>1?`<b style="font:700 10px/1 'Space Mono'">${n}/${goal}</b>`:"✓"}</span></div>`;
     }).join("");
   }
   $("#checks").innerHTML=html;
