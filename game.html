@@ -1162,6 +1162,8 @@ function shodka(){
   else { flagsOpp().push(S.week); log('s','🚩',`Флаг недели ${S.week} забрал <b>Герман</b>`); }
   // сброс недели + эскалация
   S.weekStats={days:0,sotki:0,oppDays:0,oppSotki:0};
+  S.weeklyDone=[];            // недельные квоты (спорт 4/нед, голодание) начинаются заново
+  S.vabankLog=(S.vabankLog||[]).filter(v=>v.week>S.week);   // лимит ва-банка тоже недельный
   if(S.week>=2 && S.frozen!=null && !win) {} else if(B.id!=="prokuror") S.frozen=null;
   S.perkNoOblava = titleOf(S.respect)[1]>=45 ? 1 : 0; // Авторитет+
   const last=S.day>=S.maxDay;
