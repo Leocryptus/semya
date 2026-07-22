@@ -1,0 +1,215 @@
+<!doctype html><html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<title>ДЕНЬ · на двоих</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1115; --card:#171a21; --card2:#1d212a; --line:#262b36; --line2:#333a48;
+  --txt:#e8ecf3; --txt2:#9aa4b5; --txt3:#5f6878;
+  --me:#4ade80; --opp:#f0883e; --dim:#2a2f3a;
+  --r:14px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:400 15px/1.45 "Manrope",system-ui,sans-serif;
+ -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;user-select:none}
+#app{max-width:520px;margin:0 auto;padding:0 12px 30px}
+
+/* ── шапка ── */
+.top{padding:16px 2px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.top h1{margin:0;font:800 19px/1 "Manrope";letter-spacing:-.01em}
+.top .d{font:700 12px/1 "Space Mono";color:var(--txt3)}
+
+/* ── две колонки: я и он ── */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.who{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px 12px}
+.who.mine{border-color:rgba(74,222,128,.28)}
+.who .nm{display:flex;align-items:center;gap:7px;font:800 13px/1 "Manrope";margin-bottom:10px}
+.who .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.mine .dot{background:var(--me)} .theirs .dot{background:var(--opp)}
+.who .big{font:700 30px/1 "Space Mono";letter-spacing:-.02em}
+.mine .big{color:var(--me)} .theirs .big{color:var(--opp)}
+.who .sub{font:600 11.5px/1.3 "Manrope";color:var(--txt3);margin-top:4px}
+.bar{height:5px;border-radius:99px;background:var(--dim);margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;transition:width .35s cubic-bezier(.4,0,.2,1)}
+.mine .bar i{background:var(--me)} .theirs .bar i{background:var(--opp)}
+.who .st{margin-top:9px;font:700 11px/1 "Space Mono";color:var(--txt3)}
+
+/* ── список дня ── */
+.sec{display:flex;align-items:center;gap:9px;margin:16px 2px 8px}
+.sec b{font:800 11px/1 "Manrope";letter-spacing:.09em;text-transform:uppercase;color:var(--txt3)}
+.sec i{flex:1;height:1px;background:var(--line)}
+.sec span{font:700 11px/1 "Space Mono";color:var(--txt3)}
+
+.row{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);
+ border-radius:12px;padding:11px 12px;margin-bottom:7px;cursor:pointer;transition:.13s}
+.row:active{transform:scale(.995)}
+.row.on{background:var(--card2);border-color:rgba(74,222,128,.3)}
+.row .bx{width:21px;height:21px;flex:0 0 auto;border-radius:6px;border:2px solid var(--line2);
+ display:grid;place-items:center;font-size:12px;color:transparent;transition:.13s}
+.row.on .bx{background:var(--me);border-color:var(--me);color:#0b2415;font-weight:800}
+.row .em{font-size:17px;flex:0 0 auto;width:22px;text-align:center}
+.row .t{flex:1;min-width:0;font:600 14px/1.3 "Manrope"}
+.row.on .t{color:var(--txt2)}
+.row .tag{font:800 9px/1 "Manrope";letter-spacing:.05em;padding:3px 5px;border-radius:4px;
+ background:rgba(139,124,246,.16);color:#a99bff;flex:0 0 auto}
+.row .his{width:18px;height:18px;flex:0 0 auto;border-radius:5px;border:1.5px solid var(--dim);
+ display:grid;place-items:center;font-size:10px;color:transparent}
+.row .his.yes{background:rgba(240,136,62,.18);border-color:var(--opp);color:var(--opp)}
+
+/* ── его день ── */
+.hisday{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:12px}
+.hisday .h{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.hisday .h b{font:800 12.5px/1 "Manrope";color:var(--opp)}
+.hisday .h span{font:700 11px/1 "Space Mono";color:var(--txt3)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font:600 11.5px/1 "Manrope";padding:6px 9px;border-radius:99px;background:var(--dim);color:var(--txt3)}
+.chip.yes{background:rgba(240,136,62,.14);color:#ffb27a}
+
+/* ── месяц ── */
+.grid{display:grid;grid-template-columns:repeat(15,1fr);gap:4px;margin-top:9px}
+.cell{aspect-ratio:1;border-radius:4px;background:var(--dim)}
+.cell.l1{background:rgba(74,222,128,.22)} .cell.l2{background:rgba(74,222,128,.45)}
+.cell.l3{background:rgba(74,222,128,.7)}  .cell.l4{background:var(--me)}
+.cell.o1{background:rgba(240,136,62,.22)} .cell.o2{background:rgba(240,136,62,.45)}
+.cell.o3{background:rgba(240,136,62,.7)}  .cell.o4{background:var(--opp)}
+.cell.today{outline:1.5px solid var(--txt3);outline-offset:1px}
+.legend{display:flex;align-items:center;gap:6px;margin-top:8px;font:600 10.5px/1 "Manrope";color:var(--txt3)}
+.legend .cell{width:9px;height:9px;aspect-ratio:auto}
+
+/* ── низ ── */
+.btn{width:100%;border:0;border-radius:12px;padding:15px;font:800 15px/1 "Manrope";
+ background:var(--me);color:#08260f;cursor:pointer;margin-top:14px}
+.btn:disabled{background:var(--dim);color:var(--txt3)}
+.btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--txt2);margin-top:8px}
+.note{font:600 12px/1.5 "Manrope";color:var(--txt3);margin-top:11px;padding-left:11px;border-left:2px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(70px);
+ background:#f2f5fa;color:#12151b;font:800 13px/1 "Manrope";padding:12px 18px;border-radius:99px;
+ transition:.24s;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.toast.on{transform:translateX(-50%) translateY(0)}
+</style></head><body><div id="app">
+
+<div class="top"><h1>Сегодня</h1><span class="d" id="date"></span></div>
+
+<div class="duo">
+  <div class="who mine">
+    <div class="nm"><span class="dot"></span>Лео</div>
+    <div class="big" id="myPct">0%</div>
+    <div class="sub" id="mySub">0 из 13</div>
+    <div class="bar"><i id="myBar" style="width:0"></i></div>
+    <div class="st" id="myStreak">серия 0</div>
+  </div>
+  <div class="who theirs">
+    <div class="nm"><span class="dot"></span>Герман</div>
+    <div class="big" id="opPct">0%</div>
+    <div class="sub" id="opSub">0 из 13</div>
+    <div class="bar"><i id="opBar" style="width:0"></i></div>
+    <div class="st" id="opStreak">серия 0</div>
+  </div>
+</div>
+
+<div class="hisday">
+  <div class="h"><b>Что у Германа</b><span id="opTime">обновлено —</span></div>
+  <div class="chips" id="opChips"></div>
+</div>
+
+<div id="list"></div>
+
+<button class="btn" id="send">Отчитаться за день</button>
+<button class="btn ghost" id="demo">Показать пример поста в чат</button>
+
+<div class="sec" style="margin-top:22px"><b>Месяц</b><i></i><span id="gridInfo"></span></div>
+<div class="grid" id="gridMe"></div>
+<div class="grid" id="gridOp" style="margin-top:5px"></div>
+<div class="legend">
+  <span>меньше</span>
+  <span class="cell"></span><span class="cell l1"></span><span class="cell l2"></span>
+  <span class="cell l3"></span><span class="cell l4"></span>
+  <span>больше · верхний ряд твой, нижний Германа</span>
+</div>
+
+<div class="note">Прототип. Данные Германа — заглушка, в бою придут из бота.</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const LEO=[
+ ["⏰","Подъём по графику недели"],["🌅","Утренний ритуал"],["🍳","Завтрак низкоуглеводный"],
+ ["🎯","Топ-гол 1",1],["🎯","Топ-гол 2",1],["🎬","Опубликованный рилс",1],
+ ["⚓","Рабочий ритуал"],["🥩","Обед низкоуглеводный"],["🧭","Капитанский мостик",1],
+ ["📵","Без техники за 2 часа до сна"],["📖","Книга 45 минут"],["🌙","Вечерний ритуал"],["😴","Отбой до 00:00"]
+];
+const GER=[
+ ["☀️","Подъём в 07:30",1],["📵","Первый час без телефона",1],["🚿","Контрастный душ",1],
+ ["🔥","100 отжиманий",1],["🚶","10 000 шагов",0],["🍽","2 приёма пищи",1],
+ ["🚫","Без сладкого и мучного",1],["📈","90 минут глубокой работы",0],
+ ["📥","Инбокс пустой к 21:00",0],["📚","Учить стих",0],["🛏","Сон на полу",1],
+ ["🚫","Без секса",1],["😴","Отбой до 23:30",0]
+];
+const KEY="duo_demo_v1";
+let done={}; try{ done=JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){}
+
+const d=new Date();
+$("#date").textContent=d.toLocaleDateString("ru-RU",{day:"numeric",month:"long"});
+
+function render(){
+  $("#list").innerHTML=LEO.map((x,i)=>{
+    const on=!!done[i], his=GER[i]&&GER[i][2];
+    return `<div class="row ${on?'on':''}" data-i="${i}">
+      <span class="bx">✓</span><span class="em">${x[0]}</span>
+      <span class="t">${x[1]}</span>${x[2]?'<span class="tag">ОТЧЁТ</span>':''}
+      <span class="his ${his?'yes':''}" title="Герман">${his?'✓':''}</span></div>`;
+  }).join("");
+  document.querySelectorAll(".row").forEach(r=>r.onclick=()=>{
+    const i=+r.dataset.i; done[i]=!done[i];
+    localStorage.setItem(KEY,JSON.stringify(done)); render();
+  });
+  const n=Object.values(done).filter(Boolean).length, tot=LEO.length;
+  const pct=Math.round(n/tot*100);
+  $("#myPct").textContent=pct+"%"; $("#mySub").textContent=`${n} из ${tot}`;
+  $("#myBar").style.width=pct+"%"; $("#myStreak").textContent="серия 4";
+  const gn=GER.filter(x=>x[2]).length, gp=Math.round(gn/GER.length*100);
+  $("#opPct").textContent=gp+"%"; $("#opSub").textContent=`${gn} из ${GER.length}`;
+  $("#opBar").style.width=gp+"%"; $("#opStreak").textContent="серия 2";
+  $("#opTime").textContent="обновлено 14:20";
+  $("#opChips").innerHTML=GER.map(x=>`<span class="chip ${x[2]?'yes':''}">${x[0]} ${x[1]}</span>`).join("");
+  $("#send").textContent = n===tot ? "Отчитаться — день закрыт полностью" : `Отчитаться за день · ${pct}%`;
+}
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on");
+  clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("on"),2200); }
+
+// месяц: демо-история
+const HIST_ME=[4,3,4,4,2,0,3,4,4,3,4,2,4,4,null];
+const HIST_OP=[2,3,1,4,3,2,0,3,2,4,3,3,2,1,null];
+function grid(el,arr,pref){
+  $(el).innerHTML=arr.map((v,i)=>{
+    const cls=v==null?"today":(v?pref+v:"");
+    return `<span class="cell ${cls}"></span>`;
+  }).join("")+Array.from({length:15},()=>'<span class="cell"></span>').join("");
+}
+grid("#gridMe",HIST_ME,"l"); grid("#gridOp",HIST_OP,"o");
+$("#gridInfo").textContent="день 15 из 30";
+
+$("#send").onclick=()=>{
+  const n=Object.values(done).filter(Boolean).length;
+  toast(n===LEO.length?"Отправлено. Чистый день 💚":"Отправлено в чат");
+  try{ Telegram.WebApp.sendData(JSON.stringify({day:15,done:Object.keys(done).filter(k=>done[k]).map(Number)})); }catch(e){}
+};
+$("#demo").onclick=()=>{
+  const n=Object.values(done).filter(Boolean).length, pct=Math.round(n/LEO.length*100);
+  const gn=GER.filter(x=>x[2]).length, gp=Math.round(gn/GER.length*100);
+  alert(`ДЕНЬ 15 · 22 июля\n\n`+
+    `🟢 Лео      ${String(pct).padStart(3)}%   ${n}/${LEO.length}   серия 4\n`+
+    `🟠 Герман   ${String(gp).padStart(3)}%   ${gn}/${GER.length}   серия 2\n\n`+
+    `Лео не закрыл: ${LEO.filter((_,i)=>!done[i]).map(x=>x[1]).slice(0,3).join(", ")||"—"}\n`+
+    `Герман не закрыл: ${GER.filter(x=>!x[2]).map(x=>x[1]).slice(0,3).join(", ")}\n\n`+
+    `Отчёты: Лео 2 из 4 · Герман 0 из 1`);
+};
+try{ if(window.Telegram&&Telegram.WebApp){ Telegram.WebApp.ready(); Telegram.WebApp.expand&&Telegram.WebApp.expand(); } }catch(e){}
+render();
+</script>
+</body></html>
