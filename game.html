@@ -647,13 +647,22 @@ function renderDayTab(){
         const box=$(`.subs[data-subs="${i}"]`); if(box) box.classList.toggle("open",OPEN_SUB[i]);
         return; }
       if(c.dataset.w!==undefined){
-        const i=+c.dataset.w, p=S.proto[i];
-        if((S.weeklyDone||[]).includes(p.name)){ toast("Уже закрыто на этой неделе"); return; }
-        S.weeklyDone=S.weeklyDone||[]; S.weeklyDone.push(p.name);
-        S.power+=2; S.respect+=2; c.classList.add("on"); c.style.opacity=.6;
-        log('g',p.emoji||'📅',`<b>Недельное:</b> ${p.name} — +2 силы · +2 уважения`);
-        if(MP&&BATCH) BATCH.events.push({t:"weekly",text:`📅 <b>${MPD.state.players[MY].name}</b> закрыл недельное: ${p.name}`});
-        toast("+2 силы · +2 уважения"); renderHUD(); save(); return;
+        // недельные пункты — квоты: у «спорт 4 раза» цель 4, отмечается по разу за занятие
+        const i=+c.dataset.w, p=S.proto[i], goal=weekGoal(p);
+        const было=weekCount(p.name);
+        if(было>=goal){ toast("Квота недели уже закрыта"); return; }
+        S.weeklyDone=(S.weeklyDone||[]).concat([p.name]);
+        const стало=было+1, полная=стало>=goal;
+        S.power+=1; if(полная){ S.power+=1; S.respect+=4; }
+        const имя=p.name+(goal>1?` ${стало}/${goal}`:"");
+        log('g',p.emoji||'📅', полная
+          ? `<b>Квота недели взята:</b> ${p.name} — +2 силы · +4 уважения`
+          : `<b>Недельное:</b> ${имя} — +1 сила`);
+        if(MP&&BATCH) BATCH.events.push({t:"weekly", text: полная
+          ? `📅 <b>${MPD.state.players[MY].name}</b> закрыл квоту недели: ${p.name} (${goal}/${goal})`
+          : `📅 <b>${MPD.state.players[MY].name}</b>: ${p.name} — ${стало} из ${goal}`});
+        toast(полная?"Квота взята · +2 силы · +4 уважения":`${стало} из ${goal} · +1 сила`);
+        renderHUD(); save(); renderChecks(); return;
       }
       const i=+c.dataset.i; S.done[i]=!S.done[i]; c.classList.toggle("on",S.done[i]); save();
       const bk=S.proto[i]&&S.proto[i].block; if(bk) refreshBlockCounter(bk); };
