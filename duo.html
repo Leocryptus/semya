@@ -1,0 +1,238 @@
+<!doctype html><html lang="ru" data-theme="board"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ЗЕРКАЛО · на двоих</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="quotes.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=Golos+Text:wght@400;500;600;700&family=Geologica:wght@400;600;700&family=JetBrains+Mono:wght@700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* ══ ЧЕТЫРЕ ТЕМЫ · переключаются data-theme на <html> ══ */
+[data-theme="dark"]{            /* А · Тихий тёмный — Linear, Things 3 */
+  --bg:#08090B; --card:#0F1113; --card2:#14171A; --line:#202327; --line2:#2A2E34;
+  --txt:#F2F3F5; --txt2:#9BA1AA; --txt3:#63676E;
+  --me:#5E6AD2; --opp:#626B79; --warm:#E2A03F;
+  --ink:#fff; --r:14px; --ff:"Inter",system-ui,sans-serif; --fm:"Inter",monospace;
+}
+[data-theme="paper"]{           /* Б · Тёплая бумага — Sunsama, Reflect */
+  --bg:#F2EDE4; --card:#FBF8F2; --card2:#F6F1E7; --line:#E3D9C8; --line2:#D6C9B4;
+  --txt:#22201C; --txt2:#6B6459; --txt3:#948B7C;
+  --me:#B4552F; --opp:#3D6653; --warm:#B4552F;
+  --ink:#fff; --r:16px; --ff:"Hanken Grotesk",system-ui,sans-serif; --fm:"DM Mono",monospace;
+}
+[data-theme="whoop"]{           /* В · Замер — Whoop, Nike Run Club */
+  --bg:#08090B; --card:#101318; --card2:#161A20; --line:#232830; --line2:#2E343D;
+  --txt:#F2F5F7; --txt2:#9BA3AC; --txt3:#6A727C;
+  --me:#B6FF3B; --opp:#40E0FF; --warm:#FB923C;
+  --ink:#0A0C0E; --r:12px; --ff:"Inter",system-ui,sans-serif; --fm:"JetBrains Mono",monospace;
+}
+[data-theme="board"]{           /* Г · Табло — два цвета навстречу */
+  --bg:#EEF0F2; --card:#FFFFFF; --card2:#F7F8FA; --line:#DFE3E8; --line2:#CDD3DA;
+  --txt:#16181C; --txt2:#5C636E; --txt3:#8B929C;
+  --me:#2E4BE0; --opp:#C85708; --warm:#C85708;
+  --ink:#fff; --r:14px; --ff:"Golos Text",system-ui,sans-serif; --fm:"Geologica",monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg)}
+body{color:var(--txt);font:400 15px/1.45 var(--ff);-webkit-font-smoothing:antialiased;
+ -webkit-tap-highlight-color:transparent;user-select:none;font-variant-numeric:tabular-nums}
+#app{max-width:520px;margin:0 auto;padding:0 12px 34px}
+
+.themes{display:flex;gap:6px;padding:12px 0 4px;overflow-x:auto;scrollbar-width:none}
+.themes::-webkit-scrollbar{display:none}
+.th{flex:0 0 auto;border:1px solid var(--line2);background:var(--card);color:var(--txt2);
+ border-radius:99px;padding:8px 13px;font:600 12px/1 var(--ff);cursor:pointer;white-space:nowrap}
+.th.on{background:var(--me);color:var(--ink);border-color:var(--me)}
+
+.top{padding:14px 2px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.top h1{margin:0;font:700 19px/1 var(--ff);letter-spacing:-.01em}
+.top .d{font:500 12px/1 var(--fm);color:var(--txt3)}
+
+.quote{background:var(--card);border:1px solid var(--line);border-left:2px solid var(--txt3);
+ border-radius:var(--r);padding:13px 15px;margin-bottom:13px}
+.quote p{margin:0;font:500 italic 14px/1.5 var(--ff);color:var(--txt2)}
+.quote b{display:block;margin-top:7px;font:600 10.5px/1 var(--ff);color:var(--txt3);
+ letter-spacing:.07em;text-transform:uppercase;font-style:normal}
+
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}
+.who{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px 12px}
+.who.mine{border-color:color-mix(in srgb,var(--me) 40%,transparent);border-width:1.5px}
+.who .nm{display:flex;align-items:center;gap:7px;font:700 12.5px/1 var(--ff);margin-bottom:9px}
+.who .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.mine .dot{background:var(--me)} .theirs .dot{background:var(--opp)}
+.who .big{font:700 31px/1 var(--fm);letter-spacing:-.02em}
+.mine .big{color:var(--me)} .theirs .big{color:var(--opp)}
+.who .sub{font:500 11.5px/1.3 var(--ff);color:var(--txt3);margin-top:3px}
+.bar{height:5px;border-radius:99px;background:var(--line);margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;transition:width .4s cubic-bezier(.34,1.3,.5,1)}
+.mine .bar i{background:var(--me)} .theirs .bar i{background:var(--opp)}
+.who .st{margin-top:8px;font:500 11px/1 var(--fm);color:var(--txt3)}
+
+.hisday{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:12px}
+.hisday .h{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.hisday .h b{font:700 12.5px/1 var(--ff);color:var(--opp)}
+.hisday .h span{font:500 11px/1 var(--fm);color:var(--txt3)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font:500 11.5px/1 var(--ff);padding:6px 9px;border-radius:99px;background:var(--card2);
+ border:1px solid var(--line);color:var(--txt3)}
+.chip.yes{background:color-mix(in srgb,var(--opp) 14%,transparent);
+ border-color:color-mix(in srgb,var(--opp) 35%,transparent);color:var(--opp)}
+
+.row{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);
+ border-radius:12px;padding:11px 12px;margin-bottom:7px;cursor:pointer;
+ transition:background .18s,border-color .18s,opacity .18s}
+.row.on{background:var(--card2);opacity:.72}
+.row .bx{width:24px;height:24px;flex:0 0 auto;border-radius:7px;border:2px solid var(--line2);
+ display:grid;place-items:center;
+ transition:background .22s cubic-bezier(.34,1.5,.55,1),border-color .18s,transform .22s cubic-bezier(.34,1.6,.5,1)}
+.row.on .bx{background:var(--me);border-color:var(--me);transform:scale(1.06)}
+.row .bx svg{width:13px;height:13px;stroke:var(--ink);stroke-width:2.6;fill:none;
+ stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:22;stroke-dashoffset:22;
+ transition:stroke-dashoffset .26s ease .07s}
+.row.on .bx svg{stroke-dashoffset:0}
+.row .em{font-size:16px;flex:0 0 auto;width:21px;text-align:center;opacity:.9}
+.row .t{flex:1;min-width:0;font:500 14px/1.3 var(--ff)}
+.row.on .t{color:var(--txt2)}
+.row .tag{font:700 9px/1 var(--ff);letter-spacing:.05em;padding:3px 5px;border-radius:4px;
+ background:color-mix(in srgb,var(--warm) 16%,transparent);color:var(--warm);flex:0 0 auto}
+.row .his{width:17px;height:17px;flex:0 0 auto;border-radius:99px;border:1.5px solid var(--line2);
+ display:grid;place-items:center;font-size:9px;color:transparent}
+.row .his.yes{border-color:var(--opp);background:color-mix(in srgb,var(--opp) 22%,transparent);color:var(--opp)}
+
+.sec{display:flex;align-items:center;gap:9px;margin:18px 2px 8px}
+.sec b{font:700 10.5px/1 var(--ff);letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)}
+.sec i{flex:1;height:1px;background:var(--line)}
+.sec span{font:500 11px/1 var(--fm);color:var(--txt3)}
+
+.grid{display:grid;grid-template-columns:repeat(15,1fr);gap:4px}
+.grid+.grid{margin-top:4px}
+.cell{aspect-ratio:1;border-radius:3px;background:var(--line)}
+.cell.today{outline:1.5px solid var(--txt3);outline-offset:1px}
+.legend{display:flex;align-items:center;gap:5px;margin-top:9px;font:500 10.5px/1 var(--ff);color:var(--txt3)}
+.legend .cell{width:9px;height:9px;aspect-ratio:auto}
+
+.btn{width:100%;border:0;border-radius:12px;padding:15px;font:700 15px/1 var(--ff);
+ background:var(--me);color:var(--ink);cursor:pointer;margin-top:14px}
+.btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--txt2);margin-top:8px}
+.note{font:500 12px/1.5 var(--ff);color:var(--txt3);margin-top:12px;padding-left:11px;border-left:2px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(70px);
+ background:var(--txt);color:var(--bg);font:700 13px/1 var(--ff);padding:12px 18px;border-radius:99px;
+ transition:.24s;z-index:60}
+.toast.on{transform:translateX(-50%) translateY(0)}
+</style></head><body><div id="app">
+
+<div class="themes" id="themes"></div>
+<div class="top"><h1>Сегодня</h1><span class="d" id="date"></span></div>
+<div class="quote" id="quote"></div>
+
+<div class="duo">
+  <div class="who mine">
+    <div class="nm"><span class="dot"></span>Лео</div>
+    <div class="big" id="myPct">0%</div><div class="sub" id="mySub">0 из 13</div>
+    <div class="bar"><i id="myBar" style="width:0"></i></div>
+    <div class="st">серия 4</div>
+  </div>
+  <div class="who theirs">
+    <div class="nm"><span class="dot"></span>Герман</div>
+    <div class="big" id="opPct">0%</div><div class="sub" id="opSub">0 из 13</div>
+    <div class="bar"><i id="opBar" style="width:0"></i></div>
+    <div class="st">серия 2</div>
+  </div>
+</div>
+
+<div class="hisday">
+  <div class="h"><b>Что у Германа</b><span>обновлено 14:20</span></div>
+  <div class="chips" id="opChips"></div>
+</div>
+
+<div id="list"></div>
+
+<button class="btn" id="send">Отчитаться за день</button>
+<button class="btn ghost" id="demo">Пример поста в чат</button>
+
+<div class="sec"><b>Месяц</b><i></i><span>день 15 из 30</span></div>
+<div class="grid" id="gridMe"></div>
+<div class="grid" id="gridOp"></div>
+<div class="legend"><span>меньше</span><span class="cell"></span><span class="cell" id="lg1"></span>
+ <span class="cell" id="lg2"></span><span class="cell" id="lg3"></span><span class="cell" id="lg4"></span>
+ <span>больше · верх твой, низ Германа</span></div>
+
+<div class="note">Прототип. Переключай темы кнопками сверху. Данные Германа — заглушка.</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const THEMES=[["board","Табло"],["dark","Тихий тёмный"],["paper","Тёплая бумага"],["whoop","Замер"]];
+const LEO=[["⏰","Подъём по графику недели"],["🌅","Утренний ритуал"],["🍳","Завтрак низкоуглеводный"],
+ ["🎯","Топ-гол 1",1],["🎯","Топ-гол 2",1],["🎬","Опубликованный рилс",1],["⚓","Рабочий ритуал"],
+ ["🥩","Обед низкоуглеводный"],["🧭","Капитанский мостик",1],["📵","Без техники за 2 часа до сна"],
+ ["📖","Книга 45 минут"],["🌙","Вечерний ритуал"],["😴","Отбой до 00:00"]];
+const GER=[["☀️","Подъём в 07:30",1],["📵","Первый час без телефона",1],["🚿","Контрастный душ",1],
+ ["🔥","100 отжиманий",1],["🚶","10 000 шагов",0],["🍽","2 приёма пищи",1],["🚫","Без сладкого",1],
+ ["📈","90 минут глубокой работы",0],["📥","Инбокс пустой к 21:00",0],["📚","Учить стих",0],
+ ["🛏","Сон на полу",1],["🚫","Без секса",1],["😴","Отбой до 23:30",0]];
+const KEY="duo_v2";
+let done={}; try{ done=JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){}
+const TICK='<svg viewBox="0 0 24 24"><path d="M4 12.6l5.2 5.2L20 7"/></svg>';
+
+$("#date").textContent=new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long"});
+const q=window.quoteOfDay&&window.quoteOfDay();
+if(q) $("#quote").innerHTML=`<p>«${q[0]}»</p><b>${q[1]}</b>`;
+
+$("#themes").innerHTML=THEMES.map(t=>`<button class="th" data-t="${t[0]}">${t[1]}</button>`).join("");
+function setTheme(t){
+  document.documentElement.dataset.theme=t;
+  try{ localStorage.setItem("duo_theme",t); }catch(e){}
+  document.querySelectorAll(".th").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+  [1,2,3,4].forEach(i=>{ const el=$("#lg"+i);
+    if(el) el.style.background=`color-mix(in srgb, var(--me) ${i*24}%, var(--line))`; });
+  paintGrid();
+}
+document.querySelectorAll(".th").forEach(b=>b.onclick=()=>setTheme(b.dataset.t));
+
+/* список рисуем ОДИН раз; дальше только переключаем класс —
+   при полной перерисовке анимация галочки не успевает проиграться */
+$("#list").innerHTML=LEO.map((x,i)=>`<div class="row ${done[i]?'on':''}" data-i="${i}">
+  <span class="bx">${TICK}</span><span class="em">${x[0]}</span>
+  <span class="t">${x[1]}</span>${x[2]?'<span class="tag">ОТЧЁТ</span>':''}
+  <span class="his ${GER[i]&&GER[i][2]?'yes':''}">${GER[i]&&GER[i][2]?'✓':''}</span></div>`).join("");
+document.querySelectorAll(".row").forEach(r=>r.onclick=()=>{
+  const i=+r.dataset.i; done[i]=!done[i];
+  r.classList.toggle("on",done[i]);
+  try{ localStorage.setItem(KEY,JSON.stringify(done)); }catch(e){}
+  try{ Telegram.WebApp.HapticFeedback.impactOccurred("light"); }catch(e){}
+  stats();
+});
+function stats(){
+  const n=Object.values(done).filter(Boolean).length, pct=Math.round(n/LEO.length*100);
+  $("#myPct").textContent=pct+"%"; $("#mySub").textContent=`${n} из ${LEO.length}`;
+  $("#myBar").style.width=pct+"%";
+  $("#send").textContent = n===LEO.length?"Отчитаться — день закрыт":`Отчитаться за день · ${pct}%`;
+}
+const gn=GER.filter(x=>x[2]).length, gp=Math.round(gn/GER.length*100);
+$("#opPct").textContent=gp+"%"; $("#opSub").textContent=`${gn} из ${GER.length}`;
+$("#opBar").style.width=gp+"%";
+$("#opChips").innerHTML=GER.map(x=>`<span class="chip ${x[2]?'yes':''}">${x[0]} ${x[1]}</span>`).join("");
+
+const HM=[4,3,4,4,2,0,3,4,4,3,4,2,4,4,null], HO=[2,3,1,4,3,2,0,3,2,4,3,3,2,1,null];
+function paintGrid(){
+  const g=(el,arr,v)=>{ $(el).innerHTML=arr.map(x=>{
+    if(x===null) return '<span class="cell today"></span>';
+    const bg = x ? `color-mix(in srgb, var(${v}) ${x*24}%, var(--line))` : "var(--line)";
+    return `<span class="cell" style="background:${bg}"></span>`; }).join(""); };
+  g("#gridMe",HM,"--me"); g("#gridOp",HO,"--opp");
+}
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on");
+  clearTimeout(t._x); t._x=setTimeout(()=>t.classList.remove("on"),2200); }
+$("#send").onclick=()=>{ toast("Отправлено в чат");
+  try{ Telegram.WebApp.HapticFeedback.notificationOccurred("success"); }catch(e){} };
+$("#demo").onclick=()=>{
+  const n=Object.values(done).filter(Boolean).length, pct=Math.round(n/LEO.length*100);
+  alert(`ДЕНЬ 15 · 22 июля\n\nЛео      ${pct}%   ${n}/${LEO.length}\nГерман   ${gp}%   ${gn}/${GER.length}\n\n`+
+    `Лео не закрыл: ${LEO.filter((_,i)=>!done[i]).map(x=>x[1]).slice(0,3).join(", ")||"—"}\n`+
+    `Герман не закрыл: ${GER.filter(x=>!x[2]).map(x=>x[1]).slice(0,3).join(", ")}`);
+};
+try{ if(window.Telegram&&Telegram.WebApp){ Telegram.WebApp.ready(); Telegram.WebApp.expand&&Telegram.WebApp.expand(); } }catch(e){}
+let t0="board"; try{ t0=localStorage.getItem("duo_theme")||"board"; }catch(e){}
+setTheme(t0); stats();
+</script></body></html>
