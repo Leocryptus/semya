@@ -1333,12 +1333,14 @@ $("#reset").onclick=()=>{ if(confirm("Сбросить прогресс и со�
       local.vabank || local.rest || local.dayPct!=null ||
       (local.weeklyDone||[]).length>(srv.weeklyDone||[]).length
     );
-    if(local && local.day===srv.day && srv.dayPct==null && hasProgress){
+    // галочки хранятся по индексам протокола: если состав изменился, они лягут не на те пункты
+    const sameProto = local && (local.proto||[]).length===(srv.proto||[]).length &&
+      (local.proto||[]).every((a,i)=>a.name===srv.proto[i].name);
+    if(local && local.day===srv.day && srv.dayPct==null && hasProgress && sameProto){
       S=local; // незакрытый день этого игрока — продолжаем с того же места
       // но общий город берём свежий: соперник мог сходить, пока тебя не было
       S.owners=srv.owners; S.lvl=srv.lvl; S.week=srv.week; S.flags=srv.flags;
       S.log=srv.log; S.oppPos=srv.oppPos; S.oppName=srv.oppName;
-      S.proto=srv.proto;   // протокол — только из бота, иначе правки состава не доедут
     } else { S=srv; try{localStorage.removeItem(MPKEY);}catch(e){} }
     // pending-батч прошлого дня, если апка тогда была без sendData
     let pend=null; try{ pend=localStorage.getItem(PENDKEY); }catch(e){}
