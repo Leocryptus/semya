@@ -4,6 +4,7 @@
 <meta name="theme-color" content="#0f1115">
 <title>ДЕНЬ · на двоих</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="quotes.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -22,6 +23,13 @@ body{background:var(--bg);color:var(--txt);font:400 15px/1.45 "Manrope",system-u
 .top{padding:16px 2px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .top h1{margin:0;font:800 19px/1 "Manrope";letter-spacing:-.01em}
 .top .d{font:700 12px/1 "Space Mono";color:var(--txt3)}
+
+/* ── цитата дня ── */
+.quote{background:var(--card);border:1px solid var(--line);border-left:2px solid var(--txt3);
+ border-radius:var(--r);padding:13px 15px;margin-bottom:14px}
+.quote p{margin:0;font:600 italic 14px/1.5 "Manrope";color:var(--txt2)}
+.quote b{display:block;margin-top:7px;font:700 11px/1 "Manrope";color:var(--txt3);
+ letter-spacing:.05em;text-transform:uppercase;font-style:normal}
 
 /* ── две колонки: я и он ── */
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
@@ -94,6 +102,8 @@ body{background:var(--bg);color:var(--txt);font:400 15px/1.45 "Manrope",system-u
 </style></head><body><div id="app">
 
 <div class="top"><h1>Сегодня</h1><span class="d" id="date"></span></div>
+
+<div class="quote" id="quote"></div>
 
 <div class="duo">
   <div class="who mine">
@@ -208,6 +218,8 @@ $("#demo").onclick=()=>{
     `Отчёты: Лео 2 из 4 · Герман 0 из 1`);
 };
 try{ if(window.Telegram&&Telegram.WebApp){ Telegram.WebApp.ready(); Telegram.WebApp.expand&&Telegram.WebApp.expand(); } }catch(e){}
+const q=window.quoteOfDay?window.quoteOfDay():null;
+if(q) $("#quote").innerHTML=`<p>«${q[0]}»</p><b>${q[1]}</b>`;
 render();
 </script>
 </body></html>
