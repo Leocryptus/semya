@@ -515,6 +515,7 @@ function flagsOpp(){ return MP ? (S.flags[OPP_CLAN]=S.flags[OPP_CLAN]||[]) : (S.
 function save(){ try{ localStorage.setItem(MP?MPKEY:KEY, JSON.stringify(S)); }catch(e){} }
 const $=s=>document.querySelector(s);
 const fmt=n=>(n<0?"−":"")+Math.abs(n).toLocaleString("ru-RU").replace(/,/g," ");
+function movesWord(n){const d=n%10,dd=n%100;if(d===1&&dd!==11)return"ход";if(d>=2&&d<=4&&(dd<12||dd>14))return"хода";return"ходов";}
 function ownVal(){ return MP?MY:"me"; }
 function oppVal(){ return MP?OPP_CLAN:"opp"; }
 function myCount(s){ return Object.values((s||S).owners).filter(o=>o===ownVal()).length; }
@@ -940,8 +941,8 @@ function dayResult(){
   S.money=Math.max(0,S.money+cash);
   const prevT=titleOf(S.respect)[0];
   const respMul=(vbWin?2:1)*((CE&&CE.id==="molva")?2:1);   // молва по городу удваивает уважение
-  // серия растёт с 70%: при пороге 85 крепкий, но неидеальный день её никогда бы не начал
-  if(pct>=70){ S.streak++; S.respect += (respFor(pct)+stBonusResp)*respMul; }
+  // серия растёт с 65%: при пороге 85 крепкий, но неидеальный день её никогда бы не начал
+  if(pct>=65){ S.streak++; S.respect += (respFor(pct)+stBonusResp)*respMul; }
   else { S.streak=0; if(respFor(pct)) S.respect += respFor(pct)*respMul; }
   if(pct>=85){ S.weekStats.days++; if(pct>=100)S.weekStats.sotki++; }
   // проигранный ва-банк роняет серию на ступень (не в ноль — день всё же прожит)
@@ -952,14 +953,14 @@ function dayResult(){
   const newT=titleOf(S.respect); if(newT[0]!==prevT){ setTimeout(()=>toast(`Новое звание: ${newT[0]}! Лимит районов ${newT[2]}${newT[3]!=="—"?" · "+newT[3]:""}`),900); log('g','🎖',`<b>Ты</b> поднялся до звания <b>${newT[0]}</b>`); }
   // давление босс-контракта недели
   const B=curBoss(); let pressTxt="";
-  if(B.id==="buhgalter" && pct<85){ S.money=Math.max(0,S.money-100); pressTxt="Сан Саныч оштрафовал кассу: −$100"; }
+  if(B.id==="buhgalter" && pct<65){ S.money=Math.max(0,S.money-100); pressTxt="Сан Саныч оштрафовал кассу: −$100"; }
   if(B.id==="prokuror"){ S.money=Math.max(0,S.money-50); pressTxt="Допрос у Прокурора: −$50"; }
   if(pressTxt){ log('n','🎩',pressTxt); setTimeout(()=>toast(pressTxt),1600); }
-  log('g','📅',`<b>Ты</b> закрыл день ${S.day} на <b>${pct}%</b>${cash?` · +$${cash}`:""}${moves?` · ${moves} ходов`:""}`);
+  log('g','📅',`<b>Ты</b> закрыл день ${S.day} на <b>${pct}%</b>${cash?` · +$${cash}`:""}${moves?` · ${moves} ${movesWord(moves)}`:""}`);
   if(MP&&BATCH){
     const nm=MPD.state.players[MY].name;
     BATCH.events.push(pct>=100?{t:"day100",text:`🏆 <b>СОТКА!</b> ${nm} закрыл день ${S.day} на 100% · 🎲 ${moves} ходов · 🔥 серия ${S.streak}`}
-      : pct>=85?{t:"day",text:`💪 <b>${nm}</b> закрыл день ${S.day} на ${pct}% · 🎲 ${moves} ходов`}
+      : pct>=85?{t:"day",text:`💪 <b>${nm}</b> закрыл день ${S.day} на ${pct}% · 🎲 ${moves} ${movesWord(moves)}`}
       : {t:"weak",text:`🌫 <b>${nm}</b>: день ${S.day} слабый (${pct}%)`});
   }
   S.moves+=moves; S.phase="rolled"; save(); renderHUD();
@@ -971,8 +972,8 @@ function dayResult(){
   if(needRep) verdict += ` Сдай ${needRep===1?"отчёт по делу":"отчёты по делам"} боту (/report) — судья ставит ★, они умножают ходы.`;
   openModal({
     kind:"Итог дня · "+pct+"%", art:`<span class="big">${pct>=100?"🏆":pct>=85?"💪":pct>=50?"🙂":"😮‍💨"}</span>`,
-    title: moves>0?((MP&&rollsInfo&&rollsInfo.rolls.length)?`🎲 ${rollsInfo.rolls.join(" + 🎲 ")}${rollsInfo.bonus?` +${rollsInfo.bonus}`:""} = ${moves}`:`+${moves} ходов`):"0 ходов",
-    reward:[["👣",moves+" ходов"], cash?["money","+$"+cash]:null, ["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:null, pct>=85?["📜",curBoss().count(S)+"/"+curBoss().need+" к боссу"]:null, sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
+    title: moves>0?((MP&&rollsInfo&&rollsInfo.base)?`${rollsInfo.base} за день${rollsInfo.bonus?" + 🎲 "+rollsInfo.bonus+" фарт":""} = ${moves} ${movesWord(moves)}`:`+${moves} ${movesWord(moves)}`):"0 ходов",
+    reward:[["👣",moves+" "+movesWord(moves)], cash?["money","+$"+cash]:null, ["💪","+"+coreDone+" силы"], pct>=85?["🎖","+"+(pct>=100?3:2)]:null, pct>=85?["📜",curBoss().count(S)+"/"+curBoss().need+" к боссу"]:null, sbonus?["🔥","серия +"+sbonus]:null].filter(Boolean).filter(x=>x[0]),
     desc:verdict+(moves>0?" Жми «Выйти в город».":" Ходов нет — сегодня стоишь. Завтра поднимайся."),
     btns: moves>0?[["▶ Выйти в город","btn",()=>{closeModal(); const m=S.moves; S.moves=0; go("city"); walk(m);}]]
                  :[["Завершить день","btn wood",()=>{closeModal();endDay();}]]
