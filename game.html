@@ -651,7 +651,25 @@ function renderDayTab(){
         // недельные пункты — квоты: у «спорт 4 раза» цель 4, отмечается по разу за занятие
         const i=+c.dataset.w, p=S.proto[i], goal=weekGoal(p);
         const было=weekCount(p.name);
-        if(было>=goal){ toast("Квота недели уже закрыта"); return; }
+        if(было>=goal){
+          // ошибочный тап должен сниматься — иначе квота висит закрытой до воскресенья
+          openModal({kind:"Квота недели", art:`<span class="big">${p.emoji||"📅"}</span>`,
+            title:`${p.name} · ${было}/${goal}`,
+            desc:`Квота закрыта. Отметил лишнее — сними.`,
+            btns:[["− Снять одну","btn wood",()=>{
+                    const k=S.weeklyDone.lastIndexOf(p.name);
+                    if(k>=0) S.weeklyDone.splice(k,1);
+                    S.power=Math.max(0,S.power-2); S.respect=Math.max(0,S.respect-4);
+                    save(); closeModal(); renderChecks(); renderHUD(); toast(`${weekCount(p.name)}/${goal}`);
+                  }],
+                  ["✕ Сбросить всё","btn red",()=>{
+                    S.weeklyDone=(S.weeklyDone||[]).filter(x=>x!==p.name);
+                    S.power=Math.max(0,S.power-(goal+1)); S.respect=Math.max(0,S.respect-4);
+                    save(); closeModal(); renderChecks(); renderHUD(); toast(`0/${goal}`);
+                  }],
+                  ["Оставить","btn",()=>closeModal()]]});
+          return;
+        }
         S.weeklyDone=(S.weeklyDone||[]).concat([p.name]);
         const стало=было+1, полная=стало>=goal;
         S.power+=1; if(полная){ S.power+=1; S.respect+=4; }
