@@ -1,4 +1,4 @@
-<!doctype html><html lang="ru" data-theme="board"><head>
+<!doctype html><html lang="ru" data-theme="whoop"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ЗЕРКАЛО · на двоих</title>
@@ -120,7 +120,7 @@ body{color:var(--txt);font:400 15px/1.45 var(--ff);-webkit-font-smoothing:antial
 .toast.on{transform:translateX(-50%) translateY(0)}
 </style></head><body><div id="app">
 
-<div class="themes" id="themes"></div>
+<div class="themes" id="themes" style="display:none"></div>
 <div class="top"><h1>Сегодня</h1><span class="d" id="date"></span></div>
 <div class="quote" id="quote"></div>
 
@@ -233,6 +233,5 @@ $("#demo").onclick=()=>{
     `Герман не закрыл: ${GER.filter(x=>!x[2]).map(x=>x[1]).slice(0,3).join(", ")}`);
 };
 try{ if(window.Telegram&&Telegram.WebApp){ Telegram.WebApp.ready(); Telegram.WebApp.expand&&Telegram.WebApp.expand(); } }catch(e){}
-let t0="board"; try{ t0=localStorage.getItem("duo_theme")||"board"; }catch(e){}
-setTheme(t0); stats();
+setTheme("whoop"); stats();   // тема зафиксирована — Замер
 </script></body></html>
