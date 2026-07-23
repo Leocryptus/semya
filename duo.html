@@ -91,6 +91,8 @@ body{color:var(--txt);font:400 15px/1.45 var(--ff);-webkit-font-smoothing:antial
 .row.on .bx svg{stroke-dashoffset:0}
 .row .em{font-size:16px;flex:0 0 auto;width:21px;text-align:center;opacity:.9}
 .row .t{flex:1;min-width:0;font:500 14px/1.3 var(--ff)}
+.row .t small{display:block;margin-top:3px;font:400 11px/1.35 var(--ff);color:var(--txt3);letter-spacing:.01em}
+.row.on .t small{opacity:.55}
 .row.on .t{color:var(--txt2)}
 .row .tag{font:700 9px/1 var(--ff);letter-spacing:.05em;padding:3px 5px;border-radius:4px;
  background:color-mix(in srgb,var(--warm) 16%,transparent);color:var(--warm);flex:0 0 auto}
@@ -190,11 +192,17 @@ function setTheme(t){
 }
 document.querySelectorAll(".th").forEach(b=>b.onclick=()=>setTheme(b.dataset.t));
 
+/* ритуал = один тап; его шаги показываем серым как напоминание, без отдельных галочек */
+const HINTS={
+ "Утренний ритуал":"свет · вода+соль · холодный душ · дыхание · медитация · телефон не трогать 1.5ч",
+ "Рабочий ритуал":"якорь перед стартом · NSDR между блоками · мелочёвка после топ-гола",
+ "Вечерний ритуал":"закатный свет · горячий душ · прохладная спальня · медитация 10–15 мин"};
+
 /* список рисуем ОДИН раз; дальше только переключаем класс —
    при полной перерисовке анимация галочки не успевает проиграться */
 $("#list").innerHTML=LEO.map((x,i)=>`<div class="row ${done[i]?'on':''}" data-i="${i}">
   <span class="bx">${TICK}</span><span class="em">${x[0]}</span>
-  <span class="t">${x[1]}</span>${x[2]?'<span class="tag">ОТЧЁТ</span>':''}
+  <span class="t">${x[1]}${x[2]?' <span class="tag">ОТЧЁТ</span>':''}${HINTS[x[1]]?`<small>${HINTS[x[1]]}</small>`:''}</span>
   <span class="his ${GER[i]&&GER[i][2]?'yes':''}">${GER[i]&&GER[i][2]?'✓':''}</span></div>`).join("");
 document.querySelectorAll(".row").forEach(r=>r.onclick=()=>{
   const i=+r.dataset.i; done[i]=!done[i];
