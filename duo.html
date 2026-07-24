@@ -128,21 +128,21 @@ body{color:var(--txt);font:400 15px/1.45 var(--ff);-webkit-font-smoothing:antial
 
 <div class="duo">
   <div class="who mine">
-    <div class="nm"><span class="dot"></span>Лео</div>
+    <div class="nm"><span class="dot"></span><span id="meName">Лео</span></div>
     <div class="big" id="myPct">0%</div><div class="sub" id="mySub">0 из 13</div>
     <div class="bar"><i id="myBar" style="width:0"></i></div>
-    <div class="st">серия 4</div>
+    <div class="st" id="myStreak">серия 0</div>
   </div>
   <div class="who theirs">
-    <div class="nm"><span class="dot"></span>Герман</div>
+    <div class="nm"><span class="dot"></span><span id="opName">Герман</span></div>
     <div class="big" id="opPct">0%</div><div class="sub" id="opSub">0 из 13</div>
     <div class="bar"><i id="opBar" style="width:0"></i></div>
-    <div class="st">серия 2</div>
+    <div class="st" id="opStreak">серия 0</div>
   </div>
 </div>
 
 <div class="hisday">
-  <div class="h"><b>Что у Германа</b><span>обновлено 14:20</span></div>
+  <div class="h"><b id="opTitle">Что у Германа</b><span id="opUpd">ещё не сегодня</span></div>
   <div class="chips" id="opChips"></div>
 </div>
 
@@ -151,33 +151,47 @@ body{color:var(--txt);font:400 15px/1.45 var(--ff);-webkit-font-smoothing:antial
 <button class="btn" id="send">Отчитаться за день</button>
 <button class="btn ghost" id="demo">Пример поста в чат</button>
 
-<div class="sec"><b>Месяц</b><i></i><span>день 15 из 30</span></div>
+<div class="sec"><b>Месяц</b><i></i><span id="dayCount">день 1 из 30</span></div>
 <div class="grid" id="gridMe"></div>
 <div class="grid" id="gridOp"></div>
 <div class="legend"><span>меньше</span><span class="cell"></span><span class="cell" id="lg1"></span>
  <span class="cell" id="lg2"></span><span class="cell" id="lg3"></span><span class="cell" id="lg4"></span>
  <span>больше · верх твой, низ Германа</span></div>
 
-<div class="note">Прототип. Переключай темы кнопками сверху. Данные Германа — заглушка.</div>
+<div class="note">Живые протоколы обоих — из бота. Тепловая карта месяца пока демо, оживёт по мере накопления дней.</div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 const $=s=>document.querySelector(s);
+const qs=new URLSearchParams(location.search);
 const THEMES=[["board","Табло"],["dark","Тихий тёмный"],["paper","Тёплая бумага"],["whoop","Замер"]];
-const LEO=[["⏰","Подъём по графику недели"],["🌅","Утренний ритуал"],["🍳","Завтрак низкоуглеводный"],
- ["🎯","Топ-гол 1",1],["🎯","Топ-гол 2",1],["🎬","Опубликованный рилс",1],["⚓","Рабочий ритуал"],
- ["🥩","Обед низкоуглеводный"],["🧭","Капитанский мостик",1],["📵","Без техники за 2 часа до сна"],
- ["📖","Книга 45 минут"],["🌙","Вечерний ритуал"],["😴","Отбой до 00:00"]];
-const GER=[["☀️","Подъём в 07:30",1],["📵","Первый час без телефона",1],["🚿","Контрастный душ",1],
- ["🔥","100 отжиманий",1],["🚶","10 000 шагов",0],["🍽","2 приёма пищи",1],["🚫","Без сладкого",1],
- ["📈","90 минут глубокой работы",0],["📥","Инбокс пустой к 21:00",0],["📚","Учить стих",0],
- ["🛏","Сон на полу",1],["🚫","Без секса",1],["😴","Отбой до 23:30",0]];
-const KEY="duo_v2";
+
+/* ── кто открыл: его clan = MY, второй игрок = OPP (маппинг uid→clan из mp-state) ── */
+const TG_UID=(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user&&Telegram.WebApp.initDataUnsafe.user.id)||qs.get("uid")||null;
+const MPD=window.__MP__||null;
+const ST=(MPD&&MPD.state)||{};
+const MY=(MPD&&TG_UID&&MPD.uids&&MPD.uids[String(TG_UID)])||"g";
+const OPP=MY==="g"?"s":"g";
+const NAME={g:"Лео",s:"Герман"};
+const EMPTY={proto:[],days:[],streak:0,dayPct:null,day:1};
+const meP=(ST.players&&ST.players[MY])||EMPTY;
+const opP=(ST.players&&ST.players[OPP])||EMPTY;
+
+/* дневной чек-лист = протоколы без недельных; напоминание — из под-шагов ритуала */
+const dayList=p=>(p.proto||[]).filter(x=>!x.weekly);
+const MINE=dayList(meP), THEIRS=dayList(opP);
+const hintOf=x=>(x.sub&&x.sub.length)?x.sub.map(s=>s.n).join(" · "):"";
+
+const KEY="duo_v2_"+MY;
 let done={}; try{ done=JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){}
 const TICK='<svg viewBox="0 0 24 24"><path d="M4 12.6l5.2 5.2L20 7"/></svg>';
 
 $("#date").textContent=new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long"});
+$("#meName").textContent=NAME[MY];
+$("#opName").textContent=NAME[OPP];
+$("#opTitle").textContent="Что у "+NAME[OPP];
+$("#dayCount").textContent=`день ${meP.day||1} из ${ST.maxDay||30}`;
 const q=window.quoteOfDay&&window.quoteOfDay();
 if(q) $("#quote").innerHTML=`<p>«${q[0]}»</p><b>${q[1]}</b>`;
 
@@ -192,18 +206,12 @@ function setTheme(t){
 }
 document.querySelectorAll(".th").forEach(b=>b.onclick=()=>setTheme(b.dataset.t));
 
-/* ритуал = один тап; его шаги показываем серым как напоминание, без отдельных галочек */
-const HINTS={
- "Утренний ритуал":"свет · вода+соль · холодный душ · дыхание · медитация · телефон не трогать 1.5ч",
- "Рабочий ритуал":"якорь перед стартом · NSDR между блоками · мелочёвка после топ-гола",
- "Вечерний ритуал":"закатный свет · горячий душ · прохладная спальня · медитация 10–15 мин"};
-
 /* список рисуем ОДИН раз; дальше только переключаем класс —
-   при полной перерисовке анимация галочки не успевает проиграться */
-$("#list").innerHTML=LEO.map((x,i)=>`<div class="row ${done[i]?'on':''}" data-i="${i}">
-  <span class="bx">${TICK}</span><span class="em">${x[0]}</span>
-  <span class="t">${x[1]}${x[2]?' <span class="tag">ОТЧЁТ</span>':''}${HINTS[x[1]]?`<small>${HINTS[x[1]]}</small>`:''}</span>
-  <span class="his ${GER[i]&&GER[i][2]?'yes':''}">${GER[i]&&GER[i][2]?'✓':''}</span></div>`).join("");
+   при полной перерисовке анимация галочки не успевает проиграться.
+   ритуал = одна строка-галочка, под-шаги серым как напоминание (из proto.sub) */
+$("#list").innerHTML=MINE.map((x,i)=>`<div class="row ${done[i]?'on':''}" data-i="${i}">
+  <span class="bx">${TICK}</span><span class="em">${x.emoji||"•"}</span>
+  <span class="t">${x.name}${x.report?' <span class="tag">ОТЧЁТ</span>':''}${hintOf(x)?`<small>${hintOf(x)}</small>`:''}</span></div>`).join("");
 document.querySelectorAll(".row").forEach(r=>r.onclick=()=>{
   const i=+r.dataset.i; done[i]=!done[i];
   r.classList.toggle("on",done[i]);
@@ -212,15 +220,20 @@ document.querySelectorAll(".row").forEach(r=>r.onclick=()=>{
   stats();
 });
 function stats(){
-  const n=Object.values(done).filter(Boolean).length, pct=Math.round(n/LEO.length*100);
-  $("#myPct").textContent=pct+"%"; $("#mySub").textContent=`${n} из ${LEO.length}`;
+  const n=Object.values(done).filter(Boolean).length, tot=MINE.length||1, pct=Math.round(n/tot*100);
+  $("#myPct").textContent=pct+"%"; $("#mySub").textContent=`${n} из ${MINE.length}`;
   $("#myBar").style.width=pct+"%";
-  $("#send").textContent = n===LEO.length?"Отчитаться — день закрыт":`Отчитаться за день · ${pct}%`;
+  $("#myStreak").textContent="серия "+(meP.streak||0);
+  $("#send").textContent=(n===MINE.length&&n>0)?"Отчитаться — день закрыт":`Отчитаться за день · ${pct}%`;
 }
-const gn=GER.filter(x=>x[2]).length, gp=Math.round(gn/GER.length*100);
-$("#opPct").textContent=gp+"%"; $("#opSub").textContent=`${gn} из ${GER.length}`;
+/* оппонент — из его живого стейта (пока не закрыл день — нули, честно) */
+const opDone=(opP.dayPct!=null)?Math.round((opP.dayPct>1?opP.dayPct/100:opP.dayPct)*THEIRS.length):0;
+const gp=THEIRS.length?Math.round(opDone/THEIRS.length*100):0;
+$("#opPct").textContent=gp+"%"; $("#opSub").textContent=`${opDone} из ${THEIRS.length}`;
 $("#opBar").style.width=gp+"%";
-$("#opChips").innerHTML=GER.map(x=>`<span class="chip ${x[2]?'yes':''}">${x[0]} ${x[1]}</span>`).join("");
+$("#opStreak").textContent="серия "+(opP.streak||0);
+$("#opUpd").textContent=(opP.dayPct!=null)?"день закрыт":"ещё не сегодня";
+$("#opChips").innerHTML=THEIRS.map(x=>`<span class="chip">${x.emoji||"•"} ${x.name}</span>`).join("");
 
 const HM=[4,3,4,4,2,0,3,4,4,3,4,2,4,4,null], HO=[2,3,1,4,3,2,0,3,2,4,3,3,2,1,null];
 function paintGrid(){
@@ -235,10 +248,9 @@ function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on");
 $("#send").onclick=()=>{ toast("Отправлено в чат");
   try{ Telegram.WebApp.HapticFeedback.notificationOccurred("success"); }catch(e){} };
 $("#demo").onclick=()=>{
-  const n=Object.values(done).filter(Boolean).length, pct=Math.round(n/LEO.length*100);
-  alert(`ДЕНЬ 15 · 22 июля\n\nЛео      ${pct}%   ${n}/${LEO.length}\nГерман   ${gp}%   ${gn}/${GER.length}\n\n`+
-    `Лео не закрыл: ${LEO.filter((_,i)=>!done[i]).map(x=>x[1]).slice(0,3).join(", ")||"—"}\n`+
-    `Герман не закрыл: ${GER.filter(x=>!x[2]).map(x=>x[1]).slice(0,3).join(", ")}`);
+  const n=Object.values(done).filter(Boolean).length, pct=MINE.length?Math.round(n/MINE.length*100):0;
+  alert(`ДЕНЬ ${meP.day||1}\n\n${NAME[MY]}   ${pct}%   ${n}/${MINE.length}\n${NAME[OPP]}   ${gp}%   ${opDone}/${THEIRS.length}\n\n`+
+    `${NAME[MY]} не закрыл: ${MINE.filter((_,i)=>!done[i]).map(x=>x.name).slice(0,3).join(", ")||"—"}`);
 };
 try{ if(window.Telegram&&Telegram.WebApp){ Telegram.WebApp.ready(); Telegram.WebApp.expand&&Telegram.WebApp.expand(); } }catch(e){}
 setTheme("whoop"); stats();   // тема зафиксирована — Замер
