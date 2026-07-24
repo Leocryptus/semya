@@ -175,6 +175,7 @@ const ST=(MPD&&MPD.state)||{};
 const MY=(MPD&&TG_UID&&MPD.uids&&MPD.uids[String(TG_UID)])||"g";
 const OPP=MY==="g"?"s":"g";
 const NAME={g:"Лео",s:"Герман"};
+const NAME_GEN={g:"Лео",s:"Германа"};   /* «Что у …» — родительный падеж */
 const EMPTY={proto:[],days:[],streak:0,dayPct:null,day:1};
 const meP=(ST.players&&ST.players[MY])||EMPTY;
 const opP=(ST.players&&ST.players[OPP])||EMPTY;
@@ -191,7 +192,7 @@ const TICK='<svg viewBox="0 0 24 24"><path d="M4 12.6l5.2 5.2L20 7"/></svg>';
 $("#date").textContent=new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long"});
 $("#meName").textContent=NAME[MY];
 $("#opName").textContent=NAME[OPP];
-$("#opTitle").textContent="Что у "+NAME[OPP];
+$("#opTitle").textContent="Что у "+NAME_GEN[OPP];
 $("#dayCount").textContent=`день ${meP.day||1} из ${ST.maxDay||30}`;
 const q=window.quoteOfDay&&window.quoteOfDay();
 if(q) $("#quote").innerHTML=`<p>«${q[0]}»</p><b>${q[1]}</b>`;
